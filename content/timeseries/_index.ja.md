@@ -5,6 +5,7 @@ pre: "<b>5. </b>"
 chapter: true
 not_use_colab: true
 not_use_twitter: true
+bookCollapseSection: true
 ---
 
 ### Section 5

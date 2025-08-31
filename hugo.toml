@@ -30,7 +30,7 @@ summaryLength   = 160                      # メタ説明の要約長
   privacyEnhanced = true                    # youtube-nocookie を使用
 
 [params]
-  BookSection = 'basic'
+  BookSection = '*'
   BookTheme   = 'auto'
   BookToC     = true
   BookSearch  = true

@@ -5,6 +5,7 @@ weight: 8
 chapter: true
 not_use_colab: true
 not_use_twitter: true
+bookCollapseSection: true
 ---
 
 ### Section 8
