@@ -170,9 +170,6 @@ plt.show()
 
 
 ### Impact of Specifying Seasonality
-```{warning}
-Specifying seasonality when it is not present in the data can lead to incorrect predictions.
-```
 
 In the example below, we deliberately specify that there is annual seasonality (yearly_seasonality=True).
 Due to the term introduced to capture the yearly cycle, the forecast for 2022 shows a somewhat unnatural increase.

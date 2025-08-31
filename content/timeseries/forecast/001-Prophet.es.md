@@ -175,9 +175,6 @@ plt.show()
 
 
 ### Impacto de la especificación de periodicidad
-```{warning}
-Si se especifica una estacionalidad que no existe en los datos, podría generar predicciones incorrectas.
-```
 
 En el siguiente ejemplo, se fuerza la especificación de estacionalidad anual (yearly_seasonality=True).
 Como resultado, debido al término añadido para capturar ciclos anuales, se observa un aumento algo inusual en las predicciones para 2022.

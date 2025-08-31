@@ -164,9 +164,6 @@ plt.show()
 
 
 ### Pengaruh Penetapan Periodisitas
-```{warning}
-Jika periodisitas ditetapkan meskipun data tidak memiliki pola musiman, hasil prediksi dapat menjadi tidak akurat.
-```
 
 Pada contoh berikut, musiman tahunan sengaja ditetapkan (yearly_seasonality=True). Akibat pengaruh komponen untuk menangkap pola tahunan, prediksi untuk tahun 2022 menunjukkan peningkatan yang agak tidak wajar.
 

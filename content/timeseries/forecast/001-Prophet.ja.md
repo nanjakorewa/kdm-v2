@@ -166,15 +166,9 @@ plt.show()
 
 
 
-    
 ![png](/images/timeseries/forecast/001-Prophet_files/001-Prophet_10_1.png)
-    
-
 
 ### 周期性の指定の影響
-
-以下の例ではあえて**年の季節性がある**（`yearly_seasonality=True`）と指定しています。
-年の周期を捉えるための項の影響で2022年の予測がやや不自然に増加していることがわかります。
 
 
 ```python
