@@ -1,4 +1,29 @@
-{{ $_hugo_config := `{ "version": 1 }` }}
-<div class="youtube-embed">
-  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/{{.Get 0}}" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
+{{/* Simple & reliable YouTube embed (nocookie, no JS)
+     使い方：
+       {{< youtube "KKuAxQbuJpk" >}}
+       {{< youtube id="KKuAxQbuJpk" title="最小二乗法のイントロ" caption="5分で分かる最小二乗法" aspect="16/9" start="30" >}}
+*/}}
+{{- $id      := .Get "id" | default (.Get 0) -}}
+{{- if not $id -}}{{ errorf "youtube shortcode needs an id" }}{{- end -}}
+{{- $title   := .Get "title" | default .Page.Title -}}
+{{- $caption := .Get "caption" -}}
+{{- $aspect  := .Get "aspect"  | default "16/9" -}}
+{{- $start   := .Get "start"   | default "" -}}
+
+{{- $params := slice "rel=0" "modestbranding=1" "playsinline=1" "cc_load_policy=1" -}}
+{{- if $start }}{{ $params = $params | append (printf "start=%s" $start) }}{{ end -}}
+{{- $qs := printf "?%s" (delimit $params "&") -}}
+
+<figure class="yt {{ with .Get "variant" }}yt--{{ . }}{{ end }}">
+  <div class="yt-frame" style="aspect-ratio: {{ $aspect }};">
+    <iframe
+      src="https://www.youtube-nocookie.com/embed/{{ $id }}{{ $qs }}"
+      title="{{ $title }}"
+      loading="lazy"
+      style="min-height: 400px"
+      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen>
+    </iframe>
+  </div>
+  {{ with $caption }}<figcaption class="yt-cap">{{ . }}</figcaption>{{ end }}
+</figure>

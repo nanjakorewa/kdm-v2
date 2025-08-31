@@ -285,3 +285,33 @@ div.notices.ref p     { border-top-color:#06b6d4; }
   text-underline-offset:.15em;
 }
 .trust-footer .dot{ color:var(--border); }
+
+/* --- YouTube: 安定版埋め込み（カード風） --- */
+.yt { margin: 2rem 0; }
+.yt-cap { margin-top:.5rem; font-size:.95rem; color:var(--muted); }
+
+.yt-frame{
+  width:100%;
+  min-height: 400px;
+  border-radius: var(--radius);
+  overflow:hidden;
+  box-shadow: var(--shadow-md);
+  background:#000;                 /* 読み込み前の背景 */
+}
+.yt-frame iframe{
+  width:100%;
+  height:100%;
+  display:block;
+  border:0;
+}
+
+/* --- ワイド/フル幅オプション（Sass互換・安全版） --- */
+.yt--wide,
+.yt--full{
+  width: calc(100vw - 2rem);                  /* ビューポート基準で広げる */
+  max-width: var(--embed-max, 1100px);        /* 上限キャップ */
+  margin-left: 50%;
+  transform: translateX(-50%);                /* 中央寄せ */
+}
+
+.yt--full { --embed-max: 1400px; }
