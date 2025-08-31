@@ -2,13 +2,15 @@
 title: "Outliers and Robustness"
 pre: "2.1.3 "
 weight: 3
-title_suffix: "Handle outliers and do robust linear regression in python"
+title_suffix: "Handling with Huber Regression"
 ---
 
-<div class="pagetop-box">
-    <p>Outlier is a general term for a value that is anomalous (very large or conversely small) compared to other values. What values are outliers depends on the problem setting and the nature of the data. On this page, we will review the difference in results between "regression with squared error" and "regression with Huber loss" for data with outliers.</p>
-</div>
+{{% youtube "CrN5Si0379g" %}}
 
+
+<div class="pagetop-box">
+  <p><b>Outliers</b> are observations that deviate strongly from most of the data. What counts as an outlier depends on the problem, the distribution, and the target scale. Here we contrast ordinary least squares (squared loss) with <b>Huber loss</b> on data that include an extreme point.</p>
+  </div>
 
 ```python
 import japanize_matplotlib
@@ -16,110 +18,190 @@ import matplotlib.pyplot as plt
 import numpy as np
 ```
 
-## Visualisation of Huber loss
+---
 
+## 1. Why OLS is sensitive to outliers
+
+OLS minimizes the sum of squared residuals
+$$
+\text{RSS} = \sum_{i=1}^n (y_i - \hat y_i)^2.
+$$
+Because residuals are <b>squared</b>, even a single extreme point can dominate the loss and <b>drag the fitted line</b> toward the outlier.
+
+---
+
+## 2. Huber loss: a compromise between squared and absolute
+
+The <b>Huber loss</b> uses squared loss for small residuals and absolute loss for large residuals. For residual <code>r = y - \hat y</code> and threshold <code>\(\delta > 0\)</code>:
+
+$$
+\ell_\delta(r) = \begin{cases}
+\dfrac{1}{2}r^2, & |r| \le \delta \\
+\delta\left(|r| - \dfrac{1}{2}\delta\right), & |r| > \delta.
+\end{cases}
+$$
+
+The derivative (influence) is
+$$
+\psi_\delta(r) = \frac{d}{dr}\ell_\delta(r) = \begin{cases}
+r, & |r| \le \delta \\
+\delta\,\mathrm{sign}(r), & |r| > \delta,
+\end{cases}
+$$
+so the gradient is <b>clipped</b> for large residuals (outliers).
+
+> Note: in scikit-learn’s <code>HuberRegressor</code>, the threshold is parameter <code>epsilon</code> (corresponds to <code>\(\delta\)</code> above).
+
+---
+
+## 3. Visualizing the loss shapes
 
 ```python
-def huber_loss(y_pred: float, y: float, delta=1.0):
-    """HuberLoss"""
-    huber_1 = 0.5 * (y - y_pred) ** 2
-    huber_2 = delta * (np.abs(y - y_pred) - 0.5 * delta)
-    return np.where(np.abs(y - y_pred) <= delta, huber_1, huber_2)
-
+def huber_loss(r: np.ndarray, delta: float = 1.5):
+    half_sq = 0.5 * np.square(r)
+    lin = delta * (np.abs(r) - 0.5 * delta)
+    return np.where(np.abs(r) <= delta, half_sq, lin)
 
 delta = 1.5
-x_vals = np.arange(-2, 2, 0.01)
-y_vals = np.where(
-    np.abs(x_vals) <= delta,
-    0.5 * np.square(x_vals),
-    delta * (np.abs(x_vals) - 0.5 * delta),
-)
+r_vals = np.arange(-2, 2, 0.01)
+h_vals = huber_loss(r_vals, delta=delta)
 
-# plot graph
-fig = plt.figure(figsize=(8, 8))
-plt.plot(x_vals, x_vals ** 2, "red", label=r"$(y-\hat{y})^2$")  ## Squared error
-plt.plot(x_vals, np.abs(x_vals), "orange", label=r"$|y-\hat{y}|$")  ## Absolute error
-plt.plot(
-    x_vals, huber_loss(x_vals * 2, x_vals), "green", label=r"huber-loss"
-)  # Huber-loss
-plt.axhline(y=0, color="k")
-plt.grid(True)
+plt.figure(figsize=(8, 6))
+plt.plot(r_vals, np.square(r_vals), "red",   label=r"squared $r^2$")
+plt.plot(r_vals, np.abs(r_vals),    "orange",label=r"absolute $|r|$")
+plt.plot(r_vals, h_vals,            "green", label=fr"Huber ($\delta={delta}$)")
+plt.axhline(0, color="k", linewidth=0.8)
+plt.grid(True, alpha=0.3)
 plt.legend()
+plt.xlabel("residual $r$")
+plt.ylabel("loss")
+plt.title("Squared vs absolute vs Huber")
 plt.show()
 ```
 
-
-    
 ![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_5_0.png)
-    
 
+---
 
-## Comparison with the least-squares method
+## 4. What happens with an outlier? (data)
 
-### Prepare data for the experiment
-
-To compare regression with Huber loss and normal linear regression, one outlier is intentionally included in the data.
-
+Create a simple 2-feature linear problem and inject <b>one extreme outlier</b> in <code>y</code>.
 
 ```python
-N = 30
-x1 = np.array([i for i in range(N)])
-x2 = np.array([i for i in range(N)])
-X = np.array([x1, x2]).T
-epsilon = np.array([np.random.random() for i in range(N)])
-y = 5 * x1 + 10 * x2 + epsilon * 10
-y[5] = 500
+np.random.seed(42)
 
-plt.figure(figsize=(8, 8))
+N = 30
+x1 = np.arange(N)
+x2 = np.arange(N)
+X = np.c_[x1, x2]                      # shape (N, 2)
+epsilon = np.random.rand(N)            # noise in [0, 1)
+y = 5 * x1 + 10 * x2 + epsilon * 10    # true relation + noise
+
+y[5] = 500  # one very large outlier
+
+plt.figure(figsize=(8, 6))
 plt.plot(x1, y, "ko", label="data")
+plt.xlabel("$x_1$")
+plt.ylabel("$y$")
 plt.legend()
+plt.title("Dataset with an outlier")
 plt.show()
 ```
 
-
-    
 ![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_7_0.png)
-    
 
+---
 
-### Compare with least squares, ridge regression and huber regression
+## 5. Compare OLS vs Ridge vs Huber
+
+- <b>OLS</b> (squared loss): very sensitive to outliers.  
+- <b>Ridge</b> (L2): shrinks coefficients; slightly more stable, but still affected.  
+- <b>Huber</b>: clips the influence of outliers; the line is less dragged.
 
 {{% notice document %}}
-[sklearn.linear_model.HuberRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.HuberRegressor.html#sklearn.linear_model.HuberRegressor)
+- [HuberRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.HuberRegressor.html)
 {{% /notice %}}
 
 {{% notice seealso %}}
-[Pre-processing method: labeling outliers①](https://k-dm.work/ja/prep/numerical/add_label_to_anomaly/)
+[Preprocessing approach: label anomalies (JP)](https://k-dm.work/ja/prep/numerical/add_label_to_anomaly/)
 {{% /notice %}}
 
-
 ```python
-from sklearn.datasets import make_regression
-from sklearn.linear_model import HuberRegressor, Ridge
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import HuberRegressor, Ridge, LinearRegression
 
+plt.figure(figsize=(8, 6))
 
-plt.figure(figsize=(8, 8))
-huber = HuberRegressor(alpha=0.0, epsilon=3)
+# Huber: use epsilon=3 to reduce outlier influence
+huber = HuberRegressor(alpha=0.0, epsilon=3.0)
 huber.fit(X, y)
-plt.plot(x1, huber.predict(X), "green", label="huber regression")
+plt.plot(x1, huber.predict(X), "green", label="Huber")
 
-ridge = Ridge(alpha=0.0, random_state=0)
+# Ridge (L2). With alpha≈0, behaves like OLS.
+ridge = Ridge(alpha=1.0, random_state=0)
 ridge.fit(X, y)
-plt.plot(x1, ridge.predict(X), "orange", label="ridge regression")
+plt.plot(x1, ridge.predict(X), "orange", label="Ridge (α=1.0)")
 
+# OLS
 lr = LinearRegression()
 lr.fit(X, y)
-plt.plot(x1, lr.predict(X), "r-", label="least square regression")
-plt.plot(x1, y, "x")
+plt.plot(x1, lr.predict(X), "r-", label="OLS")
 
-plt.plot(x1, y, "ko", label="data")
+# raw data
+plt.plot(x1, y, "kx", alpha=0.7)
+
+plt.xlabel("$x_1$")
+plt.ylabel("$y$")
 plt.legend()
+plt.title("Effect of an outlier on fitted lines")
+plt.grid(alpha=0.3)
 plt.show()
 ```
 
-
-    
 ![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_9_0.png)
-    
+
+Interpretation:
+- OLS (red) is strongly pulled by the outlier.
+- Ridge (orange) mitigates slightly but remains affected.
+- Huber (green) reduces outlier influence and follows the overall trend better.
+
+---
+
+## 6. Parameters: epsilon and alpha
+
+- <code>epsilon</code> (threshold <code>\(\delta\)</code>):
+  - Larger → closer to OLS; smaller → closer to absolute loss.
+  - Depends on residual scale; standardization or robust scaling helps.
+- <code>alpha</code> (L2 penalty):
+  - Stabilizes coefficients, useful under collinearity.
+
+Sensitivity to <code>epsilon</code>:
+
+```python
+from sklearn.metrics import mean_squared_error
+
+for eps in [1.2, 1.5, 2.0, 3.0]:
+    h = HuberRegressor(alpha=0.0, epsilon=eps).fit(X, y)
+    mse = mean_squared_error(y, h.predict(X))
+    print(f"epsilon={eps:>3}: MSE={mse:.3f}")
+```
+
+---
+
+## 7. Practical notes
+
+- <b>Scaling</b>: if feature/target scales differ, the meaning of <code>epsilon</code> changes; standardize or use robust scaling.
+- <b>High leverage points</b>: Huber is robust to vertical outliers in <code>y</code>, but not necessarily to extreme points in <code>X</code>.
+- <b>Choosing thresholds</b>: tune <code>epsilon</code> and <code>alpha</code> (e.g., via <code>GridSearchCV</code>).
+- <b>Evaluate with CV</b>: don’t judge by training fit only.
+
+---
+
+## 8. Summary
+
+- OLS is sensitive to outliers; the fit can be dragged.
+- Huber uses squared loss for small errors and absolute for large errors, effectively <b>clipping gradients</b> for outliers.
+- Tuning <code>epsilon</code> and <code>alpha</code> balances robustness and fit.
+- Beware of leverage points; combine with inspection and preprocessing if needed.
+
+---
 

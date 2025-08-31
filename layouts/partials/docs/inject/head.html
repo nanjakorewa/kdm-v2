@@ -1,12 +1,29 @@
-﻿{{- /* ====== SEO meta & structured data inject (site-wide) ====== */ -}}
+﻿{{- /* ======= SEO meta & structured data (enhanced) ======= */ -}}
 {{- $title := .Title -}}
 {{- $desc  := cond (ne .Description "") .Description (.Summary | plainify | htmlUnescape | truncate 160) -}}
 {{- $url   := .Permalink -}}
 {{- $img   := (or (index .Params.images 0) (site.Params.ogImage)) | absURL -}}
 {{- $site  := site.Title -}}
 {{- $lang  := .Lang -}}
+{{- $author:= (or .Params.author site.Params.author) -}}
+
+{{/* Robots（ドラフト/明示noindexは除外）。高度ロボッツも付与 */}}
+{{- $isNoindex := or .Draft .Params.noindex (eq .Params.robots "noindex") -}}
+{{- $robotsBase := cond $isNoindex "noindex, nofollow" "index, follow" -}}
+{{- $robotsAdv  := "max-snippet:-1, max-image-preview:large, max-video-preview:-1" -}}
+<meta name="robots" content="{{ $robotsBase }}, {{ $robotsAdv }}">
+<meta name="googlebot" content="{{ $robotsBase }}, {{ $robotsAdv }}">
+
+{{- with site.Params.googleSiteVerification -}}
+<meta name="google-site-verification" content="{{ . }}">
+{{- end -}}
+{{- with site.Params.bingSiteVerification -}}
+<meta name="msvalidate.01" content="{{ . }}">
+{{- end -}}
 
 <meta name="description" content="{{ $desc }}">
+{{ with $author }}<meta name="author" content="{{ . }}">{{ end }}
+
 <!-- Open Graph -->
 <meta property="og:title" content="{{ $title }}">
 <meta property="og:description" content="{{ $desc }}">
@@ -15,14 +32,35 @@
 {{ with $img }}<meta property="og:image" content="{{ . }}">{{ end }}
 <meta property="og:site_name" content="{{ $site }}">
 <meta property="og:locale" content="{{ $lang }}">
+{{- range .AllTranslations -}}
+<meta property="og:locale:alternate" content="{{ .Lang }}">
+{{- end -}}
+{{ with $img }}<meta property="og:image:alt" content="{{ $title }}">{{ end }}
+{{ if .IsPage }}
+  <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+  <meta property="article:modified_time"  content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+  <meta property="og:updated_time"        content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+  {{ with .Section }}<meta property="article:section" content="{{ . }}">{{ end }}
+  {{ with .Params.tags }}{{ range . }}<meta property="article:tag" content="{{ . }}">{{ end }}{{ end }}
+{{ end }}
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $title }}">
 <meta name="twitter:description" content="{{ $desc }}">
 {{ with $img }}<meta name="twitter:image" content="{{ . }}">{{ end }}
+{{ with site.Params.twitterSite }}<meta name="twitter:site" content="@{{ . }}">{{ end }}
+{{ with (or .Params.twitterCreator site.Params.twitterCreator) }}<meta name="twitter:creator" content="@{{ . }}">{{ end }}
 
-<!-- JSON-LD: Article / WebPage -->
+<!-- hreflang（絶対URL） -->
+{{- range .AllTranslations -}}
+<link rel="alternate" hreflang="{{ .Lang }}" href="{{ .Permalink }}">
+{{- end -}}
+{{- if .IsHome -}}
+<link rel="alternate" hreflang="x-default" href="{{ site.Home.Permalink }}">
+{{- end -}}
+
+<!-- JSON-LD: Article/WebSite + BreadcrumbList + Publisher/logo -->
 {{- if .IsPage -}}
 <script type="application/ld+json">
 {
@@ -34,8 +72,30 @@
   "mainEntityOfPage": {"@type":"WebPage","@id": {{ $url | jsonify }}},
   "datePublished": {{ .Date.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
   "dateModified": {{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
-  "author": {"@type":"Organization","name": {{ site.Title | jsonify }}}
-  {{ with $img }}, "image": [{{ . | jsonify }}]{{ end }}
+  {{- with $author -}}"author":{"@type":"Person","name":{{ . | jsonify }}},{{- end -}}
+  "publisher":{
+    "@type":"Organization",
+    "name": {{ (site.Params.orgName | default $site) | jsonify }}
+    {{- with site.Params.orgLogo -}},
+    "logo": { "@type": "ImageObject", "url": {{ . | absURL | jsonify }} }
+    {{- end -}}
+  }
+  {{- with $img -}}, "image":[ {{ . | jsonify }} ]{{- end -}}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"BreadcrumbList",
+  "itemListElement": [
+    { "@type":"ListItem", "position": 1, "name": "Home", "item": {{ site.BaseURL | jsonify }} }
+    {{- $pos := 1 -}}
+    {{- range .Ancestors.Reverse -}}
+      {{- $pos = add $pos 1 -}}
+      ,{ "@type":"ListItem","position": {{ $pos }},"name": {{ .Title | jsonify }},"item": {{ .Permalink | jsonify }} }
+    {{- end -}}
+    ,{ "@type":"ListItem","position": {{ add $pos 1 }},"name": {{ $title | jsonify }},"item": {{ $url | jsonify }} }
+  ]
 }
 </script>
 {{- else -}}
@@ -46,16 +106,47 @@
   "name": {{ $site | jsonify }},
   "url": {{ site.BaseURL | jsonify }},
   "inLanguage": {{ $lang | jsonify }},
-  "potentialAction": {"@type":"SearchAction","target":"{{ site.BaseURL }}?q={search_term_string}","query-input":"required name=search_term_string"}
+  "publisher":{
+    "@type":"Organization",
+    "name": {{ (site.Params.orgName | default $site) | jsonify }}
+    {{- with site.Params.orgLogo -}},
+    "logo": { "@type":"ImageObject", "url": {{ . | absURL | jsonify }} }
+    {{- end -}}
+  },
+  "potentialAction":{"@type":"SearchAction","target":"{{ site.BaseURL }}?q={search_term_string}","query-input":"required name=search_term_string"}
 }
 </script>
 {{- end -}}
 
-<!-- hreflang (テーマも出しますが、念のため絶対URLで補強) -->
-{{- range .AllTranslations -}}
-<link rel="alternate" hreflang="{{ .Lang }}" href="{{ .Permalink }}">
-{{- end -}}
+<!-- パフォーマンス微調整（よく使う外部に先行接続） -->
+<link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin>
+<link rel="preconnect" href="https://i.ytimg.com" crossorigin>
 
-{{- if .IsHome -}}
-<link rel="alternate" hreflang="x-default" href="{{ site.Home.Permalink }}">
-{{- end -}}
+{{/* ---- KaTeX (site-wide) ---- */}}
+{{- $kconf := (resources.Get "katex.json" | transform.Unmarshal) | default (dict
+  "delimiters" (slice
+    (dict "left" "$$" "right" "$$" "display" true)
+    (dict "left" "$"  "right" "$"  "display" false)
+    (dict "left" "\\(" "right" "\\)" "display" false)
+    (dict "left" "\\[" "right" "\\]" "display" true)
+  )
+  "throwOnError" false
+) -}}
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+
+<script>
+  // 二重初期化を防止
+  window.__katexAllPages__ = true;
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.renderMathInElement) {
+      try {
+        renderMathInElement(document.body, {{ $kconf | jsonify }});
+      } catch(e) { console && console.warn('KaTeX render skipped:', e); }
+    }
+  });
+</script>

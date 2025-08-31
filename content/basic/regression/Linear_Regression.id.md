@@ -1,92 +1,146 @@
 ---
-title: "Metode kuadrat terkecil"
+title: "Metode Kuadrat Terkecil"
 pre: "2.1.1 "
 weight: 1
-searchtitle: "Regresi Kuadrat Terkecil dalam Python"
+title_suffix: "Konsep dan Implementasi"
 ---
 
+{{% youtube "KKuAxQbuJpk" %}}
+
+
+
 <div class="pagetop-box">
-    <p>Metode kuadrat terkecil mengacu pada pencarian koefisien fungsi untuk meminimalkan jumlah kuadrat residual ketika menyesuaikan fungsi ke kumpulan pasangan angka $(x_i, y_i)$ untuk mengetahui hubungan mereka. Pada halaman ini, kita akan mencoba melakukan metode least-squares pada data sampel menggunakan scikit-learn.</p>
-</div>
+  <p><b>Kuadrat terkecil</b> mencari koefisien fungsi yang paling pas terhadap pasangan observasi <code>(x_i, y_i)</code> dengan meminimalkan jumlah kuadrat residual. Kita fokus pada kasus paling sederhana, garis lurus <code>y = wx + b</code>, dan meninjau intuisi serta implementasi praktisnya.</p>
+  </div>
+
+{{% notice tip %}}
+Rumus ditampilkan dengan KaTeX. <code>\(\hat y\)</code> adalah prediksi model dan <code>\(\epsilon\)</code> adalah noise.
+{{% /notice %}}
+
+## Tujuan
+- Mempelajari garis <code>\(\hat y = wx + b\)</code> yang paling pas dengan data.
+- “Paling pas” berarti meminimalkan jumlah kuadrat error (SSE):
+  <code>\(\displaystyle L(w,b) = \sum_{i=1}^n (y_i - (w x_i + b))^2\)</code>
+
+## Buat dataset sederhana
+Kita buat garis lurus dengan noise dan tetapkan seed agar hasil dapat direproduksi.
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
-import japanize_matplotlib
-from sklearn.linear_model import LinearRegression
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-```
+import japanize_matplotlib  # opsional untuk label Jepang
 
-{{% notice tip %}}
-`japanize_matplotlib` diimpor untuk menampilkan bahasa Jepang dalam bagan.
-{{% /notice %}}
+rng = np.random.RandomState(42)
+n_samples = 200
 
-## Membuat data regresi untuk eksperimen
-Gunakan `np.linspace` untuk membuat data. Ini menciptakan daftar nilai dengan jarak yang sama di antara nilai yang Anda tentukan. Kode berikut ini membuat 500 sampel data untuk regresi linier.
+# Garis sebenarnya (kemiringan 0.8, intersep 0.5) dengan noise
+X = np.linspace(-10, 10, n_samples)
+epsilon = rng.normal(loc=0.0, scale=1.0, size=n_samples)
+y = 0.8 * X + 0.5 + epsilon
 
-```python
-# Data pelatihan
-n_samples = 500
-X = np.linspace(-10, 10, n_samples)[:, np.newaxis]
-epsolon = np.random.normal(size=n_samples)
-y = np.linspace(-2, 2, n_samples) + epsolon
+# Ubah ke 2D untuk scikit-learn: (n_samples, 1)
+X_2d = X.reshape(-1, 1)
 
-# Memvisualisasikan garis lurus
 plt.figure(figsize=(10, 5))
-plt.scatter(X, y, marker="x", label="Target", c="orange")
-plt.xlabel("$x_1$")
-plt.xlabel("$y$")
+plt.scatter(X, y, marker="x", label="observasi", c="orange")
+plt.xlabel("$x$")
+plt.ylabel("$y$")
 plt.legend()
 plt.show()
 ```
 
 ![png](/images/basic/regression/01_Linear_Regression_files/01_Linear_Regression_6_0.png)
 
+{{% notice info %}}
+Di scikit-learn, fitur selalu berbentuk array 2D: baris = sampel, kolom = fitur. Gunakan <code>X.reshape(-1, 1)</code> untuk satu fitur.
+{{% /notice %}}
 
-## Konfirmasi kebisingan pada y
-
-Tentang `y = np.linspace(-2, 2, n_samples) + epsolon`, saya memplot histogram untuk `epsolon`.
-Konfirmasikan bahwa noise dengan distribusi yang mendekati distribusi normal ada pada variabel target.
+## Periksa noise
+Mari lihat distribusi <code>epsilon</code>.
 
 ```python
 plt.figure(figsize=(10, 5))
-plt.hist(epsolon)
-plt.xlabel("$\epsilon$")
-plt.ylabel("#data")
+plt.hist(epsilon, bins=30)
+plt.xlabel("$\\epsilon$")
+plt.ylabel("jumlah")
 plt.show()
 ```
 
-
-    
 ![png](/images/basic/regression/01_Linear_Regression_files/01_Linear_Regression_8_0.png)
-    
 
-
-## Mencocokkan garis lurus dengan metode kuadrat terkecil
-
-{{% notice document %}}
-[sklearn.linear_model.LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
-{{% /notice %}}
-
+## Regresi linear (kuadrat terkecil) dengan scikit-learn
+Kita gunakan <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html" target="_blank" rel="noopener">sklearn.linear_model.LinearRegression</a>.
 
 ```python
-# pelatihan
-lin_r = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
-y_pred = lin_r.predict(X)
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 
-# Memvisualisasikan garis lurus
+model = LinearRegression()  # fit_intercept=True secara default
+model.fit(X_2d, y)
+
+print("kemiringan w:", model.coef_[0])
+print("intersep b:", model.intercept_)
+
+y_pred = model.predict(X_2d)
+
+# Metrik
+mse = mean_squared_error(y, y_pred)
+r2 = r2_score(y, y_pred)
+print("MSE:", mse)
+print("R^2:", r2)
+
+# Plot
 plt.figure(figsize=(10, 5))
-plt.scatter(X, y, marker="x", label="target", c="orange")
-plt.plot(X, y_pred, label="Garis lurus yang dipasang oleh regresi linier")
-plt.xlabel("$x_1$")
-plt.xlabel("$y$")
+plt.scatter(X, y, marker="x", label="observasi", c="orange")
+plt.plot(X, y_pred, label="garis terpasang", c="C0")
+plt.xlabel("$x$")
+plt.ylabel("$y$")
 plt.legend()
 plt.show()
 ```
 
-
-    
 ![png](/images/basic/regression/01_Linear_Regression_files/01_Linear_Regression_10_0.png)
-    
+
+{{% notice tip %}}
+Penskalaan tidak wajib untuk OLS, tetapi membantu pada kasus multivariat dan regularisasi.
+{{% /notice %}}
+
+## Solusi bentuk tertutup (referensi)
+Untuk <code>\(\hat y = wx + b\)</code>:
+
+- <code>\(\displaystyle w = \frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)}\)</code>
+- <code>\(\displaystyle b = \bar y - w\,\bar x\)</code>
+
+Verifikasi dengan NumPy:
+
+```python
+x_mean, y_mean = X.mean(), y.mean()
+w_hat = ((X - x_mean) * (y - y_mean)).sum() / ((X - x_mean) ** 2).sum()
+b_hat = y_mean - w_hat * x_mean
+print(w_hat, b_hat)
+```
+
+## Jebakan umum
+- Bentuk array: <code>X</code> harus <code>(n_samples, n_features)</code>. Untuk satu fitur, gunakan <code>reshape(-1, 1)</code>.
+- Bentuk target: <code>y</code> bisa <code>(n_samples,)</code>. <code>(n,1)</code> juga berfungsi; perhatikan broadcasting.
+- Intersep: default <code>fit_intercept=True</code>. Jika fitur dan target sudah dicenter, <code>False</code> juga baik.
+- Reproducibility: gunakan seed tetap via <code>np.random.RandomState</code> atau <code>np.random.default_rng</code>.
+
+## Lanjut (multivariat)
+Untuk banyak fitur, pertahankan <code>X</code> sebagai <code>(n_samples, n_features)</code>. Pipeline memadukan pra-pemrosesan dan estimator.
+
+```python
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+X_multi = rng.normal(size=(n_samples, 2))
+y_multi = 1.0 * X_multi[:, 0] - 2.0 * X_multi[:, 1] + 0.3 + rng.normal(size=n_samples)
+
+pipe = make_pipeline(StandardScaler(), LinearRegression())
+pipe.fit(X_multi, y_multi)
+```
+
+{{% notice note %}}
+Kode untuk pembelajaran; gambar sudah dirender sebelumnya untuk situs.
+{{% /notice %}}
 

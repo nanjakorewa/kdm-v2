@@ -7,7 +7,7 @@ title_suffix: "について仕組みを理解する"
 
 {{% youtube "qQa9Emh0pZE" %}}
 
-{{< katex />}}
+
 
 <div class="pagetop-box">
   <p><b>決定木（分類）</b>とは、データを「はい/いいえ」のようなルールの組合せで分類するモデルです。  

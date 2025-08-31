@@ -7,7 +7,7 @@ title_suffix: "の仕組みの説明"
 
 {{% youtube "rhGYOBrxPXA" %}}
 
-{{< katex />}}
+
 
 <div class="pagetop-box">
   <p><b>リッジ回帰（Ridge）</b>と<b>ラッソ回帰（Lasso）</b>は、係数の大きさにペナルティ（正則化項）を課すことで、<b>過学習を抑え</b>、<b>汎化性能</b>を高める線形回帰モデルです。こうしたテクニックを<b>正則化（regularization）</b>と呼びます。</p>

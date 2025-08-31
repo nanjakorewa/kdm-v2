@@ -5,7 +5,7 @@ weight: 1
 title_suffix: "をPythonで実行する"
 ---
 
-{{< katex />}}
+
 
 <div class="pagetop-box">
   <p><b>ロジスティック回帰</b>は、データを<b>2つのクラス</b>に分類するための代表的な手法です。  

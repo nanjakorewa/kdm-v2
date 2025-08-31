@@ -5,7 +5,7 @@ weight: 3
 title_suffix: "について仕組みを理解する"
 ---
 
-{{< katex />}}
+
 
 {{% youtube "AOEtom_l3Wk" %}}
 

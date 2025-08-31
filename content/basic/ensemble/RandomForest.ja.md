@@ -2,38 +2,37 @@
 title: "ランダムフォレスト"
 pre: "2.4.1 "
 weight: 1
-title_suffix: "の仕組みの説明"
+title_suffix: "の直感・数式・実装"
 ---
 
 {{% youtube "ewvjQMj8nA8" %}}
 
 <div class="pagetop-box">
-    <p><b>ランダムフォレスト</b>とはアンサンブル学習をするアルゴリズムであり、ランダムに選択した特徴をつかって作成した決定木を組合わせることで汎化能力と予測精度を向上させています。</p>
-    <p>このページではランダムフォレストを実行した上で、モデルにふくまれる各決定木の性能や中身を確認してみます。</p>
+  <p><b>ランダムフォレスト</b>は、多数の決定木を<b>ブートストラップ</b>（標本の再標本化）と<b>特徴量サブサンプリング</b>で学習し、分類は多数決、回帰は平均で予測する <b>Bagging</b> 系のアンサンブルです。分散を下げ、頑健な予測を狙います。</p>
 </div>
 
 {{% notice document %}}
-[sklearn.ensemble.RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn-ensemble-randomforestclassifier)
+- [RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
+- [train_test_split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
+- [roc_auc_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
 {{% /notice %}}
 
+## 仕組み（数式の直感）
+
+- ブートストラップ標本 <code>\(\mathcal{D}_b\)</code> ごとに木 <code>\(h_b(x)\)</code> を学習（<code>b=1,\dots,B</code>）。
+- 予測は分類なら多数決、回帰なら平均：
+  - 分類: <code>\(\hat y = \operatorname*{arg\,max}_c \sum_{b=1}^B \mathbf{1}[h_b(x)=c]\)</code>
+  - 回帰: <code>\(\hat y = \frac{1}{B}\sum_{b=1}^B h_b(x)\)</code>
+
+分割指標の例（Gini 不純度）：<code>\(\mathrm{Gini}(S)=1-\sum_{c}p(c\mid S)^2\)</code>
+
+---
+
+## 分類データで学習し ROC-AUC を確認
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
-```
-## ランダムフォレストを学習
-{{% notice seealso %}}
-ROC-AUCについては、[ROC-AUC](http://localhost:1313/ja/eval/classification/roc-auc/)にプロットの仕方について説明を載せています。
-{{% /notice %}}
-
-
-{{% notice document %}}
-- [sklearn.metrics.roc_auc_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score)
-- [sklearn.model_selection.train_test_split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split)
-{{% /notice %}}
-
-
-```python
 from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -62,11 +61,11 @@ rf_score = roc_auc_score(y_test, y_pred)
 print(f"テストデータでのROC-AUC = {rf_score}")
 ```
 
-    テストデータでのROC-AUC = 0.814573097628059
+![png](/images/basic/ensemble/RandomForest_files/RandomForest_6_0.png)
 
+---
 
-## ランダムフォレストに含まれる各木の性能を確認する
-
+## 各決定木の性能を見てみる
 
 ```python
 import japanize_matplotlib
@@ -87,15 +86,15 @@ plt.ylabel("ROC-AUC")
 plt.show()
 ```
 
-
-    
 ![png](/images/basic/ensemble/RandomForest_files/RandomForest_6_0.png)
-    
 
+---
 
-### 特徴の重要度
-#### 不純度(impurity)に基づいた重要度
+## 特徴量の重要度
 
+### 不純度（impurity）に基づく重要度
+
+各ノード分割での不純度減少を特徴量ごとに足し上げ、全木で平均した量を用います。
 
 ```python
 plt.figure(figsize=(10, 4))
@@ -106,17 +105,13 @@ plt.ylabel("特徴の重要度")
 plt.show()
 ```
 
-
-    
 ![png](/images/basic/ensemble/RandomForest_files/RandomForest_8_0.png)
-    
 
+### Permutation importance（入れ替え重要度）
 
-### permutation importance
 {{% notice document %}}
-[permutation_importance](https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance)
+[permutation_importance](https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html)
 {{% /notice %}}
-
 
 ```python
 from sklearn.inspection import permutation_importance
@@ -132,22 +127,18 @@ plt.ylabel("特徴の重要度")
 plt.show()
 ```
 
-
-    
 ![png](/images/basic/ensemble/RandomForest_files/RandomForest_10_0.png)
-    
 
+---
 
-## ランダムフォレストに含まれる各木を出力する
-
+## 木の可視化（任意）
 
 ```python
 from sklearn.tree import export_graphviz
 from subprocess import call
-from IPython.display import Image
-from IPython.display import display
+from IPython.display import Image, display
 
-for i in range(10):
+for i in range(3):
     try:
         estimator = model.estimators_[i]
         export_graphviz(
@@ -161,102 +152,19 @@ for i in range(10):
 
         call(["dot", "-Tpng", f"tree{i}.dot", "-o", f"tree{i}.png", "-Gdpi=500"])
         display(Image(filename=f"tree{i}.png"))
-    except KeyboardInterrupt:
-        # TODO: jupyter bookビルド時に出力に失敗するため一時的に例外処理を挟む
+    except Exception:
+        # NOTE: ビルド環境で失敗しやすいため一時的に例外を握りつぶす
         pass
 ```
 
-
-    
 ![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_0.png)
-    
 
+---
 
+## ハイパーパラメータの目安
 
-    
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_1.png)
-    
-
-
-
-    
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_2.png)
-    
-
-
-
-    
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_3.png)
-    
-
-
-
-    
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_4.png)
-    
-
-
-
-    
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_5.png)
-    
-
-
-
-    
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_6.png)
-    
-
-
-
-    
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_7.png)
-    
-
-
-
-    
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_8.png)
-    
-
-
-
-    
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_9.png)
-    
-
-
-### OOB(out-of-bag) Score
-OOBによる検証とテストデータでの検証結果が近い値を取ることが確認できます。
-乱数と木の深さを変えつつ、OOBでのAccuracyとテストデータでのAccuracyを比較します。
-
-
-```python
-from sklearn.metrics import accuracy_score
-
-for i in range(10):
-    model_i = RandomForestClassifier(
-        n_estimators=50,
-        max_depth=3 + i % 2,
-        random_state=i,
-        bootstrap=True,
-        oob_score=True,
-    )
-    model_i.fit(X_train, y_train)
-    y_pred = model_i.predict(X_test)
-    oob_score = model_i.oob_score_
-    test_score = accuracy_score(y_test, y_pred)
-    print(f"OOBでの検証結果＝{oob_score} テストデータでの検証結果＝{test_score}")
-```
-
-    OOBでの検証結果＝0.786865671641791 テストデータでの検証結果＝0.8121212121212121
-    OOBでの検証結果＝0.8101492537313433 テストデータでの検証結果＝0.8363636363636363
-    OOBでの検証結果＝0.7886567164179105 テストデータでの検証結果＝0.8024242424242424
-    OOBでの検証結果＝0.8161194029850747 テストデータでの検証結果＝0.8315151515151515
-    OOBでの検証結果＝0.7910447761194029 テストデータでの検証結果＝0.8072727272727273
-    OOBでの検証結果＝0.8101492537313433 テストデータでの検証結果＝0.833939393939394
-    OOBでの検証結果＝0.7814925373134328 テストデータでの検証結果＝0.8133333333333334
-    OOBでの検証結果＝0.8059701492537313 テストデータでの検証結果＝0.833939393939394
-    OOBでの検証結果＝0.7832835820895523 テストデータでの検証結果＝0.7951515151515152
-    OOBでの検証結果＝0.8083582089552239 テストデータでの検証結果＝0.8387878787878787
+- <b>n_estimators</b>: 木の本数。多いほど安定だが計算増。
+- <b>max_depth</b>: 各木の深さ。深すぎると過学習、浅すぎると精度不足。
+- <b>max_features</b>: 分割で試す特徴数。小さめにすると相関低下→多様性UP。
+- <b>bootstrap</b>, <b>oob_score</b>: OOB で検証すると追加の検証データ不要な場合も。
 

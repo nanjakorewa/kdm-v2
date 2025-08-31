@@ -5,7 +5,7 @@ weight: 2
 title_suffix: "（多クラス分類をPythonで実行）"
 ---
 
-{{< katex />}}
+
 
 <div class="pagetop-box">
   <p><b>ソフトマックス回帰</b>は、ロジスティック回帰を多クラス分類に拡張した手法です。  

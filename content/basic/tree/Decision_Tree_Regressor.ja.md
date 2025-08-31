@@ -5,7 +5,7 @@ weight: 2
 title_suffix: "について仕組みを理解する"
 ---
 
-{{< katex />}}
+
 {{% youtube "E5WOgzoEs1M" %}}
 
 <div class="pagetop-box">

@@ -7,7 +7,7 @@ title_suffix: "理論と実装"
 
 {{< youtube id="KKuAxQbuJpk" title="最小二乗法のイントロ" caption="5分で分かる最小二乗法" >}}
 
-{{< katex />}}
+
 
 
 <div class="pagetop-box">

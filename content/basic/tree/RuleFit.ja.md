@@ -4,7 +4,7 @@ pre: "2.3.4 "
 weight: 4
 ---
 
-{{< katex />}}
+
 
 {{% notice ref %}}
 Friedman, Jerome H and Bogdan E Popescu. “Predictive learning via rule ensembles.” The Annals of Applied Statistics (2008).  
