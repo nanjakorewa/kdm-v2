@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+
+max_depthは木の最大深さを指定します
+min_samples_splitは分岐を作成するために必要な最低データ数を指定します
+min_samples_leafは葉の作成に必要な最低データ数を指定します
+max_leaf_nodesは葉の枚数の上限を指定します
+ccp_alphaは木の複雑さを考慮した決定木の剪定をするためのパラメタ
+class_weightは分類においてクラスの重みづけを指定します
+
+
+
+sklearn.tree.DecisionTreeRegressor
+parrt/dtreeviz
+
+
+
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.datasets import make_regression
+from mpl_toolkits.mplot3d import Axes3D
+from dtreeviz.trees import dtreeviz, rtreeviz_bivar_3D
+
+  シンプルなデータに決定木を当てはめてみる
+  
+  #
+  
+
+# サンプルデータ
+X, y = make_regression(n_samples=100, n_features=2, random_state=11)
+
+# 決定木を学習
+dt = DecisionTreeRegressor(max_depth=3)
+dt.fit(X, y)
+
+# 可視化
+fig = plt.figure(figsize=(10, 10))
+ax = fig.add_subplot(111, projection=&#34;3d&#34;)
+t = rtreeviz_bivar_3D(
+    dt,
+    X,
+    y,
+    feature_names=[&#34;x1&#34;, &#34;x2&#34;],
+    target_name=&#34;MPG&#34;,
+    elev=40,
+    azim=120,
+    dist=8.0,
+    show={&#34;splits&#34;, &#34;title&#34;},
+    ax=ax,
+)
+plt.show()
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/basic/tree/parameter/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="決定木のパラメータ">
+  <meta property="og:description" content="max_depthは木の最大深さを指定します min_samples_splitは分岐を作成するために必要な最低データ数を指定します min_samples_leafは葉の作成に必要な最低データ数を指定します max_leaf_nodesは葉の枚数の上限を指定します ccp_alphaは木の複雑さを考慮した決定木の剪定をするためのパラメタ class_weightは分類においてクラスの重みづけを指定します sklearn.tree.DecisionTreeRegressor parrt/dtreeviz import matplotlib.pyplot as plt from sklearn.tree import DecisionTreeRegressor from sklearn.datasets import make_regression from mpl_toolkits.mplot3d import Axes3D from dtreeviz.trees import dtreeviz, rtreeviz_bivar_3D シンプルなデータに決定木を当てはめてみる # # サンプルデータ X, y = make_regression(n_samples=100, n_features=2, random_state=11) # 決定木を学習 dt = DecisionTreeRegressor(max_depth=3) dt.fit(X, y) # 可視化 fig = plt.figure(figsize=(10, 10)) ax = fig.add_subplot(111, projection=&#34;3d&#34;) t = rtreeviz_bivar_3D( dt, X, y, feature_names=[&#34;x1&#34;, &#34;x2&#34;], target_name=&#34;MPG&#34;, elev=40, azim=120, dist=8.0, show={&#34;splits&#34;, &#34;title&#34;}, ax=ax, ) plt.show()">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="basic">
+<title>決定木のパラメータ | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/basic/tree/parameter/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/basic/tree/parameter/" title="Decision Tree Parameters">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/basic/tree/parameter/" title="Parámetros de los Árboles de Decisión">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/basic/tree/parameter/" title="Parameter Pohon Keputusan">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-basic">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/basic/tree/parameter/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/basic/tree/parameter/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/basic/tree/parameter/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="active">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>決定木のパラメータ</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#シンプルなデータに決定木を当てはめてみる">シンプルなデータに決定木を当てはめてみる</a></li>
+    <li><a href="#いろいろなパラメタの決定木を学習してみる">いろいろなパラメタの決定木を学習してみる</a>
+      <ul>
+        <li><a href="#max_depth--10">max_depth = 10</a></li>
+        <li><a href="#max-depth5">max-depth=5</a></li>
+        <li><a href="#min_samples_split60">min_samples_split=60</a></li>
+        <li><a href="#ccp_alpha04">ccp_alpha=0.4</a></li>
+        <li><a href="#max_leaf_nodes5">max_leaf_nodes=5</a></li>
+      </ul>
+    </li>
+    <li><a href="#外れ値がある場合">外れ値がある場合</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/AOEtom_l3Wk" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<!-- raw HTML omitted -->
+<ul>
+<li><code>max_depth</code>は木の最大深さを指定します</li>
+<li><code>min_samples_split</code>は分岐を作成するために必要な最低データ数を指定します</li>
+<li><code>min_samples_leaf</code>は葉の作成に必要な最低データ数を指定します</li>
+<li><code>max_leaf_nodes</code>は葉の枚数の上限を指定します</li>
+<li><code>ccp_alpha</code>は木の複雑さを考慮した決定木の剪定をするためのパラメタ</li>
+<li><code>class_weight</code>は分類においてクラスの重みづけを指定します</li>
+</ul>
+
+<div class="notices document" ><ul>
+<li><a href="https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html#sklearn.tree.DecisionTreeRegressor">sklearn.tree.DecisionTreeRegressor</a></li>
+<li><a href="https://github.com/parrt/dtreeviz">parrt/dtreeviz</a></li>
+</ul>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.tree <span style="color:#f92672">import</span> DecisionTreeRegressor
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.datasets <span style="color:#f92672">import</span> make_regression
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> mpl_toolkits.mplot3d <span style="color:#f92672">import</span> Axes3D
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> dtreeviz.trees <span style="color:#f92672">import</span> dtreeviz, rtreeviz_bivar_3D
+</span></span></code></pre></div><h2 id="シンプルなデータに決定木を当てはめてみる">
+  シンプルなデータに決定木を当てはめてみる
+  
+  <a class="anchor" href="#%e3%82%b7%e3%83%b3%e3%83%97%e3%83%ab%e3%81%aa%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ab%e6%b1%ba%e5%ae%9a%e6%9c%a8%e3%82%92%e5%bd%93%e3%81%a6%e3%81%af%e3%82%81%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># サンプルデータ</span>
+</span></span><span style="display:flex;"><span>X, y <span style="color:#f92672">=</span> make_regression(n_samples<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>, n_features<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">11</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 決定木を学習</span>
+</span></span><span style="display:flex;"><span>dt <span style="color:#f92672">=</span> DecisionTreeRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>dt<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可視化</span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">111</span>, projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> rtreeviz_bivar_3D(
+</span></span><span style="display:flex;"><span>    dt,
+</span></span><span style="display:flex;"><span>    X,
+</span></span><span style="display:flex;"><span>    y,
+</span></span><span style="display:flex;"><span>    feature_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;x1&#34;</span>, <span style="color:#e6db74">&#34;x2&#34;</span>],
+</span></span><span style="display:flex;"><span>    target_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;MPG&#34;</span>,
+</span></span><span style="display:flex;"><span>    elev<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>,
+</span></span><span style="display:flex;"><span>    azim<span style="color:#f92672">=</span><span style="color:#ae81ff">120</span>,
+</span></span><span style="display:flex;"><span>    dist<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>,
+</span></span><span style="display:flex;"><span>    show<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;splits&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>},
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">=</span>ax,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/Parameter_files/Parameter_5_0.png" alt="png" /></p>
+<h2 id="いろいろなパラメタの決定木を学習してみる">
+  いろいろなパラメタの決定木を学習してみる
+  
+  <a class="anchor" href="#%e3%81%84%e3%82%8d%e3%81%84%e3%82%8d%e3%81%aa%e3%83%91%e3%83%a9%e3%83%a1%e3%82%bf%e3%81%ae%e6%b1%ba%e5%ae%9a%e6%9c%a8%e3%82%92%e5%ad%a6%e7%bf%92%e3%81%97%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h2>
+<p>少し複雑な構造を持つデータに対して、決定木のパラメタを変えた時にどのような挙動になるかを確認してみる。
+はじめに、<code>max_depth=3</code>以外がすべてデフォルト値の決定木を確認する。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># サンプルデータ</span>
+</span></span><span style="display:flex;"><span>X, y <span style="color:#f92672">=</span> make_regression(
+</span></span><span style="display:flex;"><span>    n_samples<span style="color:#f92672">=</span><span style="color:#ae81ff">500</span>, n_features<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, effective_rank<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, noise<span style="color:#f92672">=</span><span style="color:#ae81ff">0.1</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(X[:, <span style="color:#ae81ff">0</span>], X[:, <span style="color:#ae81ff">1</span>], c<span style="color:#f92672">=</span>y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 決定木を学習</span>
+</span></span><span style="display:flex;"><span>dt <span style="color:#f92672">=</span> DecisionTreeRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">117117</span>)
+</span></span><span style="display:flex;"><span>dt<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">111</span>, projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> rtreeviz_bivar_3D(
+</span></span><span style="display:flex;"><span>    dt,
+</span></span><span style="display:flex;"><span>    X,
+</span></span><span style="display:flex;"><span>    y,
+</span></span><span style="display:flex;"><span>    feature_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;x1&#34;</span>, <span style="color:#e6db74">&#34;x2&#34;</span>],
+</span></span><span style="display:flex;"><span>    target_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;y&#34;</span>,
+</span></span><span style="display:flex;"><span>    elev<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>,
+</span></span><span style="display:flex;"><span>    azim<span style="color:#f92672">=</span><span style="color:#ae81ff">240</span>,
+</span></span><span style="display:flex;"><span>    dist<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>,
+</span></span><span style="display:flex;"><span>    show<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;splits&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>},
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">=</span>ax,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/Parameter_files/Parameter_7_0.png" alt="png" /></p>
+<p><img src="/images/basic/tree/Parameter_files/Parameter_7_1.png" alt="png" /></p>
+<h3 id="max_depth--10">
+  max_depth = 10
+  
+  <a class="anchor" href="#max_depth--10">#</a>
+  
+</h3>
+<p><code>max_depth</code>の値が大きい時、より深い複雑な木ができます。
+これは複雑なルールを表現できますが、データ数が少ない場合は過学習している可能性もあります。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dt <span style="color:#f92672">=</span> DecisionTreeRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">117117</span>)
+</span></span><span style="display:flex;"><span>dt<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">111</span>, projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> rtreeviz_bivar_3D(
+</span></span><span style="display:flex;"><span>    dt,
+</span></span><span style="display:flex;"><span>    X,
+</span></span><span style="display:flex;"><span>    y,
+</span></span><span style="display:flex;"><span>    feature_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;x1&#34;</span>, <span style="color:#e6db74">&#34;x2&#34;</span>],
+</span></span><span style="display:flex;"><span>    target_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;y&#34;</span>,
+</span></span><span style="display:flex;"><span>    elev<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>,
+</span></span><span style="display:flex;"><span>    azim<span style="color:#f92672">=</span><span style="color:#ae81ff">240</span>,
+</span></span><span style="display:flex;"><span>    dist<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>,
+</span></span><span style="display:flex;"><span>    show<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;splits&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>},
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">=</span>ax,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/Parameter_files/Parameter_9_0.png" alt="png" /></p>
+<h3 id="max-depth5">
+  max-depth=5
+  
+  <a class="anchor" href="#max-depth5">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dt <span style="color:#f92672">=</span> DecisionTreeRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">117117</span>)
+</span></span><span style="display:flex;"><span>dt<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">111</span>, projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> rtreeviz_bivar_3D(
+</span></span><span style="display:flex;"><span>    dt,
+</span></span><span style="display:flex;"><span>    X,
+</span></span><span style="display:flex;"><span>    y,
+</span></span><span style="display:flex;"><span>    feature_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;x1&#34;</span>, <span style="color:#e6db74">&#34;x2&#34;</span>],
+</span></span><span style="display:flex;"><span>    target_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;y&#34;</span>,
+</span></span><span style="display:flex;"><span>    elev<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>,
+</span></span><span style="display:flex;"><span>    azim<span style="color:#f92672">=</span><span style="color:#ae81ff">240</span>,
+</span></span><span style="display:flex;"><span>    dist<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>,
+</span></span><span style="display:flex;"><span>    show<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;splits&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>},
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">=</span>ax,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/Parameter_files/Parameter_11_0.png" alt="png" /></p>
+<h3 id="min_samples_split60">
+  min_samples_split=60
+  
+  <a class="anchor" href="#min_samples_split60">#</a>
+  
+</h3>
+<p>一つの分岐を作るために必要な最低データ数を指定します。
+<code>min_samples_split</code> の数を小さくすれば細かいルールを作成できます。大きくすれば過学習は避けられるでしょう。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dt <span style="color:#f92672">=</span> DecisionTreeRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, min_samples_split<span style="color:#f92672">=</span><span style="color:#ae81ff">60</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">117117</span>)
+</span></span><span style="display:flex;"><span>dt<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">111</span>, projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> rtreeviz_bivar_3D(
+</span></span><span style="display:flex;"><span>    dt,
+</span></span><span style="display:flex;"><span>    X,
+</span></span><span style="display:flex;"><span>    y,
+</span></span><span style="display:flex;"><span>    feature_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;x1&#34;</span>, <span style="color:#e6db74">&#34;x2&#34;</span>],
+</span></span><span style="display:flex;"><span>    target_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;y&#34;</span>,
+</span></span><span style="display:flex;"><span>    elev<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>,
+</span></span><span style="display:flex;"><span>    azim<span style="color:#f92672">=</span><span style="color:#ae81ff">240</span>,
+</span></span><span style="display:flex;"><span>    dist<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>,
+</span></span><span style="display:flex;"><span>    show<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;splits&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>},
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">=</span>ax,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/Parameter_files/Parameter_13_0.png" alt="png" /></p>
+<h3 id="ccp_alpha04">
+  ccp_alpha=0.4
+  
+  <a class="anchor" href="#ccp_alpha04">#</a>
+  
+</h3>
+<p>木の複雑さにペナルティを与えるパラメータです。 <code>ccp_alpha</code>を設定すると、値が大きいほどシンプルな木が作成されます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dt <span style="color:#f92672">=</span> DecisionTreeRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">117117</span>, ccp_alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">0.4</span>)
+</span></span><span style="display:flex;"><span>dt<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">111</span>, projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> rtreeviz_bivar_3D(
+</span></span><span style="display:flex;"><span>    dt,
+</span></span><span style="display:flex;"><span>    X,
+</span></span><span style="display:flex;"><span>    y,
+</span></span><span style="display:flex;"><span>    feature_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;x1&#34;</span>, <span style="color:#e6db74">&#34;x2&#34;</span>],
+</span></span><span style="display:flex;"><span>    target_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;y&#34;</span>,
+</span></span><span style="display:flex;"><span>    elev<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>,
+</span></span><span style="display:flex;"><span>    azim<span style="color:#f92672">=</span><span style="color:#ae81ff">240</span>,
+</span></span><span style="display:flex;"><span>    dist<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>,
+</span></span><span style="display:flex;"><span>    show<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;splits&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>},
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">=</span>ax,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/Parameter_files/Parameter_15_0.png" alt="png" /></p>
+<h3 id="max_leaf_nodes5">
+  max_leaf_nodes=5
+  
+  <a class="anchor" href="#max_leaf_nodes5">#</a>
+  
+</h3>
+<p>最終的に作成される葉の数を指定するパラメタです。 <code>max_leaf_nodes</code>の数が、区画の数と一致していることが確認できます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dt <span style="color:#f92672">=</span> DecisionTreeRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">117117</span>, max_leaf_nodes<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)
+</span></span><span style="display:flex;"><span>dt<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">111</span>, projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> rtreeviz_bivar_3D(
+</span></span><span style="display:flex;"><span>    dt,
+</span></span><span style="display:flex;"><span>    X,
+</span></span><span style="display:flex;"><span>    y,
+</span></span><span style="display:flex;"><span>    feature_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;x1&#34;</span>, <span style="color:#e6db74">&#34;x2&#34;</span>],
+</span></span><span style="display:flex;"><span>    target_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;y&#34;</span>,
+</span></span><span style="display:flex;"><span>    elev<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>,
+</span></span><span style="display:flex;"><span>    azim<span style="color:#f92672">=</span><span style="color:#ae81ff">240</span>,
+</span></span><span style="display:flex;"><span>    dist<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>,
+</span></span><span style="display:flex;"><span>    show<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;splits&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>},
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">=</span>ax,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/Parameter_files/Parameter_17_0.png" alt="png" /></p>
+<h2 id="外れ値がある場合">
+  外れ値がある場合
+  
+  <a class="anchor" href="#%e5%a4%96%e3%82%8c%e5%80%a4%e3%81%8c%e3%81%82%e3%82%8b%e5%a0%b4%e5%90%88">#</a>
+  
+</h2>
+<p>分岐を作成する際にどの基準を適用するか指定します。
+外れ値がある状態で、<code>criterion=&quot;squared_error&quot;</code>を指定した場合に木にどのような変化があるかを確認してみます。
+<code>absolute_error</code> よりも <code>squared_error</code> の方が外れ値に強いペナルティを与えるため、<code>squared_error</code> と指定した場合は決定木の分岐が作成されることが予想されます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">## 外れ値として、一部のデータの値を5倍にする</span>
+</span></span><span style="display:flex;"><span>X, y <span style="color:#f92672">=</span> make_regression(n_samples<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>, n_features<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">11</span>)
+</span></span><span style="display:flex;"><span>y[<span style="color:#ae81ff">1</span>:<span style="color:#ae81ff">20</span>] <span style="color:#f92672">=</span> y[<span style="color:#ae81ff">1</span>:<span style="color:#ae81ff">20</span>] <span style="color:#f92672">*</span> <span style="color:#ae81ff">5</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dt <span style="color:#f92672">=</span> DecisionTreeRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">117117</span>, criterion<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;absolute_error&#34;</span>)
+</span></span><span style="display:flex;"><span>dt<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">111</span>, projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> rtreeviz_bivar_3D(
+</span></span><span style="display:flex;"><span>    dt,
+</span></span><span style="display:flex;"><span>    X,
+</span></span><span style="display:flex;"><span>    y,
+</span></span><span style="display:flex;"><span>    feature_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;x1&#34;</span>, <span style="color:#e6db74">&#34;x2&#34;</span>],
+</span></span><span style="display:flex;"><span>    target_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;y&#34;</span>,
+</span></span><span style="display:flex;"><span>    elev<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>,
+</span></span><span style="display:flex;"><span>    azim<span style="color:#f92672">=</span><span style="color:#ae81ff">240</span>,
+</span></span><span style="display:flex;"><span>    dist<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>,
+</span></span><span style="display:flex;"><span>    show<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;splits&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>},
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">=</span>ax,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/Parameter_files/Parameter_20_0.png" alt="png" /></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dt <span style="color:#f92672">=</span> DecisionTreeRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">117117</span>, criterion<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;squared_error&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dt<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">111</span>, projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> rtreeviz_bivar_3D(
+</span></span><span style="display:flex;"><span>    dt,
+</span></span><span style="display:flex;"><span>    X,
+</span></span><span style="display:flex;"><span>    y,
+</span></span><span style="display:flex;"><span>    feature_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;x1&#34;</span>, <span style="color:#e6db74">&#34;x2&#34;</span>],
+</span></span><span style="display:flex;"><span>    target_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;y&#34;</span>,
+</span></span><span style="display:flex;"><span>    elev<span style="color:#f92672">=</span><span style="color:#ae81ff">40</span>,
+</span></span><span style="display:flex;"><span>    azim<span style="color:#f92672">=</span><span style="color:#ae81ff">240</span>,
+</span></span><span style="display:flex;"><span>    dist<span style="color:#f92672">=</span><span style="color:#ae81ff">8.0</span>,
+</span></span><span style="display:flex;"><span>    show<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;splits&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>},
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">=</span>ax,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/Parameter_files/Parameter_21_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/basic/tree/decision_tree_regressor/" class="flex align-center book-icon">
+        <img src="/svg/backward.svg" class="book-icon" alt="Previous" title="決定木(回帰)" />
+        <span>決定木(回帰)</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/basic/tree/rulefit/" class="flex align-center book-icon">
+        <span>RuleFit</span>
+        <img src="/svg/forward.svg" class="book-icon" alt="Next" title="RuleFit" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#シンプルなデータに決定木を当てはめてみる">シンプルなデータに決定木を当てはめてみる</a></li>
+    <li><a href="#いろいろなパラメタの決定木を学習してみる">いろいろなパラメタの決定木を学習してみる</a>
+      <ul>
+        <li><a href="#max_depth--10">max_depth = 10</a></li>
+        <li><a href="#max-depth5">max-depth=5</a></li>
+        <li><a href="#min_samples_split60">min_samples_split=60</a></li>
+        <li><a href="#ccp_alpha04">ccp_alpha=0.4</a></li>
+        <li><a href="#max_leaf_nodes5">max_leaf_nodes=5</a></li>
+      </ul>
+    </li>
+    <li><a href="#外れ値がある場合">外れ値がある場合</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

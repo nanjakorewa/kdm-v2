@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+import japanize_matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
+  Huber損失の可視化
+  
+  #
+  
+
+def huber_loss(y_pred: float, y: float, delta=1.0):
+    &#34;&#34;&#34;HuberLoss&#34;&#34;&#34;
+    huber_1 = 0.5 * (y - y_pred) ** 2
+    huber_2 = delta * (np.abs(y - y_pred) - 0.5 * delta)
+    return np.where(np.abs(y - y_pred) &lt;= delta, huber_1, huber_2)
+
+
+delta = 1.5
+x_vals = np.arange(-2, 2, 0.01)
+y_vals = np.where(
+    np.abs(x_vals) &lt;= delta,
+    0.5 * np.square(x_vals),
+    delta * (np.abs(x_vals) - 0.5 * delta),
+)
+
+# グラフをプロットする
+fig = plt.figure(figsize=(8, 8))
+plt.plot(x_vals, x_vals ** 2, &#34;red&#34;, label=r&#34;$(y-\hat{y})^2$&#34;)  ## 二乗誤差
+plt.plot(x_vals, np.abs(x_vals), &#34;orange&#34;, label=r&#34;$|y-\hat{y}|$&#34;)  ## 絶対誤差
+plt.plot(
+    x_vals, huber_loss(x_vals * 2, x_vals), &#34;green&#34;, label=r&#34;huber-loss&#34;
+)  # Huber-loss
+plt.axhline(y=0, color=&#34;k&#34;)
+plt.grid(True)
+plt.legend()
+plt.show()
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/basic/regression/robust_regression/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="外れ値と頑健性">
+  <meta property="og:description" content="import japanize_matplotlib import matplotlib.pyplot as plt import numpy as np Huber損失の可視化 # def huber_loss(y_pred: float, y: float, delta=1.0): &#34;&#34;&#34;HuberLoss&#34;&#34;&#34; huber_1 = 0.5 * (y - y_pred) ** 2 huber_2 = delta * (np.abs(y - y_pred) - 0.5 * delta) return np.where(np.abs(y - y_pred) &lt;= delta, huber_1, huber_2) delta = 1.5 x_vals = np.arange(-2, 2, 0.01) y_vals = np.where( np.abs(x_vals) &lt;= delta, 0.5 * np.square(x_vals), delta * (np.abs(x_vals) - 0.5 * delta), ) # グラフをプロットする fig = plt.figure(figsize=(8, 8)) plt.plot(x_vals, x_vals ** 2, &#34;red&#34;, label=r&#34;$(y-\hat{y})^2$&#34;) ## 二乗誤差 plt.plot(x_vals, np.abs(x_vals), &#34;orange&#34;, label=r&#34;$|y-\hat{y}|$&#34;) ## 絶対誤差 plt.plot( x_vals, huber_loss(x_vals * 2, x_vals), &#34;green&#34;, label=r&#34;huber-loss&#34; ) # Huber-loss plt.axhline(y=0, color=&#34;k&#34;) plt.grid(True) plt.legend() plt.show()">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="basic">
+<title>外れ値と頑健性 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/basic/regression/robust_regression/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/basic/regression/robust_regression/" title="Outliers and Robustness">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/basic/regression/robust_regression/" title="Valores atípicos y robustez">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/basic/regression/robust_regression/" title="Pencilan dan Kekokohan">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-basic">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/basic/regression/robust_regression/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/basic/regression/robust_regression/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/basic/regression/robust_regression/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="active">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>外れ値と頑健性</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#huber損失の可視化">Huber損失の可視化</a></li>
+    <li><a href="#最小二乗法との比較">最小二乗法との比較</a>
+      <ul>
+        <li><a href="#実験用のデータを作成する">実験用のデータを作成する</a></li>
+        <li><a href="#最小二乗法とリッジ回帰を当てはめた場合と比較する">最小二乗法とリッジ回帰を当てはめた場合と比較する</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/CrN5Si0379g" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span></code></pre></div><h2 id="huber損失の可視化">
+  Huber損失の可視化
+  
+  <a class="anchor" href="#huber%e6%90%8d%e5%a4%b1%e3%81%ae%e5%8f%af%e8%a6%96%e5%8c%96">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">huber_loss</span>(y_pred: float, y: float, delta<span style="color:#f92672">=</span><span style="color:#ae81ff">1.0</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;HuberLoss&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    huber_1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.5</span> <span style="color:#f92672">*</span> (y <span style="color:#f92672">-</span> y_pred) <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    huber_2 <span style="color:#f92672">=</span> delta <span style="color:#f92672">*</span> (np<span style="color:#f92672">.</span>abs(y <span style="color:#f92672">-</span> y_pred) <span style="color:#f92672">-</span> <span style="color:#ae81ff">0.5</span> <span style="color:#f92672">*</span> delta)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>where(np<span style="color:#f92672">.</span>abs(y <span style="color:#f92672">-</span> y_pred) <span style="color:#f92672">&lt;=</span> delta, huber_1, huber_2)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>delta <span style="color:#f92672">=</span> <span style="color:#ae81ff">1.5</span>
+</span></span><span style="display:flex;"><span>x_vals <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>arange(<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0.01</span>)
+</span></span><span style="display:flex;"><span>y_vals <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>where(
+</span></span><span style="display:flex;"><span>    np<span style="color:#f92672">.</span>abs(x_vals) <span style="color:#f92672">&lt;=</span> delta,
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0.5</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>square(x_vals),
+</span></span><span style="display:flex;"><span>    delta <span style="color:#f92672">*</span> (np<span style="color:#f92672">.</span>abs(x_vals) <span style="color:#f92672">-</span> <span style="color:#ae81ff">0.5</span> <span style="color:#f92672">*</span> delta),
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># グラフをプロットする</span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">8</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x_vals, x_vals <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;red&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;$(y-\hat</span><span style="color:#e6db74">{y}</span><span style="color:#e6db74">)^2$&#34;</span>)  <span style="color:#75715e">## 二乗誤差</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x_vals, np<span style="color:#f92672">.</span>abs(x_vals), <span style="color:#e6db74">&#34;orange&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;$|y-\hat</span><span style="color:#e6db74">{y}</span><span style="color:#e6db74">|$&#34;</span>)  <span style="color:#75715e">## 絶対誤差</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(
+</span></span><span style="display:flex;"><span>    x_vals, huber_loss(x_vals <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>, x_vals), <span style="color:#e6db74">&#34;green&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;huber-loss&#34;</span>
+</span></span><span style="display:flex;"><span>)  <span style="color:#75715e"># Huber-loss</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>axhline(y<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;k&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid(<span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_5_0.png" alt="png" /></p>
+<h2 id="最小二乗法との比較">
+  最小二乗法との比較
+  
+  <a class="anchor" href="#%e6%9c%80%e5%b0%8f%e4%ba%8c%e4%b9%97%e6%b3%95%e3%81%a8%e3%81%ae%e6%af%94%e8%bc%83">#</a>
+  
+</h2>
+<h3 id="実験用のデータを作成する">
+  実験用のデータを作成する
+  
+  <a class="anchor" href="#%e5%ae%9f%e9%a8%93%e7%94%a8%e3%81%ae%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e4%bd%9c%e6%88%90%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<p>Huber損失による回帰とが通常の線形回帰を比較するために、一つだけ外れ値を用意します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>N <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>
+</span></span><span style="display:flex;"><span>x1 <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(N)])
+</span></span><span style="display:flex;"><span>x2 <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(N)])
+</span></span><span style="display:flex;"><span>X <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([x1, x2])<span style="color:#f92672">.</span>T
+</span></span><span style="display:flex;"><span>epsilon <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>random() <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(N)])
+</span></span><span style="display:flex;"><span>y <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">*</span> x1 <span style="color:#f92672">+</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> x2 <span style="color:#f92672">+</span> epsilon <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>y[<span style="color:#ae81ff">5</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">500</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">8</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x1, y, <span style="color:#e6db74">&#34;ko&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;data&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_7_0.png" alt="png" /></p>
+<h3 id="最小二乗法とリッジ回帰を当てはめた場合と比較する">
+  最小二乗法とリッジ回帰を当てはめた場合と比較する
+  
+  <a class="anchor" href="#%e6%9c%80%e5%b0%8f%e4%ba%8c%e4%b9%97%e6%b3%95%e3%81%a8%e3%83%aa%e3%83%83%e3%82%b8%e5%9b%9e%e5%b8%b0%e3%82%92%e5%bd%93%e3%81%a6%e3%81%af%e3%82%81%e3%81%9f%e5%a0%b4%e5%90%88%e3%81%a8%e6%af%94%e8%bc%83%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+
+<div class="notices document" ><p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.HuberRegressor.html#sklearn.linear_model.HuberRegressor">sklearn.linear_model.HuberRegressor</a></p>
+</div>
+
+
+<div class="notices seealso" ><p><a href="https://k-dm.work/ja/prep/numerical/add_label_to_anomaly/">前処理の方法：外れ値にラベルを付与①</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.datasets <span style="color:#f92672">import</span> make_regression
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.linear_model <span style="color:#f92672">import</span> HuberRegressor, Ridge
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.linear_model <span style="color:#f92672">import</span> LinearRegression
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">8</span>))
+</span></span><span style="display:flex;"><span>huber <span style="color:#f92672">=</span> HuberRegressor(alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>, epsilon<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>huber<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x1, huber<span style="color:#f92672">.</span>predict(X), <span style="color:#e6db74">&#34;green&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;huber回帰&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ridge <span style="color:#f92672">=</span> Ridge(alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>ridge<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x1, ridge<span style="color:#f92672">.</span>predict(X), <span style="color:#e6db74">&#34;orange&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;リッジ回帰&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>lr <span style="color:#f92672">=</span> LinearRegression()
+</span></span><span style="display:flex;"><span>lr<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x1, lr<span style="color:#f92672">.</span>predict(X), <span style="color:#e6db74">&#34;r-&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;線形回帰&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x1, y, <span style="color:#e6db74">&#34;x&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x1, y, <span style="color:#e6db74">&#34;ko&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;data&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_9_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/basic/regression/ridge_and_lasso/" class="flex align-center book-icon">
+        <img src="/svg/backward.svg" class="book-icon" alt="Previous" title="リッジ回帰・ラッソ回帰" />
+        <span>リッジ回帰・ラッソ回帰</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/basic/regression/regressionanalysis/" class="flex align-center book-icon">
+        <span>残差の分析</span>
+        <img src="/svg/forward.svg" class="book-icon" alt="Next" title="残差の分析" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#huber損失の可視化">Huber損失の可視化</a></li>
+    <li><a href="#最小二乗法との比較">最小二乗法との比較</a>
+      <ul>
+        <li><a href="#実験用のデータを作成する">実験用のデータを作成する</a></li>
+        <li><a href="#最小二乗法とリッジ回帰を当てはめた場合と比較する">最小二乗法とリッジ回帰を当てはめた場合と比較する</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

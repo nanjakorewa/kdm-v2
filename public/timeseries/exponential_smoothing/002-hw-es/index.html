@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="import japanize_matplotlib as jm
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from statsmodels.tsa.holtwinters import Holt
+from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+
+
+jm.japanize()
+
+  サンプルデータ
+  
+  #
+  
+
+Natural Gas Consumption (NATURALGAS)のデータを使用しています。数値の単位はBCF（10億立方フィート）です。
+data = {
+    &#34;value&#34;: {
+        &#34;2013-01-01&#34;: 2878.8,
+        &#34;2013-02-01&#34;: 2567.2,
+        &#34;2013-03-01&#34;: 2521.1,
+        &#34;2013-04-01&#34;: 1967.5,
+        &#34;2013-05-01&#34;: 1752.5,
+        &#34;2013-06-01&#34;: 1742.9,
+        &#34;2013-07-01&#34;: 1926.3,
+        &#34;2013-08-01&#34;: 1927.4,
+        &#34;2013-09-01&#34;: 1767.0,
+        &#34;2013-10-01&#34;: 1866.8,
+        &#34;2013-11-01&#34;: 2316.9,
+        &#34;2013-12-01&#34;: 2920.8,
+        &#34;2014-01-01&#34;: 3204.1,
+        &#34;2014-02-01&#34;: 2741.2,
+        &#34;2014-03-01&#34;: 2557.9,
+        &#34;2014-04-01&#34;: 1961.7,
+        &#34;2014-05-01&#34;: 1810.2,
+        &#34;2014-06-01&#34;: 1745.4,
+        &#34;2014-07-01&#34;: 1881.0,
+        &#34;2014-08-01&#34;: 1933.1,
+        &#34;2014-09-01&#34;: 1809.3,
+        &#34;2014-10-01&#34;: 1912.8,
+        &#34;2014-11-01&#34;: 2357.5,
+        &#34;2014-12-01&#34;: 2679.2,
+        &#34;2015-01-01&#34;: 3115.0,
+        &#34;2015-02-01&#34;: 2925.2,
+        &#34;2015-03-01&#34;: 2591.3,
+        &#34;2015-04-01&#34;: 2007.9,
+        &#34;2015-05-01&#34;: 1858.2,
+        &#34;2015-06-01&#34;: 1899.9,
+        &#34;2015-07-01&#34;: 2067.7,
+        &#34;2015-08-01&#34;: 2052.7,
+        &#34;2015-09-01&#34;: 1901.3,
+        &#34;2015-10-01&#34;: 1987.3,
+        &#34;2015-11-01&#34;: 2249.1,
+        &#34;2015-12-01&#34;: 2588.2,
+        &#34;2016-01-01&#34;: 3091.7,
+        &#34;2016-02-01&#34;: 2652.3,
+        &#34;2016-03-01&#34;: 2356.3,
+        &#34;2016-04-01&#34;: 2083.9,
+        &#34;2016-05-01&#34;: 1965.8,
+        &#34;2016-06-01&#34;: 2000.7,
+        &#34;2016-07-01&#34;: 2186.6,
+        &#34;2016-08-01&#34;: 2208.4,
+        &#34;2016-09-01&#34;: 1947.8,
+        &#34;2016-10-01&#34;: 1925.2,
+        &#34;2016-11-01&#34;: 2159.5,
+        &#34;2016-12-01&#34;: 2866.3,
+        &#34;2017-01-01&#34;: 2913.8,
+        &#34;2017-02-01&#34;: 2340.2,
+        &#34;2017-03-01&#34;: 2523.3,
+        &#34;2017-04-01&#34;: 1932.0,
+        &#34;2017-05-01&#34;: 1892.0,
+        &#34;2017-06-01&#34;: 1910.4,
+        &#34;2017-07-01&#34;: 2141.6,
+        &#34;2017-08-01&#34;: 2093.8,
+        &#34;2017-09-01&#34;: 1920.5,
+        &#34;2017-10-01&#34;: 2031.5,
+        &#34;2017-11-01&#34;: 2357.3,
+        &#34;2017-12-01&#34;: 3086.0,
+        &#34;2018-01-01&#34;: 3340.9,
+        &#34;2018-02-01&#34;: 2710.7,
+        &#34;2018-03-01&#34;: 2796.7,
+        &#34;2018-04-01&#34;: 2350.5,
+        &#34;2018-05-01&#34;: 2055.0,
+        &#34;2018-06-01&#34;: 2063.1,
+        &#34;2018-07-01&#34;: 2350.7,
+        &#34;2018-08-01&#34;: 2313.8,
+        &#34;2018-09-01&#34;: 2156.1,
+        &#34;2018-10-01&#34;: 2285.9,
+        &#34;2018-11-01&#34;: 2715.9,
+        &#34;2018-12-01&#34;: 2999.5,
+        &#34;2019-01-01&#34;: 3424.3,
+        &#34;2019-02-01&#34;: 3019.1,
+        &#34;2019-03-01&#34;: 2927.8,
+        &#34;2019-04-01&#34;: 2212.4,
+        &#34;2019-05-01&#34;: 2134.0,
+        &#34;2019-06-01&#34;: 2119.3,
+        &#34;2019-07-01&#34;: 2393.9,
+        &#34;2019-08-01&#34;: 2433.9,
+        &#34;2019-09-01&#34;: 2206.3,
+        &#34;2019-10-01&#34;: 2306.5,
+        &#34;2019-11-01&#34;: 2783.8,
+        &#34;2019-12-01&#34;: 3170.7,
+        &#34;2020-01-01&#34;: 3320.6,
+        &#34;2020-02-01&#34;: 3058.5,
+        &#34;2020-03-01&#34;: 2722.0,
+        &#34;2020-04-01&#34;: 2256.9,
+        &#34;2020-05-01&#34;: 2072.2,
+        &#34;2020-06-01&#34;: 2127.9,
+        &#34;2020-07-01&#34;: 2464.1,
+        &#34;2020-08-01&#34;: 2399.5,
+        &#34;2020-09-01&#34;: 2151.2,
+        &#34;2020-10-01&#34;: 2315.9,
+        &#34;2020-11-01&#34;: 2442.0,
+        &#34;2020-12-01&#34;: 3182.8,
+        &#34;2021-01-01&#34;: 3343.9,
+        &#34;2021-02-01&#34;: 3099.2,
+        &#34;2021-03-01&#34;: 2649.4,
+        &#34;2021-04-01&#34;: 2265.1,
+        &#34;2021-05-01&#34;: 2117.4,
+        &#34;2021-06-01&#34;: 2238.4,
+        &#34;2021-07-01&#34;: 2412.2,
+        &#34;2021-08-01&#34;: 2433.8,
+        &#34;2021-09-01&#34;: 2142.3,
+        &#34;2021-10-01&#34;: 2262.6,
+        &#34;2021-11-01&#34;: 2693.3,
+        &#34;2021-12-01&#34;: 3007.3,
+        &#34;2022-01-01&#34;: 3612.1,
+        &#34;2022-02-01&#34;: 3064.2,
+        &#34;2022-03-01&#34;: 2785.4,
+        &#34;2022-04-01&#34;: 2379.3,
+        &#34;2022-05-01&#34;: 2247.8,
+        &#34;2022-06-01&#34;: 2326.9,
+        &#34;2022-07-01&#34;: 2597.9,
+        &#34;2022-08-01&#34;: 2566.1,
+        &#34;2022-09-01&#34;: 2263.3,
+    }
+}
+
+data = pd.DataFrame(data)
+data.rename(columns={&#34;value&#34;: &#34;Natural Gas Consumption(BCF)&#34;}, inplace=True)
+data.index = pd.to_datetime(data.index)
+data = data.asfreq(&#34;MS&#34;)
+data.head()
+
+.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/timeseries/exponential_smoothing/002-hw-es/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="Holtの線形指数平滑法">
+  <meta property="og:description" content="import japanize_matplotlib as jm import numpy as np import pandas as pd import matplotlib.pyplot as plt import seaborn as sns from statsmodels.tsa.holtwinters import Holt from statsmodels.tsa.holtwinters import SimpleExpSmoothing jm.japanize() サンプルデータ # Natural Gas Consumption (NATURALGAS)のデータを使用しています。数値の単位はBCF（10億立方フィート）です。
+data = { &#34;value&#34;: { &#34;2013-01-01&#34;: 2878.8, &#34;2013-02-01&#34;: 2567.2, &#34;2013-03-01&#34;: 2521.1, &#34;2013-04-01&#34;: 1967.5, &#34;2013-05-01&#34;: 1752.5, &#34;2013-06-01&#34;: 1742.9, &#34;2013-07-01&#34;: 1926.3, &#34;2013-08-01&#34;: 1927.4, &#34;2013-09-01&#34;: 1767.0, &#34;2013-10-01&#34;: 1866.8, &#34;2013-11-01&#34;: 2316.9, &#34;2013-12-01&#34;: 2920.8, &#34;2014-01-01&#34;: 3204.1, &#34;2014-02-01&#34;: 2741.2, &#34;2014-03-01&#34;: 2557.9, &#34;2014-04-01&#34;: 1961.7, &#34;2014-05-01&#34;: 1810.2, &#34;2014-06-01&#34;: 1745.4, &#34;2014-07-01&#34;: 1881.0, &#34;2014-08-01&#34;: 1933.1, &#34;2014-09-01&#34;: 1809.3, &#34;2014-10-01&#34;: 1912.8, &#34;2014-11-01&#34;: 2357.5, &#34;2014-12-01&#34;: 2679.2, &#34;2015-01-01&#34;: 3115.0, &#34;2015-02-01&#34;: 2925.2, &#34;2015-03-01&#34;: 2591.3, &#34;2015-04-01&#34;: 2007.9, &#34;2015-05-01&#34;: 1858.2, &#34;2015-06-01&#34;: 1899.9, &#34;2015-07-01&#34;: 2067.7, &#34;2015-08-01&#34;: 2052.7, &#34;2015-09-01&#34;: 1901.3, &#34;2015-10-01&#34;: 1987.3, &#34;2015-11-01&#34;: 2249.1, &#34;2015-12-01&#34;: 2588.2, &#34;2016-01-01&#34;: 3091.7, &#34;2016-02-01&#34;: 2652.3, &#34;2016-03-01&#34;: 2356.3, &#34;2016-04-01&#34;: 2083.9, &#34;2016-05-01&#34;: 1965.8, &#34;2016-06-01&#34;: 2000.7, &#34;2016-07-01&#34;: 2186.6, &#34;2016-08-01&#34;: 2208.4, &#34;2016-09-01&#34;: 1947.8, &#34;2016-10-01&#34;: 1925.2, &#34;2016-11-01&#34;: 2159.5, &#34;2016-12-01&#34;: 2866.3, &#34;2017-01-01&#34;: 2913.8, &#34;2017-02-01&#34;: 2340.2, &#34;2017-03-01&#34;: 2523.3, &#34;2017-04-01&#34;: 1932.0, &#34;2017-05-01&#34;: 1892.0, &#34;2017-06-01&#34;: 1910.4, &#34;2017-07-01&#34;: 2141.6, &#34;2017-08-01&#34;: 2093.8, &#34;2017-09-01&#34;: 1920.5, &#34;2017-10-01&#34;: 2031.5, &#34;2017-11-01&#34;: 2357.3, &#34;2017-12-01&#34;: 3086.0, &#34;2018-01-01&#34;: 3340.9, &#34;2018-02-01&#34;: 2710.7, &#34;2018-03-01&#34;: 2796.7, &#34;2018-04-01&#34;: 2350.5, &#34;2018-05-01&#34;: 2055.0, &#34;2018-06-01&#34;: 2063.1, &#34;2018-07-01&#34;: 2350.7, &#34;2018-08-01&#34;: 2313.8, &#34;2018-09-01&#34;: 2156.1, &#34;2018-10-01&#34;: 2285.9, &#34;2018-11-01&#34;: 2715.9, &#34;2018-12-01&#34;: 2999.5, &#34;2019-01-01&#34;: 3424.3, &#34;2019-02-01&#34;: 3019.1, &#34;2019-03-01&#34;: 2927.8, &#34;2019-04-01&#34;: 2212.4, &#34;2019-05-01&#34;: 2134.0, &#34;2019-06-01&#34;: 2119.3, &#34;2019-07-01&#34;: 2393.9, &#34;2019-08-01&#34;: 2433.9, &#34;2019-09-01&#34;: 2206.3, &#34;2019-10-01&#34;: 2306.5, &#34;2019-11-01&#34;: 2783.8, &#34;2019-12-01&#34;: 3170.7, &#34;2020-01-01&#34;: 3320.6, &#34;2020-02-01&#34;: 3058.5, &#34;2020-03-01&#34;: 2722.0, &#34;2020-04-01&#34;: 2256.9, &#34;2020-05-01&#34;: 2072.2, &#34;2020-06-01&#34;: 2127.9, &#34;2020-07-01&#34;: 2464.1, &#34;2020-08-01&#34;: 2399.5, &#34;2020-09-01&#34;: 2151.2, &#34;2020-10-01&#34;: 2315.9, &#34;2020-11-01&#34;: 2442.0, &#34;2020-12-01&#34;: 3182.8, &#34;2021-01-01&#34;: 3343.9, &#34;2021-02-01&#34;: 3099.2, &#34;2021-03-01&#34;: 2649.4, &#34;2021-04-01&#34;: 2265.1, &#34;2021-05-01&#34;: 2117.4, &#34;2021-06-01&#34;: 2238.4, &#34;2021-07-01&#34;: 2412.2, &#34;2021-08-01&#34;: 2433.8, &#34;2021-09-01&#34;: 2142.3, &#34;2021-10-01&#34;: 2262.6, &#34;2021-11-01&#34;: 2693.3, &#34;2021-12-01&#34;: 3007.3, &#34;2022-01-01&#34;: 3612.1, &#34;2022-02-01&#34;: 3064.2, &#34;2022-03-01&#34;: 2785.4, &#34;2022-04-01&#34;: 2379.3, &#34;2022-05-01&#34;: 2247.8, &#34;2022-06-01&#34;: 2326.9, &#34;2022-07-01&#34;: 2597.9, &#34;2022-08-01&#34;: 2566.1, &#34;2022-09-01&#34;: 2263.3, } } data = pd.DataFrame(data) data.rename(columns={&#34;value&#34;: &#34;Natural Gas Consumption(BCF)&#34;}, inplace=True) data.index = pd.to_datetime(data.index) data = data.asfreq(&#34;MS&#34;) data.head() .dataframe tbody tr th {vertical-align: top;}.dataframe thead th {text-align: right;}">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="timeseries">
+<title>Holtの線形指数平滑法 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/timeseries/exponential_smoothing/002-hw-es/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/timeseries/exponential_smoothing/002-hw-es/" title="Holt&#39;s Linear Exponential Smoothing Method">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/timeseries/exponential_smoothing/002-hw-es/" title="Método de Suavización Exponencial Lineal de Holt">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/timeseries/exponential_smoothing/002-hw-es/" title="Metode Pemulusan Eksponensial Linear Holt">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-timeseries">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/timeseries/exponential_smoothing/002-hw-es/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/timeseries/exponential_smoothing/002-hw-es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/timeseries/exponential_smoothing/002-hw-es/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>Holtの線形指数平滑法</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#サンプルデータ">サンプルデータ</a></li>
+    <li><a href="#データの分割">データの分割</a></li>
+    <li><a href="#モデルの学習と予測">モデルの学習と予測</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib <span style="color:#66d9ef">as</span> jm
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> statsmodels.tsa.holtwinters <span style="color:#f92672">import</span> Holt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> statsmodels.tsa.holtwinters <span style="color:#f92672">import</span> SimpleExpSmoothing
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>jm<span style="color:#f92672">.</span>japanize()
+</span></span></code></pre></div><h2 id="サンプルデータ">
+  サンプルデータ
+  
+  <a class="anchor" href="#%e3%82%b5%e3%83%b3%e3%83%97%e3%83%ab%e3%83%87%e3%83%bc%e3%82%bf">#</a>
+  
+</h2>
+<p><a href="https://fred.stlouisfed.org/series/NATURALGAS">Natural Gas Consumption (NATURALGAS)</a>のデータを使用しています。数値の単位はBCF（10億立方フィート）です。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>data <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;value&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-01-01&#34;</span>: <span style="color:#ae81ff">2878.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-02-01&#34;</span>: <span style="color:#ae81ff">2567.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-03-01&#34;</span>: <span style="color:#ae81ff">2521.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-04-01&#34;</span>: <span style="color:#ae81ff">1967.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-05-01&#34;</span>: <span style="color:#ae81ff">1752.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-06-01&#34;</span>: <span style="color:#ae81ff">1742.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-07-01&#34;</span>: <span style="color:#ae81ff">1926.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-08-01&#34;</span>: <span style="color:#ae81ff">1927.4</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-09-01&#34;</span>: <span style="color:#ae81ff">1767.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-10-01&#34;</span>: <span style="color:#ae81ff">1866.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-11-01&#34;</span>: <span style="color:#ae81ff">2316.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2013-12-01&#34;</span>: <span style="color:#ae81ff">2920.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-01-01&#34;</span>: <span style="color:#ae81ff">3204.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-02-01&#34;</span>: <span style="color:#ae81ff">2741.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-03-01&#34;</span>: <span style="color:#ae81ff">2557.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-04-01&#34;</span>: <span style="color:#ae81ff">1961.7</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-05-01&#34;</span>: <span style="color:#ae81ff">1810.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-06-01&#34;</span>: <span style="color:#ae81ff">1745.4</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-07-01&#34;</span>: <span style="color:#ae81ff">1881.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-08-01&#34;</span>: <span style="color:#ae81ff">1933.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-09-01&#34;</span>: <span style="color:#ae81ff">1809.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-10-01&#34;</span>: <span style="color:#ae81ff">1912.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-11-01&#34;</span>: <span style="color:#ae81ff">2357.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2014-12-01&#34;</span>: <span style="color:#ae81ff">2679.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-01-01&#34;</span>: <span style="color:#ae81ff">3115.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-02-01&#34;</span>: <span style="color:#ae81ff">2925.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-03-01&#34;</span>: <span style="color:#ae81ff">2591.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-04-01&#34;</span>: <span style="color:#ae81ff">2007.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-05-01&#34;</span>: <span style="color:#ae81ff">1858.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-06-01&#34;</span>: <span style="color:#ae81ff">1899.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-07-01&#34;</span>: <span style="color:#ae81ff">2067.7</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-08-01&#34;</span>: <span style="color:#ae81ff">2052.7</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-09-01&#34;</span>: <span style="color:#ae81ff">1901.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-10-01&#34;</span>: <span style="color:#ae81ff">1987.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-11-01&#34;</span>: <span style="color:#ae81ff">2249.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2015-12-01&#34;</span>: <span style="color:#ae81ff">2588.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-01-01&#34;</span>: <span style="color:#ae81ff">3091.7</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-02-01&#34;</span>: <span style="color:#ae81ff">2652.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-03-01&#34;</span>: <span style="color:#ae81ff">2356.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-04-01&#34;</span>: <span style="color:#ae81ff">2083.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-05-01&#34;</span>: <span style="color:#ae81ff">1965.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-06-01&#34;</span>: <span style="color:#ae81ff">2000.7</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-07-01&#34;</span>: <span style="color:#ae81ff">2186.6</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-08-01&#34;</span>: <span style="color:#ae81ff">2208.4</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-09-01&#34;</span>: <span style="color:#ae81ff">1947.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-10-01&#34;</span>: <span style="color:#ae81ff">1925.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-11-01&#34;</span>: <span style="color:#ae81ff">2159.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2016-12-01&#34;</span>: <span style="color:#ae81ff">2866.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-01-01&#34;</span>: <span style="color:#ae81ff">2913.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-02-01&#34;</span>: <span style="color:#ae81ff">2340.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-03-01&#34;</span>: <span style="color:#ae81ff">2523.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-04-01&#34;</span>: <span style="color:#ae81ff">1932.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-05-01&#34;</span>: <span style="color:#ae81ff">1892.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-06-01&#34;</span>: <span style="color:#ae81ff">1910.4</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-07-01&#34;</span>: <span style="color:#ae81ff">2141.6</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-08-01&#34;</span>: <span style="color:#ae81ff">2093.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-09-01&#34;</span>: <span style="color:#ae81ff">1920.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-10-01&#34;</span>: <span style="color:#ae81ff">2031.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-11-01&#34;</span>: <span style="color:#ae81ff">2357.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2017-12-01&#34;</span>: <span style="color:#ae81ff">3086.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-01-01&#34;</span>: <span style="color:#ae81ff">3340.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-02-01&#34;</span>: <span style="color:#ae81ff">2710.7</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-03-01&#34;</span>: <span style="color:#ae81ff">2796.7</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-04-01&#34;</span>: <span style="color:#ae81ff">2350.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-05-01&#34;</span>: <span style="color:#ae81ff">2055.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-06-01&#34;</span>: <span style="color:#ae81ff">2063.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-07-01&#34;</span>: <span style="color:#ae81ff">2350.7</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-08-01&#34;</span>: <span style="color:#ae81ff">2313.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-09-01&#34;</span>: <span style="color:#ae81ff">2156.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-10-01&#34;</span>: <span style="color:#ae81ff">2285.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-11-01&#34;</span>: <span style="color:#ae81ff">2715.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2018-12-01&#34;</span>: <span style="color:#ae81ff">2999.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-01-01&#34;</span>: <span style="color:#ae81ff">3424.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-02-01&#34;</span>: <span style="color:#ae81ff">3019.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-03-01&#34;</span>: <span style="color:#ae81ff">2927.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-04-01&#34;</span>: <span style="color:#ae81ff">2212.4</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-05-01&#34;</span>: <span style="color:#ae81ff">2134.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-06-01&#34;</span>: <span style="color:#ae81ff">2119.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-07-01&#34;</span>: <span style="color:#ae81ff">2393.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-08-01&#34;</span>: <span style="color:#ae81ff">2433.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-09-01&#34;</span>: <span style="color:#ae81ff">2206.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-10-01&#34;</span>: <span style="color:#ae81ff">2306.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-11-01&#34;</span>: <span style="color:#ae81ff">2783.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2019-12-01&#34;</span>: <span style="color:#ae81ff">3170.7</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-01-01&#34;</span>: <span style="color:#ae81ff">3320.6</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-02-01&#34;</span>: <span style="color:#ae81ff">3058.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-03-01&#34;</span>: <span style="color:#ae81ff">2722.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-04-01&#34;</span>: <span style="color:#ae81ff">2256.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-05-01&#34;</span>: <span style="color:#ae81ff">2072.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-06-01&#34;</span>: <span style="color:#ae81ff">2127.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-07-01&#34;</span>: <span style="color:#ae81ff">2464.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-08-01&#34;</span>: <span style="color:#ae81ff">2399.5</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-09-01&#34;</span>: <span style="color:#ae81ff">2151.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-10-01&#34;</span>: <span style="color:#ae81ff">2315.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-11-01&#34;</span>: <span style="color:#ae81ff">2442.0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2020-12-01&#34;</span>: <span style="color:#ae81ff">3182.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-01-01&#34;</span>: <span style="color:#ae81ff">3343.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-02-01&#34;</span>: <span style="color:#ae81ff">3099.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-03-01&#34;</span>: <span style="color:#ae81ff">2649.4</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-04-01&#34;</span>: <span style="color:#ae81ff">2265.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-05-01&#34;</span>: <span style="color:#ae81ff">2117.4</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-06-01&#34;</span>: <span style="color:#ae81ff">2238.4</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-07-01&#34;</span>: <span style="color:#ae81ff">2412.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-08-01&#34;</span>: <span style="color:#ae81ff">2433.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-09-01&#34;</span>: <span style="color:#ae81ff">2142.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-10-01&#34;</span>: <span style="color:#ae81ff">2262.6</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-11-01&#34;</span>: <span style="color:#ae81ff">2693.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2021-12-01&#34;</span>: <span style="color:#ae81ff">3007.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2022-01-01&#34;</span>: <span style="color:#ae81ff">3612.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2022-02-01&#34;</span>: <span style="color:#ae81ff">3064.2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2022-03-01&#34;</span>: <span style="color:#ae81ff">2785.4</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2022-04-01&#34;</span>: <span style="color:#ae81ff">2379.3</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2022-05-01&#34;</span>: <span style="color:#ae81ff">2247.8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2022-06-01&#34;</span>: <span style="color:#ae81ff">2326.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2022-07-01&#34;</span>: <span style="color:#ae81ff">2597.9</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2022-08-01&#34;</span>: <span style="color:#ae81ff">2566.1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;2022-09-01&#34;</span>: <span style="color:#ae81ff">2263.3</span>,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>data <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(data)
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">.</span>rename(columns<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;value&#34;</span>: <span style="color:#e6db74">&#34;Natural Gas Consumption(BCF)&#34;</span>}, inplace<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">.</span>index <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>to_datetime(data<span style="color:#f92672">.</span>index)
+</span></span><span style="display:flex;"><span>data <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>asfreq(<span style="color:#e6db74">&#34;MS&#34;</span>)
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>lineplot(data<span style="color:#f92672">=</span>data)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/timeseries/exponential_smoothing/002-hw-es_files/002-hw-es_4_0.png" alt="png" /></p>
+<h2 id="データの分割">
+  データの分割
+  
+  <a class="anchor" href="#%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ae%e5%88%86%e5%89%b2">#</a>
+  
+</h2>
+<p>データの末尾（2020年以降のデータ）を予測性能の検証に使用するためにデータを分割します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>data_train <span style="color:#f92672">=</span> data[data<span style="color:#f92672">.</span>index <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#34;2020-1-1&#34;</span>]
+</span></span><span style="display:flex;"><span>data_test <span style="color:#f92672">=</span> data[data<span style="color:#f92672">.</span>index <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#34;2020-1-1&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(data_train<span style="color:#f92672">.</span>index, data_train<span style="color:#f92672">.</span>values, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;train&#34;</span>, linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(data_test<span style="color:#f92672">.</span>index, data_test<span style="color:#f92672">.</span>values, <span style="color:#e6db74">&#34;-.&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;test&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid()
+</span></span></code></pre></div><p><img src="/images/timeseries/exponential_smoothing/002-hw-es_files/002-hw-es_6_0.png" alt="png" /></p>
+<h2 id="モデルの学習と予測">
+  モデルの学習と予測
+  
+  <a class="anchor" href="#%e3%83%a2%e3%83%87%e3%83%ab%e3%81%ae%e5%ad%a6%e7%bf%92%e3%81%a8%e4%ba%88%e6%b8%ac">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>ses <span style="color:#f92672">=</span> SimpleExpSmoothing(data_train)
+</span></span><span style="display:flex;"><span>ses <span style="color:#f92672">=</span> ses<span style="color:#f92672">.</span>fit(smoothing_level<span style="color:#f92672">=</span><span style="color:#ae81ff">0.1</span>)
+</span></span><span style="display:flex;"><span>ses_pred <span style="color:#f92672">=</span> ses<span style="color:#f92672">.</span>forecast(<span style="color:#ae81ff">33</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>holt <span style="color:#f92672">=</span> Holt(data_train)
+</span></span><span style="display:flex;"><span>holt <span style="color:#f92672">=</span> holt<span style="color:#f92672">.</span>fit(smoothing_level<span style="color:#f92672">=</span><span style="color:#ae81ff">0.1</span>, smoothing_trend<span style="color:#f92672">=</span><span style="color:#ae81ff">0.2</span>)
+</span></span><span style="display:flex;"><span>holt_pred <span style="color:#f92672">=</span> holt<span style="color:#f92672">.</span>forecast(<span style="color:#ae81ff">33</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(data_train<span style="color:#f92672">.</span>index, data_train<span style="color:#f92672">.</span>values, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;train&#34;</span>, linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(data_test<span style="color:#f92672">.</span>index, data_test<span style="color:#f92672">.</span>values, <span style="color:#e6db74">&#34;-.&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;test&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(ses_pred<span style="color:#f92672">.</span>index, ses_pred<span style="color:#f92672">.</span>values, <span style="color:#e6db74">&#34;-x&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;prediction(ses)&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(holt_pred<span style="color:#f92672">.</span>index, holt_pred<span style="color:#f92672">.</span>values, <span style="color:#e6db74">&#34;-x&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;prediction(Holt)&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid()
+</span></span></code></pre></div><p><img src="/images/timeseries/exponential_smoothing/002-hw-es_files/002-hw-es_9_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#サンプルデータ">サンプルデータ</a></li>
+    <li><a href="#データの分割">データの分割</a></li>
+    <li><a href="#モデルの学習と予測">モデルの学習と予測</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

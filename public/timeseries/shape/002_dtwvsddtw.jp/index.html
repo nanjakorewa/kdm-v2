@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from dtaidistance import dtw
+from dtaidistance import dtw_visualisation as dtwvis
+
+from utils import DDTW
+
+np.random.seed(777)
+
+  実験に使用する二つの波形をプロット
+  
+  #
+  
+
+data1 = np.array([12.0 * np.sin(i / 2.1) &#43; 20 for i in range(30)])
+data2 = np.array([10.0 * np.sin(i / 2.0) &#43; np.random.rand() for i in range(30)])
+
+plt.figure(figsize=(12, 4))
+
+# 波形をプロット
+plt.plot(data1, label=&#34;data1&#34;, color=&#34;k&#34;)
+plt.plot(data2, label=&#34;data2&#34;, color=&#34;r&#34;)
+plt.legend()
+plt.show()
+
+
+  DTW
+  
+  #
+  
+
+d, paths = dtw.warping_paths(
+    data1,
+    data2,
+    window=25,
+)
+best_path = dtw.best_path(paths)
+dtwvis.plot_warpingpaths(data1, data2, paths, best_path)
+(&lt;Figure size 720x720 with 4 Axes&gt;,
+ [&lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;])
+
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/timeseries/shape/002_dtwvsddtw.jp/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="DTWとDDTW">
+  <meta property="og:description" content="import numpy as np import matplotlib.pyplot as plt import seaborn as sns from dtaidistance import dtw from dtaidistance import dtw_visualisation as dtwvis from utils import DDTW np.random.seed(777) 実験に使用する二つの波形をプロット # data1 = np.array([12.0 * np.sin(i / 2.1) &#43; 20 for i in range(30)]) data2 = np.array([10.0 * np.sin(i / 2.0) &#43; np.random.rand() for i in range(30)]) plt.figure(figsize=(12, 4)) # 波形をプロット plt.plot(data1, label=&#34;data1&#34;, color=&#34;k&#34;) plt.plot(data2, label=&#34;data2&#34;, color=&#34;r&#34;) plt.legend() plt.show() DTW # d, paths = dtw.warping_paths( data1, data2, window=25, ) best_path = dtw.best_path(paths) dtwvis.plot_warpingpaths(data1, data2, paths, best_path) (&lt;Figure size 720x720 with 4 Axes&gt;,[&lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;])">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="timeseries">
+<title>DTWとDDTW | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/timeseries/shape/002_dtwvsddtw.jp/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-timeseries">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>DTWとDDTW</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#実験に使用する二つの波形をプロット">実験に使用する二つの波形をプロット</a></li>
+    <li><a href="#dtw">DTW</a></li>
+    <li><a href="#ddtw">DDTW</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> dtaidistance <span style="color:#f92672">import</span> dtw
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> dtaidistance <span style="color:#f92672">import</span> dtw_visualisation <span style="color:#66d9ef">as</span> dtwvis
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> utils <span style="color:#f92672">import</span> DDTW
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>seed(<span style="color:#ae81ff">777</span>)
+</span></span></code></pre></div><h2 id="実験に使用する二つの波形をプロット">
+  実験に使用する二つの波形をプロット
+  
+  <a class="anchor" href="#%e5%ae%9f%e9%a8%93%e3%81%ab%e4%bd%bf%e7%94%a8%e3%81%99%e3%82%8b%e4%ba%8c%e3%81%a4%e3%81%ae%e6%b3%a2%e5%bd%a2%e3%82%92%e3%83%97%e3%83%ad%e3%83%83%e3%83%88">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>data1 <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">12.0</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sin(i <span style="color:#f92672">/</span> <span style="color:#ae81ff">2.1</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">20</span> <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">30</span>)])
+</span></span><span style="display:flex;"><span>data2 <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">10.0</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sin(i <span style="color:#f92672">/</span> <span style="color:#ae81ff">2.0</span>) <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand() <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">30</span>)])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 波形をプロット</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(data1, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;data1&#34;</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;k&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(data2, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;data2&#34;</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;r&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/timeseries/shape/002_DTWvsDDTW_files/002_DTWvsDDTW_4_0.png" alt="png" /></p>
+<h2 id="dtw">
+  DTW
+  
+  <a class="anchor" href="#dtw">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>d, paths <span style="color:#f92672">=</span> dtw<span style="color:#f92672">.</span>warping_paths(
+</span></span><span style="display:flex;"><span>    data1,
+</span></span><span style="display:flex;"><span>    data2,
+</span></span><span style="display:flex;"><span>    window<span style="color:#f92672">=</span><span style="color:#ae81ff">25</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>best_path <span style="color:#f92672">=</span> dtw<span style="color:#f92672">.</span>best_path(paths)
+</span></span><span style="display:flex;"><span>dtwvis<span style="color:#f92672">.</span>plot_warpingpaths(data1, data2, paths, best_path)
+</span></span></code></pre></div><pre><code>(&lt;Figure size 720x720 with 4 Axes&gt;,
+ [&lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;])
+</code></pre>
+<p><img src="/images/timeseries/shape/002_DTWvsDDTW_files/002_DTWvsDDTW_6_1.png" alt="png" /></p>
+<h2 id="ddtw">
+  DDTW
+  
+  <a class="anchor" href="#ddtw">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>γ_mat, arrows, ddtw <span style="color:#f92672">=</span> DDTW(np<span style="color:#f92672">.</span>array(data1), np<span style="color:#f92672">.</span>array(data2))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>set(rc<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;figure.figsize&#34;</span>: (<span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">15</span>)})
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>set(font<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IPAexGothic&#34;</span>)
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>heatmap(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> γ_mat, cmap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YlGnBu&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;DDTW = </span><span style="color:#e6db74">{</span>ddtw<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>invert_xaxis()
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>invert_yaxis()
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#34;w2&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#34;w2&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><pre><code>findfont: Font family ['IPAexGothic'] not found. Falling back to DejaVu Sans.
+findfont: Font family ['IPAexGothic'] not found. Falling back to DejaVu Sans.
+</code></pre>
+<p><img src="/images/timeseries/shape/002_DTWvsDDTW_files/002_DTWvsDDTW_8_1.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#実験に使用する二つの波形をプロット">実験に使用する二つの波形をプロット</a></li>
+    <li><a href="#dtw">DTW</a></li>
+    <li><a href="#ddtw">DDTW</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

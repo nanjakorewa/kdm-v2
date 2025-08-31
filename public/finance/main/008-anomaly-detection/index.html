@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+総務省統計局の公開している「家計調査（家計収支編）　時系列データ（二人以上の世帯）」のデータを分析します。
+
+経済産業省 鉱工業指数(生産・出荷・在庫、生産能力・稼働率)、製造工業生産予測指数 季節調整手法
+
+
+import japanize_matplotlib as jm
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+data = pd.read_csv(&#34;./支出金額_加工済みデータ.csv&#34;, index_col=&#34;日付&#34;)
+data.index = pd.to_datetime(data.index)
+data.head(10)
+
+.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+
+
+
+sns.set(rc={&#34;figure.figsize&#34;: (15, 8)})
+jm.japanize()
+sns.lineplot(data=data, x=&#34;日付&#34;, y=&#34;季節変動調整分&#34;, label=&#34;季節変動調整分&#34;)
+plt.show()
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/finance/main/008-anomaly-detection/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="外れ値">
+  <meta property="og:description" content="総務省統計局の公開している「家計調査（家計収支編）　時系列データ（二人以上の世帯）」のデータを分析します。
+経済産業省 鉱工業指数(生産・出荷・在庫、生産能力・稼働率)、製造工業生産予測指数 季節調整手法
+import japanize_matplotlib as jm import matplotlib.pyplot as plt import pandas as pd import seaborn as sns data = pd.read_csv(&#34;./支出金額_加工済みデータ.csv&#34;, index_col=&#34;日付&#34;) data.index = pd.to_datetime(data.index) data.head(10) .dataframe tbody tr th {vertical-align: top;}.dataframe thead th {text-align: right;}sns.set(rc={&#34;figure.figsize&#34;: (15, 8)}) jm.japanize() sns.lineplot(data=data, x=&#34;日付&#34;, y=&#34;季節変動調整分&#34;, label=&#34;季節変動調整分&#34;) plt.show()">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="finance">
+<title>外れ値 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/finance/main/008-anomaly-detection/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-finance">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>外れ値</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#異常値を検出してみる">異常値を検出してみる</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/nILasBn8WT8" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<p>総務省統計局の公開している「<a href="https://www.stat.go.jp/data/kakei/longtime/index.html">家計調査（家計収支編）　時系列データ（二人以上の世帯）</a>」のデータを分析します。</p>
+
+<div class="notices info" ><p><a href="https://www.meti.go.jp/statistics/tyo/iip/riyou-4.pdf">経済産業省 鉱工業指数(生産・出荷・在庫、生産能力・稼働率)、製造工業生産予測指数 季節調整手法</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib <span style="color:#66d9ef">as</span> jm
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>data <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#34;./支出金額_加工済みデータ.csv&#34;</span>, index_col<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;日付&#34;</span>)
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">.</span>index <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>to_datetime(data<span style="color:#f92672">.</span>index)
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">10</span>)
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>set(rc<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;figure.figsize&#34;</span>: (<span style="color:#ae81ff">15</span>, <span style="color:#ae81ff">8</span>)})
+</span></span><span style="display:flex;"><span>jm<span style="color:#f92672">.</span>japanize()
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>lineplot(data<span style="color:#f92672">=</span>data, x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;日付&#34;</span>, y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;季節変動調整分&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;季節変動調整分&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/finance/main/008-Anomaly-Detection_files/008-Anomaly-Detection_2_0.png" alt="png" /></p>
+<h3 id="異常値を検出してみる">
+  異常値を検出してみる
+  
+  <a class="anchor" href="#%e7%95%b0%e5%b8%b8%e5%80%a4%e3%82%92%e6%a4%9c%e5%87%ba%e3%81%97%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h3>
+<p><a href="https://github.com/DHI/tsod">DHI/tsod</a>を用いて異常値を検出してみます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> tsod
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>magd <span style="color:#f92672">=</span> tsod<span style="color:#f92672">.</span>DiffDetector(direction<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;positive&#34;</span>)
+</span></span><span style="display:flex;"><span>series <span style="color:#f92672">=</span> data[<span style="color:#e6db74">&#34;季節変動調整分&#34;</span>]
+</span></span><span style="display:flex;"><span>magd<span style="color:#f92672">.</span>fit(series[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">10</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>res <span style="color:#f92672">=</span> magd<span style="color:#f92672">.</span>detect(series)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(series)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(series[res], <span style="color:#e6db74">&#34;ro&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Anomaly&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> d <span style="color:#f92672">in</span> series[res]<span style="color:#f92672">.</span>index:
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>axvline(d, alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>, linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">0.75</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;k&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>text(
+</span></span><span style="display:flex;"><span>        d <span style="color:#f92672">+</span> pd<span style="color:#f92672">.</span>DateOffset(<span style="color:#ae81ff">10</span>),
+</span></span><span style="display:flex;"><span>        <span style="color:#ae81ff">10</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>d<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#34;%Y/%m/</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;</span>,
+</span></span><span style="display:flex;"><span>        rotation<span style="color:#f92672">=</span><span style="color:#ae81ff">90</span>,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/finance/main/008-Anomaly-Detection_files/008-Anomaly-Detection_4_0.png" alt="png" /></p>
+<h4 id="ピークの点付近にあった出来事">
+  ピークの点付近にあった出来事
+  
+  <a class="anchor" href="#%e3%83%94%e3%83%bc%e3%82%af%e3%81%ae%e7%82%b9%e4%bb%98%e8%bf%91%e3%81%ab%e3%81%82%e3%81%a3%e3%81%9f%e5%87%ba%e6%9d%a5%e4%ba%8b">#</a>
+  
+</h4>
+<h5 id="200012頃">
+  2000/12頃
+  
+  <a class="anchor" href="#200012%e9%a0%83">#</a>
+  
+</h5>
+
+<blockquote class='book-hint '>
+  <p>日本経済は、2000年10月に(1)景気の山を越え、景気後退局面に入った。その後、2001年を通じて、生産は大幅に減少するとともに、失業率も既往最高水準を更新し、景気は悪化を続けた。（<a href="https://www5.cao.go.jp/j-j/wp/wp-je02/wp-je02-00101.html">経済財政白書／経済白書 &gt; 平成14年度 年次経済財政報告</a>）</p>
+</blockquote><h5 id="201403頃">
+  2014/03頃
+  
+  <a class="anchor" href="#201403%e9%a0%83">#</a>
+  
+</h5>
+<p><a href="https://gallery.intage.co.jp/zouzei2014/">2014年の消費増税時を振り返る データから見えた消費への影響と小売店の対策とは？</a></p>
+<h5 id="201910頃">
+  2019/10頃
+  
+  <a class="anchor" href="#201910%e9%a0%83">#</a>
+  
+</h5>
+<p><a href="https://www.mof.go.jp/tax_policy/summary/consumption/consumption_tax/index.html">2019年10月に消費税率は10％になりました。 | 財務省</a></p>
+<h5 id="202006頃">
+  2020/06頃
+  
+  <a class="anchor" href="#202006%e9%a0%83">#</a>
+  
+</h5>
+<p><a href="https://car.watch.impress.co.jp/docs/news/1259775.html">都道府県をまたぐ移動、6月19日から全国的に緩和</a></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#異常値を検出してみる">異常値を検出してみる</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>階層化・グループ化 on K_DM Book</title>
+    <link>http://localhost:1313/timeseries/hts/</link>
+    <description>Recent content in 階層化・グループ化 on K_DM Book</description>
+    <generator>Hugo</generator>
+    <language>ja</language>
+    <atom:link href="http://localhost:1313/timeseries/hts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>階層的な構造</title>
+      <link>http://localhost:1313/timeseries/hts/001-hts/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/timeseries/hts/001-hts/</guid>
+      <description>&lt;p&gt;時系列データが複数あるとき、そのデータが階層的な構造を持つことがあります。&lt;/p&gt;&#xA;&lt;h3 id=&#34;例地域カテゴリごとの販売データ&#34;&gt;&#xA;  例：地域・カテゴリごとの販売データ&#xA;  &#xA;  &lt;a class=&#34;anchor&#34; href=&#34;#%e4%be%8b%e5%9c%b0%e5%9f%9f%e3%82%ab%e3%83%86%e3%82%b4%e3%83%aa%e3%81%94%e3%81%a8%e3%81%ae%e8%b2%a9%e5%a3%b2%e3%83%87%e3%83%bc%e3%82%bf&#34;&gt;#&lt;/a&gt;&#xA;  &#xA;&lt;/h3&gt;&#xA;&lt;p&gt;経済産業省のサイトでは『商業動態統計商業動態統計』が定期的に公開されています。&#xA;これは、日本の商業を営む企業の販売活動の動向をチェックすることを目的として集められているデータです。たとえば、2022年1月の&lt;a href=&#34;https://www.meti.go.jp/statistics/tyo/syoudou/result/kakuho_2.html&#34;&gt;付表3　百貨店・スーパー販売　都道府県別、商品別販売額等&lt;/a&gt;には以下のようなデータが含まれています。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/images/timeseries/hts/sc.png&#34; alt=&#34;百貨店・スーパー販売　都道府県別、商品別販売額等&#34; /&gt;&lt;/p&gt;&#xA;&lt;p&gt;このデータには以下のような階層構造が含まれています。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/images/timeseries/hts/sc2.png&#34; alt=&#34;百貨店・スーパー販売　都道府県別、商品別販売額等&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

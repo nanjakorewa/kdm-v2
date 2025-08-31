@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  投資信託で効率的フロンティアを計算してみる
+  
+  #
+  
+
+
+2014091602: AB･米国成長株投信Dコース(H無) 予想分配金
+
+https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2014091602
+
+
+2018103105:eMAXIS Slim全世界株式(オール･カントリー)
+
+https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2018103105
+
+
+2015042708: ニッセイ TOPIXインデックスファンド
+
+https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2015042708
+
+
+2019092601: SBI・V・S&amp;P500インデックス・ファンド
+
+https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2019092601
+
+
+2018070301: eMAXIS Slim米国株式(S&amp;P500)
+
+https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2018070301
+
+
+2011020701: 三菱UFJ 純金ファンド（←保有していないですが金価格の参考として）
+
+https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2011020701
+
+
+
+
+  データの読み込み
+  
+  #
+  
+
+WEALTH ADVISERから手動で取得した週次のcsvデータを使用して、効率的フロンティアを計算してみます。
+import os
+
+import pandas as pd
+
+データ保存先ディレクトリ = &#34;C://Users//nanja-win-ms//Dropbox//PC//Downloads//&#34;
+投資信託一覧 = {
+    &#34;2018103105&#34;: &#34;eMAXIS Slim全世界株式(オール･カントリー)&#34;,
+    &#34;2015042708&#34;: &#34;ニッセイ TOPIXインデックスファンド&#34;,
+    &#34;2019092601&#34;: &#34;SBI・V・S&amp;P500インデックス・ファンド&#34;,
+    &#34;2018070301&#34;: &#34;eMAXIS Slim米国株式(S&amp;P500)&#34;,
+    &#34;2011020701&#34;: &#34;三菱UFJ 純金ファンド&#34;,
+}
+
+投資信託リターン = {}
+
+for 投資信託ID, 投資信託名 in 投資信託一覧.items():
+    月次リターンファイル名 = [
+        c
+        for c in os.listdir(os.path.join(データ保存先ディレクトリ, 投資信託ID))
+        if c.startswith(&#34;基準価額&#34;)
+    ][0]
+    投資信託リターン[投資信託ID] = pd.read_csv(
+        os.path.join(データ保存先ディレクトリ, 投資信託ID, 月次リターンファイル名), encoding=&#34;cp932&#34;
+    )
+    投資信託リターン[投資信託ID].columns = [&#34;日付&#34;, 投資信託名]
+
+  データの整形
+  
+  #
+  
+
+ｘ＝日付、ｙ＝銘柄名のデータを作成します。投資信託でなく株式でも可能です。">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/finance/misc/pyportfolioopt/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="投資信託">
+  <meta property="og:description" content="投資信託で効率的フロンティアを計算してみる # 2014091602: AB･米国成長株投信Dコース(H無) 予想分配金 https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2014091602 2018103105:eMAXIS Slim全世界株式(オール･カントリー) https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2018103105 2015042708: ニッセイ TOPIXインデックスファンド https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2015042708 2019092601: SBI・V・S&amp;P500インデックス・ファンド https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2019092601 2018070301: eMAXIS Slim米国株式(S&amp;P500) https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2018070301 2011020701: 三菱UFJ 純金ファンド（←保有していないですが金価格の参考として） https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2011020701 データの読み込み # WEALTH ADVISERから手動で取得した週次のcsvデータを使用して、効率的フロンティアを計算してみます。
+import os import pandas as pd データ保存先ディレクトリ = &#34;C://Users//nanja-win-ms//Dropbox//PC//Downloads//&#34; 投資信託一覧 = { &#34;2018103105&#34;: &#34;eMAXIS Slim全世界株式(オール･カントリー)&#34;, &#34;2015042708&#34;: &#34;ニッセイ TOPIXインデックスファンド&#34;, &#34;2019092601&#34;: &#34;SBI・V・S&amp;P500インデックス・ファンド&#34;, &#34;2018070301&#34;: &#34;eMAXIS Slim米国株式(S&amp;P500)&#34;, &#34;2011020701&#34;: &#34;三菱UFJ 純金ファンド&#34;, } 投資信託リターン = {} for 投資信託ID, 投資信託名 in 投資信託一覧.items(): 月次リターンファイル名 = [ c for c in os.listdir(os.path.join(データ保存先ディレクトリ, 投資信託ID)) if c.startswith(&#34;基準価額&#34;) ][0] 投資信託リターン[投資信託ID] = pd.read_csv( os.path.join(データ保存先ディレクトリ, 投資信託ID, 月次リターンファイル名), encoding=&#34;cp932&#34; ) 投資信託リターン[投資信託ID].columns = [&#34;日付&#34;, 投資信託名] データの整形 # ｘ＝日付、ｙ＝銘柄名のデータを作成します。投資信託でなく株式でも可能です。">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="finance">
+<title>投資信託 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/finance/misc/pyportfolioopt/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-finance">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>投資信託</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#投資信託で効率的フロンティアを計算してみる">投資信託で効率的フロンティアを計算してみる</a></li>
+        <li><a href="#データの読み込み">データの読み込み</a></li>
+        <li><a href="#データの整形">データの整形</a></li>
+        <li><a href="#可視化">可視化</a></li>
+        <li><a href="#値動きの相関">値動きの相関</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h3 id="投資信託で効率的フロンティアを計算してみる">
+  投資信託で効率的フロンティアを計算してみる
+  
+  <a class="anchor" href="#%e6%8a%95%e8%b3%87%e4%bf%a1%e8%a8%97%e3%81%a7%e5%8a%b9%e7%8e%87%e7%9a%84%e3%83%95%e3%83%ad%e3%83%b3%e3%83%86%e3%82%a3%e3%82%a2%e3%82%92%e8%a8%88%e7%ae%97%e3%81%97%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h3>
+<ul>
+<li><code>2014091602</code>: AB･米国成長株投信Dコース(H無) 予想分配金
+<ul>
+<li><a href="https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2014091602">https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2014091602</a></li>
+</ul>
+</li>
+<li><code>2018103105</code>:eMAXIS Slim全世界株式(オール･カントリー)
+<ul>
+<li><a href="https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2018103105">https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2018103105</a></li>
+</ul>
+</li>
+<li><code>2015042708</code>: ニッセイ TOPIXインデックスファンド
+<ul>
+<li><a href="https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2015042708">https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2015042708</a></li>
+</ul>
+</li>
+<li><code>2019092601</code>: SBI・V・S&amp;P500インデックス・ファンド
+<ul>
+<li><a href="https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2019092601">https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2019092601</a></li>
+</ul>
+</li>
+<li><code>2018070301</code>: eMAXIS Slim米国株式(S&amp;P500)
+<ul>
+<li><a href="https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2018070301">https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2018070301</a></li>
+</ul>
+</li>
+<li><code>2011020701</code>: 三菱UFJ 純金ファンド（←保有していないですが金価格の参考として）
+<ul>
+<li><a href="https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2011020701">https://www.wealthadvisor.co.jp/FundData/SnapShot.do?fnc=2011020701</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="データの読み込み">
+  データの読み込み
+  
+  <a class="anchor" href="#%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ae%e8%aa%ad%e3%81%bf%e8%be%bc%e3%81%bf">#</a>
+  
+</h3>
+<p><a href="https://www.wealthadvisor.co.jp">WEALTH ADVISER</a>から手動で取得した週次のcsvデータを使用して、効率的フロンティアを計算してみます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>データ保存先ディレクトリ <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;C://Users//nanja-win-ms//Dropbox//PC//Downloads//&#34;</span>
+</span></span><span style="display:flex;"><span>投資信託一覧 <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2018103105&#34;</span>: <span style="color:#e6db74">&#34;eMAXIS Slim全世界株式(オール･カントリー)&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2015042708&#34;</span>: <span style="color:#e6db74">&#34;ニッセイ TOPIXインデックスファンド&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2019092601&#34;</span>: <span style="color:#e6db74">&#34;SBI・V・S&amp;P500インデックス・ファンド&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2018070301&#34;</span>: <span style="color:#e6db74">&#34;eMAXIS Slim米国株式(S&amp;P500)&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2011020701&#34;</span>: <span style="color:#e6db74">&#34;三菱UFJ 純金ファンド&#34;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>投資信託リターン <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> 投資信託ID, 投資信託名 <span style="color:#f92672">in</span> 投資信託一覧<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>    月次リターンファイル名 <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>        c
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> os<span style="color:#f92672">.</span>listdir(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(データ保存先ディレクトリ, 投資信託ID))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> c<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74">&#34;基準価額&#34;</span>)
+</span></span><span style="display:flex;"><span>    ][<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    投資信託リターン[投資信託ID] <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(
+</span></span><span style="display:flex;"><span>        os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(データ保存先ディレクトリ, 投資信託ID, 月次リターンファイル名), encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cp932&#34;</span>
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    投資信託リターン[投資信託ID]<span style="color:#f92672">.</span>columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;日付&#34;</span>, 投資信託名]
+</span></span></code></pre></div><h3 id="データの整形">
+  データの整形
+  
+  <a class="anchor" href="#%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ae%e6%95%b4%e5%bd%a2">#</a>
+  
+</h3>
+<p>ｘ＝日付、ｙ＝銘柄名のデータを作成します。投資信託でなく株式でも可能です。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>ポートフォリオ <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> 投資信託ID <span style="color:#f92672">in</span> 投資信託一覧<span style="color:#f92672">.</span>keys():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ポートフォリオ <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        ポートフォリオ <span style="color:#f92672">=</span> 投資信託リターン[投資信託ID]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        ポートフォリオ <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>merge(ポートフォリオ, 投資信託リターン[投資信託ID], on<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;日付&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ポートフォリオ<span style="color:#f92672">.</span>index <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>to_datetime(ポートフォリオ[<span style="color:#e6db74">&#34;日付&#34;</span>], format<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;%Y%m</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>ポートフォリオ<span style="color:#f92672">.</span>drop(<span style="color:#e6db74">&#34;日付&#34;</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, inplace<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ポートフォリオ
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h3 id="可視化">
+  可視化
+  
+  <a class="anchor" href="#%e5%8f%af%e8%a6%96%e5%8c%96">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>lineplot(data<span style="color:#f92672">=</span>ポートフォリオ)
+</span></span></code></pre></div><pre><code>&lt;Axes: xlabel='日付'&gt;
+</code></pre>
+<p><img src="/images/finance/misc/pyPortfolioOpt_files/pyPortfolioOpt_6_1.png" alt="png" /></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pypfopt <span style="color:#f92672">import</span> expected_returns, risk_models
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pypfopt.efficient_frontier <span style="color:#f92672">import</span> EfficientFrontier
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>mu <span style="color:#f92672">=</span> expected_returns<span style="color:#f92672">.</span>mean_historical_return(ポートフォリオ)
+</span></span><span style="display:flex;"><span>S <span style="color:#f92672">=</span> risk_models<span style="color:#f92672">.</span>sample_cov(ポートフォリオ)
+</span></span><span style="display:flex;"><span>ef <span style="color:#f92672">=</span> EfficientFrontier(mu, S)
+</span></span><span style="display:flex;"><span>weights <span style="color:#f92672">=</span> ef<span style="color:#f92672">.</span>max_sharpe()
+</span></span><span style="display:flex;"><span>ef<span style="color:#f92672">.</span>portfolio_performance(verbose<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span></code></pre></div><pre><code>Expected annual return: 115.5%
+Annual volatility: 34.2%
+Sharpe Ratio: 3.32
+
+
+
+
+
+(1.1546507705298557, 0.34188826020611157, 3.318776637272708)
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pypfopt <span style="color:#f92672">import</span> CLA, plotting
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cla <span style="color:#f92672">=</span> CLA(mu, S)
+</span></span><span style="display:flex;"><span>cla<span style="color:#f92672">.</span>max_sharpe()
+</span></span><span style="display:flex;"><span>cla<span style="color:#f92672">.</span>portfolio_performance(verbose<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>plotting<span style="color:#f92672">.</span>plot_efficient_frontier(cla, show_assets<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, points<span style="color:#f92672">=</span><span style="color:#ae81ff">50</span>, show_tickers<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span></code></pre></div><pre><code>Expected annual return: 115.1%
+Annual volatility: 34.1%
+Sharpe Ratio: 3.32
+
+
+
+
+
+&lt;Axes: xlabel='Volatility', ylabel='Return'&gt;
+</code></pre>
+<p><img src="/images/finance/misc/pyPortfolioOpt_files/pyPortfolioOpt_8_2.png" alt="png" /></p>
+<h3 id="値動きの相関">
+  値動きの相関
+  
+  <a class="anchor" href="#%e5%80%a4%e5%8b%95%e3%81%8d%e3%81%ae%e7%9b%b8%e9%96%a2">#</a>
+  
+</h3>
+<p>値動きの変化で相関を計算してみます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>heatmap(ポートフォリオ<span style="color:#f92672">.</span>diff()<span style="color:#f92672">.</span>dropna()<span style="color:#f92672">.</span>corr(), annot<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, fmt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1.4f&#34;</span>)
+</span></span></code></pre></div><pre><code>&lt;Axes: &gt;
+</code></pre>
+<p><img src="/images/finance/misc/pyPortfolioOpt_files/pyPortfolioOpt_10_1.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#投資信託で効率的フロンティアを計算してみる">投資信託で効率的フロンティアを計算してみる</a></li>
+        <li><a href="#データの読み込み">データの読み込み</a></li>
+        <li><a href="#データの整形">データの整形</a></li>
+        <li><a href="#可視化">可視化</a></li>
+        <li><a href="#値動きの相関">値動きの相関</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

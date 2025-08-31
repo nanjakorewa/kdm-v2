@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+
+  データを読み込む
+  
+  #
+  
+
+import pandas as pd
+
+df = pd.read_csv(&#34;./z-001.csv&#34;)
+df.head()
+
+.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+
+
+
+
+  カラム名を変更する
+  
+  #
+  
+
+
+pandas.Series.str.replace
+
+
+Unnamed:XX がわかりにくいので、これらの文字列を置換します。
+repl = lambda x: x.group(0)[::-1]
+df.columns = df.columns.str.replace(&#34;Unnamed:.&#34;, &#34;列名&#34;, regex=True)
+df.head()
+
+.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/prep/data/read-number-from-data/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="数値に対する演算">
+  <meta property="og:description" content="データを読み込む # import pandas as pd df = pd.read_csv(&#34;./z-001.csv&#34;) df.head() .dataframe tbody tr th {vertical-align: top;}.dataframe thead th {text-align: right;}カラム名を変更する # pandas.Series.str.replace
+Unnamed:XX がわかりにくいので、これらの文字列を置換します。
+repl = lambda x: x.group(0)[::-1] df.columns = df.columns.str.replace(&#34;Unnamed:.&#34;, &#34;列名&#34;, regex=True) df.head() .dataframe tbody tr th {vertical-align: top;}.dataframe thead th {text-align: right;}">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="prep">
+<title>数値に対する演算 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/prep/data/read-number-from-data/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-prep">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>数値に対する演算</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#データを読み込む">データを読み込む</a></li>
+    <li><a href="#カラム名を変更する">カラム名を変更する</a></li>
+    <li><a href="#列名を確認する">列名を確認する</a></li>
+    <li><a href="#年度ごとに平均中央値などを求めてみる">年度ごとに平均・中央値などを求めてみる</a></li>
+    <li><a href="#年度ごとの変化を可視化する">年度ごとの変化を可視化する</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><!-- raw HTML omitted -->
+<h2 id="データを読み込む">
+  データを読み込む
+  
+  <a class="anchor" href="#%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e8%aa%ad%e3%81%bf%e8%be%bc%e3%82%80">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#34;./z-001.csv&#34;</span>)
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h2 id="カラム名を変更する">
+  カラム名を変更する
+  
+  <a class="anchor" href="#%e3%82%ab%e3%83%a9%e3%83%a0%e5%90%8d%e3%82%92%e5%a4%89%e6%9b%b4%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+
+<div class="notices document" ><p><a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.str.replace.html">pandas.Series.str.replace</a></p>
+</div>
+
+<p><code>Unnamed:XX</code> がわかりにくいので、これらの文字列を置換します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>repl <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">0</span>)[::<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">.</span>columns <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>columns<span style="color:#f92672">.</span>str<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;Unnamed:.&#34;</span>, <span style="color:#e6db74">&#34;列名&#34;</span>, regex<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 列名1の列はインデックスにして削除する</span>
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">.</span>index <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#34;列名1&#34;</span>]
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>drop([<span style="color:#e6db74">&#34;列名1&#34;</span>], axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h2 id="列名を確認する">
+  列名を確認する
+  
+  <a class="anchor" href="#%e5%88%97%e5%90%8d%e3%82%92%e7%a2%ba%e8%aa%8d%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+<p>想定したデータ型になっているかを確認します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df<span style="color:#f92672">.</span>dtypes
+</span></span></code></pre></div><pre><code>列名0         int64
+平成21年度    float64
+平成22年度    float64
+平成23年度    float64
+平成24年度    float64
+平成25年度    float64
+平成26年度    float64
+平成27年度    float64
+平成28年度    float64
+平成29年度    float64
+平成30年度    float64
+令和元年度     float64
+dtype: object
+</code></pre>
+<h2 id="年度ごとに平均中央値などを求めてみる">
+  年度ごとに平均・中央値などを求めてみる
+  
+  <a class="anchor" href="#%e5%b9%b4%e5%ba%a6%e3%81%94%e3%81%a8%e3%81%ab%e5%b9%b3%e5%9d%87%e4%b8%ad%e5%a4%ae%e5%80%a4%e3%81%aa%e3%81%a9%e3%82%92%e6%b1%82%e3%82%81%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h2>
+
+<div class="notices document" ><ul>
+<li><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.select_dtypes.html">pandas.DataFrame.select_dtypes</a></li>
+<li><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.agg.html">pandas.DataFrame.agg</a></li>
+</ul>
+</div>
+
+<p>数値として読み取れる列を選択して、その平均や中央値を求めてみます。&ldquo;list of functions and/or function names, e.g. [np.sum, &lsquo;mean&rsquo;]&ldquo;ということで関数名や関数を指定すると、列ごとにそれを実行します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df<span style="color:#f92672">.</span>select_dtypes(<span style="color:#e6db74">&#34;number&#34;</span>)<span style="color:#f92672">.</span>agg([<span style="color:#e6db74">&#34;mean&#34;</span>, <span style="color:#e6db74">&#34;median&#34;</span>, <span style="color:#e6db74">&#34;min&#34;</span>, <span style="color:#e6db74">&#34;max&#34;</span>, <span style="color:#e6db74">&#34;sum&#34;</span>, <span style="color:#e6db74">&#34;var&#34;</span>, <span style="color:#e6db74">&#34;std&#34;</span>])
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h2 id="年度ごとの変化を可視化する">
+  年度ごとの変化を可視化する
+  
+  <a class="anchor" href="#%e5%b9%b4%e5%ba%a6%e3%81%94%e3%81%a8%e3%81%ae%e5%a4%89%e5%8c%96%e3%82%92%e5%8f%af%e8%a6%96%e5%8c%96%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+<p>seabornを用いてデータをプロットしてみます。平成と令和が含まれる列のみを対象に抽出してプロットします。japanize_matplotlibにより日本語を表示できるようにしています。列名は <code>pandas.DataFrame.filter</code>でフィルタリングしています。</p>
+
+<div class="notices document" ><p><a href="https://seaborn.pydata.org/">seaborn</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>data <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>filter(regex<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;(平成|令和).+&#34;</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)<span style="color:#f92672">.</span>T
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>lineplot(data<span style="color:#f92672">=</span>data, palette<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;tab10&#34;</span>, linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">2.5</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<p><img src="/images/prep/data/read-number-from-data_files/read-number-from-data_10_1.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#データを読み込む">データを読み込む</a></li>
+    <li><a href="#カラム名を変更する">カラム名を変更する</a></li>
+    <li><a href="#列名を確認する">列名を確認する</a></li>
+    <li><a href="#年度ごとに平均中央値などを求めてみる">年度ごとに平均・中央値などを求めてみる</a></li>
+    <li><a href="#年度ごとの変化を可視化する">年度ごとの変化を可視化する</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

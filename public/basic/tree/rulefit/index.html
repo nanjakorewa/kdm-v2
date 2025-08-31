@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Friedman, Jerome H and Bogdan E Popescu. “Predictive learning via rule ensembles.” The Annals of Applied Statistics. JSTOR, 916–54. (2008).(pdf)
+
+
+
+  実験用のデータを取得する
+  
+  #
+  
+
+openmlで公開されている CC0 Public Domain のデータセットhouse_sales
+ データセットを使用して回帰モデルを作成します。
+
+上記openmlページではデータの出典が不明ですが自分が調べた限りではデータの提供元はここのようです。
+
+
+
+sklearn.datasets.fetch_openml
+
+
+import japanize_matplotlib
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.datasets import fetch_openml
+
+dataset = fetch_openml(data_id=42092)
+X = pd.DataFrame(dataset.data, columns=dataset.feature_names)
+X = X.select_dtypes(&#34;number&#34;)
+y = dataset.target
+
+  データの中身を確認する
+  
+  #
+  
+
+X.head(10)
+
+.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/basic/tree/rulefit/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="RuleFit">
+  <meta property="og:description" content="Friedman, Jerome H and Bogdan E Popescu. “Predictive learning via rule ensembles.” The Annals of Applied Statistics. JSTOR, 916–54. (2008).(pdf)
+実験用のデータを取得する # openmlで公開されている CC0 Public Domain のデータセットhouse_sales データセットを使用して回帰モデルを作成します。
+上記openmlページではデータの出典が不明ですが自分が調べた限りではデータの提供元はここのようです。
+sklearn.datasets.fetch_openml
+import japanize_matplotlib import matplotlib.pyplot as plt import pandas as pd from sklearn.datasets import fetch_openml dataset = fetch_openml(data_id=42092) X = pd.DataFrame(dataset.data, columns=dataset.feature_names) X = X.select_dtypes(&#34;number&#34;) y = dataset.target データの中身を確認する # X.head(10) .dataframe tbody tr th {vertical-align: top;}.dataframe thead th {text-align: right;}">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="basic">
+<title>RuleFit | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/basic/tree/rulefit/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-basic">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="active">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>RuleFit</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#実験用のデータを取得する">実験用のデータを取得する</a></li>
+        <li><a href="#データの中身を確認する">データの中身を確認する</a></li>
+        <li><a href="#rulefitを実行する">RuleFitを実行する</a></li>
+        <li><a href="#作成されたルールを確認する">作成されたルールを確認する</a></li>
+        <li><a href="#ルールが正しいか確認してみる">ルールが正しいか確認してみる</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="notices ref" ><p>Friedman, Jerome H and Bogdan E Popescu. “Predictive learning via rule ensembles.” The Annals of Applied Statistics. JSTOR, 916–54. (2008).(<a href="https://jerryfriedman.su.domains/ftp/RuleFit.pdf">pdf</a>)</p>
+</div>
+
+<h3 id="実験用のデータを取得する">
+  実験用のデータを取得する
+  
+  <a class="anchor" href="#%e5%ae%9f%e9%a8%93%e7%94%a8%e3%81%ae%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e5%8f%96%e5%be%97%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<p>openmlで公開されている CC0 Public Domain のデータセット<a href="https://www.openml.org/d/42092">house_sales
+</a> データセットを使用して回帰モデルを作成します。</p>
+
+<div class="notices info" ><p>上記openmlページではデータの出典が不明ですが自分が調べた限りではデータの提供元は<a href="https://gis-kingcounty.opendata.arcgis.com/datasets/zipcodes-for-king-county-and-surrounding-area-shorelines-zipcode-shore-area/explore?location=47.482924%2C-121.477600%2C8.00&amp;showTable=true">ここ</a>のようです。</p>
+</div>
+
+
+<div class="notices document" ><p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_openml.html">sklearn.datasets.fetch_openml</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.datasets <span style="color:#f92672">import</span> fetch_openml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dataset <span style="color:#f92672">=</span> fetch_openml(data_id<span style="color:#f92672">=</span><span style="color:#ae81ff">42092</span>)
+</span></span><span style="display:flex;"><span>X <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(dataset<span style="color:#f92672">.</span>data, columns<span style="color:#f92672">=</span>dataset<span style="color:#f92672">.</span>feature_names)
+</span></span><span style="display:flex;"><span>X <span style="color:#f92672">=</span> X<span style="color:#f92672">.</span>select_dtypes(<span style="color:#e6db74">&#34;number&#34;</span>)
+</span></span><span style="display:flex;"><span>y <span style="color:#f92672">=</span> dataset<span style="color:#f92672">.</span>target
+</span></span></code></pre></div><h3 id="データの中身を確認する">
+  データの中身を確認する
+  
+  <a class="anchor" href="#%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ae%e4%b8%ad%e8%ba%ab%e3%82%92%e7%a2%ba%e8%aa%8d%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>X<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">10</span>)
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h3 id="rulefitを実行する">
+  RuleFitを実行する
+  
+  <a class="anchor" href="#rulefit%e3%82%92%e5%ae%9f%e8%a1%8c%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<p><a href="https://github.com/christophM/rulefit">Python implementation of the rulefit algorithm - GitHub</a>の実装を使用してRuleFitを動かしてみます。</p>
+<p>※実行する際は <code>import warnings;warnings.simplefilter('ignore')</code> は外してください</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> rulefit <span style="color:#f92672">import</span> RuleFit
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> warnings
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>warnings<span style="color:#f92672">.</span>simplefilter(<span style="color:#e6db74">&#34;ignore&#34;</span>)  <span style="color:#75715e">## ConvergenceWarning</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>rf <span style="color:#f92672">=</span> RuleFit(max_rules<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)
+</span></span><span style="display:flex;"><span>rf<span style="color:#f92672">.</span>fit(X<span style="color:#f92672">.</span>values, y, feature_names<span style="color:#f92672">=</span>list(X<span style="color:#f92672">.</span>columns))
+</span></span></code></pre></div><pre><code>RuleFit(max_rules=100,
+        tree_generator=GradientBoostingRegressor(learning_rate=0.01,
+                                                 max_depth=100,
+                                                 max_leaf_nodes=5,
+                                                 n_estimators=28,
+                                                 random_state=27,
+                                                 subsample=0.04543939429397564))
+</code></pre>
+<h3 id="作成されたルールを確認する">
+  作成されたルールを確認する
+  
+  <a class="anchor" href="#%e4%bd%9c%e6%88%90%e3%81%95%e3%82%8c%e3%81%9f%e3%83%ab%e3%83%bc%e3%83%ab%e3%82%92%e7%a2%ba%e8%aa%8d%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>rules <span style="color:#f92672">=</span> rf<span style="color:#f92672">.</span>get_rules()
+</span></span><span style="display:flex;"><span>rules <span style="color:#f92672">=</span> rules[rules<span style="color:#f92672">.</span>coef <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>sort_values(by<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;importance&#34;</span>, ascending<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>rules<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">10</span>)
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h3 id="ルールが正しいか確認してみる">
+  ルールが正しいか確認してみる
+  
+  <a class="anchor" href="#%e3%83%ab%e3%83%bc%e3%83%ab%e3%81%8c%e6%ad%a3%e3%81%97%e3%81%84%e3%81%8b%e7%a2%ba%e8%aa%8d%e3%81%97%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h3>
+<p><code>sqft_above	linear	8.632149e+01	1.000000	66243.550192</code> のルールに基づいて、<code>sqft_above</code> が増加すると y(<code>price</code>)が増える傾向にあるかどうか確認します。</p>
+
+<div class="notices document" ><p><a href="https://matplotlib.org/3.5.1/api/_as_gen/matplotlib.pyplot.boxplot.html">matplotlib.pyplot.boxplot — Matplotlib 3.5.1 documentation</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(X[<span style="color:#e6db74">&#34;sqft_above&#34;</span>], y, marker<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;.&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;sqft_above&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74">&#34;price&#34;</span>)
+</span></span></code></pre></div><p><img src="/images/basic/tree/RuleFit_files/RuleFit_12_1.png" alt="png" /></p>
+<p><code>sqft_living &lt;= 3935.0 &amp; lat &lt;= 47.5314998626709	rule	-8.271074e+04	0.377800	40101.257833</code> のルールに該当するデータのみ抽出してみます。
+係数がマイナスになっているので、このルールに該当するデータのy(<code>price</code>)は低い傾向にあるはずです。
+log(y)を箱髭図で確認すると、確かにルールに該当しているデータのyはルールに該当しないデータのyと比較すると低くなっています。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>applicable_data <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>log(
+</span></span><span style="display:flex;"><span>    y[X<span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#34;sqft_living &lt;= 3935.0 &amp; lat &lt;= 47.5314998626709&#34;</span>)<span style="color:#f92672">.</span>index]
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>not_applicable_data <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>log(
+</span></span><span style="display:flex;"><span>    y[X<span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#34;not(sqft_living &lt;= 3935.0 &amp; lat &lt;= 47.5314998626709)&#34;</span>)<span style="color:#f92672">.</span>index]
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>boxplot([applicable_data, not_applicable_data], labels<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;ルールに該当&#34;</span>, <span style="color:#e6db74">&#34;ルールに該当しない&#34;</span>])
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74">&#34;log(price)&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/tree/RuleFit_files/RuleFit_14_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/basic/tree/parameter/" class="flex align-center book-icon">
+        <img src="/svg/backward.svg" class="book-icon" alt="Previous" title="決定木のパラメータ" />
+        <span>決定木のパラメータ</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/basic/ensemble/" class="flex align-center book-icon">
+        <span>アンサンブル</span>
+        <img src="/svg/forward.svg" class="book-icon" alt="Next" title="アンサンブル" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#実験用のデータを取得する">実験用のデータを取得する</a></li>
+        <li><a href="#データの中身を確認する">データの中身を確認する</a></li>
+        <li><a href="#rulefitを実行する">RuleFitを実行する</a></li>
+        <li><a href="#作成されたルールを確認する">作成されたルールを確認する</a></li>
+        <li><a href="#ルールが正しいか確認してみる">ルールが正しいか確認してみる</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

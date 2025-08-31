@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+  J-Quants APIを使ってみる
+  
+  #
+  
+
+
+J-Quants
+jquants-api-client
+API仕様書
+
+import os
+import time
+from datetime import datetime
+
+import jquantsapi
+import pandas as pd
+import requests
+from dateutil import tz
+
+REFRESH_TOKEN: str = os.environ.get(&#34;JQ_REFRESH_TOKEN&#34;)
+my_mail_address: str = os.environ.get(&#34;JQ_MAIL_ADDRESS&#34;)
+my_password: str = os.environ.get(&#34;JQ_PASSWORD&#34;)
+cli = jquantsapi.Client(mail_address=my_mail_address, password=my_password)
+df = cli.get_price_range(
+    start_dt=datetime(2022, 7, 25, tzinfo=tz.gettz(&#34;Asia/Tokyo&#34;)),
+    end_dt=datetime(2022, 7, 26, tzinfo=tz.gettz(&#34;Asia/Tokyo&#34;)),
+)
+print(df)
+           Date   Code    Open    High     Low   Close UpperLimit LowerLimit  \
+0    2022-07-25  13010  3615.0  3660.0  3615.0  3630.0          0          0   
+0    2022-07-26  13010  3615.0  3640.0  3610.0  3635.0          0          0   
+1    2022-07-25  13050  2026.5  2037.0  2022.0  2023.0          0          0   
+1    2022-07-26  13050  2026.0  2029.5  2022.0  2023.5          0          0   
+2    2022-07-25  13060  2002.5  2015.0  2000.0  2001.0          0          0   
+...         ...    ...     ...     ...     ...     ...        ...        ...   
+4191 2022-07-26  99950   403.0   404.0   402.0   404.0          0          0   
+4192 2022-07-25  99960  1274.0  1274.0  1263.0  1267.0          0          0   
+4192 2022-07-26  99960  1254.0  1266.0  1254.0  1255.0          0          0   
+4193 2022-07-25  99970   829.0   831.0   816.0   826.0          0          0   
+4193 2022-07-26  99970   826.0   827.0   816.0   825.0          0          0   
+
+        Volume  TurnoverValue  AdjustmentFactor  AdjustmentOpen  \
+0       8100.0   2.942050e&#43;07               1.0          3615.0   
+0       8500.0   3.083550e&#43;07               1.0          3615.0   
+1      54410.0   1.103787e&#43;08               1.0          2026.5   
+1      22950.0   4.646586e&#43;07               1.0          2026.0   
+2     943830.0   1.891360e&#43;09               1.0          2002.5   
+...        ...            ...               ...             ...   
+4191   13000.0   5.240900e&#43;06               1.0           403.0   
+4192    1500.0   1.902700e&#43;06               1.0          1274.0   
+4192    4000.0   5.021300e&#43;06               1.0          1254.0   
+4193  151200.0   1.245601e&#43;08               1.0           829.0   
+4193  133600.0   1.099946e&#43;08               1.0           826.0   
+
+      AdjustmentHigh  AdjustmentLow  AdjustmentClose  AdjustmentVolume  
+0             3660.0         3615.0           3630.0            8100.0  
+0             3640.0         3610.0           3635.0            8500.0  
+1             2037.0         2022.0           2023.0           54410.0  
+1             2029.5         2022.0           2023.5           22950.0  
+2             2015.0         2000.0           2001.0          943830.0  
+...              ...            ...              ...               ...  
+4191           404.0          402.0            404.0           13000.0  
+4192          1274.0         1263.0           1267.0            1500.0  
+4192          1266.0         1254.0           1255.0            4000.0  
+4193           831.0          816.0            826.0          151200.0  
+4193           827.0          816.0            825.0          133600.0  
+
+[8388 rows x 16 columns]
+
+
+  上場銘柄一覧(/listed/info)
+  
+  #
+  
+
+
+J-Quants API - listed info
+
+def get_listed_companies(idToken: str):
+    &#34;&#34;&#34;上場銘柄一覧を習得する
+
+    Args:
+        idToken (str): idToken
+
+    Returns:
+        listed_companies (pd.DataFrame): 上場銘柄が記録されたデータフレーム
+    &#34;&#34;&#34;
+    r = requests.get(
+        &#34;https://api.jquants.com/v1/listed/info&#34;,
+        headers={&#34;Authorization&#34;: &#34;Bearer {}&#34;.format(idToken)},
+    )
+    if r.status_code == requests.codes.ok:
+        listed_companies = pd.DataFrame(r.json()[&#34;info&#34;]).set_index(&#34;Code&#34;)
+        return listed_companies
+    else:
+        return None
+r_post = requests.post(
+    f&#34;https://api.jquants.com/v1/token/auth_refresh?refreshtoken={REFRESH_TOKEN}&#34;
+)
+idToken = r_post.json()[&#34;idToken&#34;]
+
+listed_companies = get_listed_companies(idToken)
+listed_companies.head()
+
+.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/finance/misc/jquants/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="J-Quants API">
+  <meta property="og:description" content="J-Quants APIを使ってみる # J-Quants jquants-api-client API仕様書 import os import time from datetime import datetime import jquantsapi import pandas as pd import requests from dateutil import tz REFRESH_TOKEN: str = os.environ.get(&#34;JQ_REFRESH_TOKEN&#34;) my_mail_address: str = os.environ.get(&#34;JQ_MAIL_ADDRESS&#34;) my_password: str = os.environ.get(&#34;JQ_PASSWORD&#34;) cli = jquantsapi.Client(mail_address=my_mail_address, password=my_password) df = cli.get_price_range( start_dt=datetime(2022, 7, 25, tzinfo=tz.gettz(&#34;Asia/Tokyo&#34;)), end_dt=datetime(2022, 7, 26, tzinfo=tz.gettz(&#34;Asia/Tokyo&#34;)), ) print(df) Date Code Open High Low Close UpperLimit LowerLimit \0 2022-07-25 13010 3615.0 3660.0 3615.0 3630.0 0 0 0 2022-07-26 13010 3615.0 3640.0 3610.0 3635.0 0 0 1 2022-07-25 13050 2026.5 2037.0 2022.0 2023.0 0 0 1 2022-07-26 13050 2026.0 2029.5 2022.0 2023.5 0 0 2 2022-07-25 13060 2002.5 2015.0 2000.0 2001.0 0 0 ... ... ... ... ... ... ... ... ... 4191 2022-07-26 99950 403.0 404.0 402.0 404.0 0 0 4192 2022-07-25 99960 1274.0 1274.0 1263.0 1267.0 0 0 4192 2022-07-26 99960 1254.0 1266.0 1254.0 1255.0 0 0 4193 2022-07-25 99970 829.0 831.0 816.0 826.0 0 0 4193 2022-07-26 99970 826.0 827.0 816.0 825.0 0 0 Volume TurnoverValue AdjustmentFactor AdjustmentOpen \0 8100.0 2.942050e&#43;07 1.0 3615.0 0 8500.0 3.083550e&#43;07 1.0 3615.0 1 54410.0 1.103787e&#43;08 1.0 2026.5 1 22950.0 4.646586e&#43;07 1.0 2026.0 2 943830.0 1.891360e&#43;09 1.0 2002.5 ... ... ... ... ... 4191 13000.0 5.240900e&#43;06 1.0 403.0 4192 1500.0 1.902700e&#43;06 1.0 1274.0 4192 4000.0 5.021300e&#43;06 1.0 1254.0 4193 151200.0 1.245601e&#43;08 1.0 829.0 4193 133600.0 1.099946e&#43;08 1.0 826.0 AdjustmentHigh AdjustmentLow AdjustmentClose AdjustmentVolume 0 3660.0 3615.0 3630.0 8100.0 0 3640.0 3610.0 3635.0 8500.0 1 2037.0 2022.0 2023.0 54410.0 1 2029.5 2022.0 2023.5 22950.0 2 2015.0 2000.0 2001.0 943830.0 ... ... ... ... ... 4191 404.0 402.0 404.0 13000.0 4192 1274.0 1263.0 1267.0 1500.0 4192 1266.0 1254.0 1255.0 4000.0 4193 831.0 816.0 826.0 151200.0 4193 827.0 816.0 825.0 133600.0 [8388 rows x 16 columns]上場銘柄一覧(/listed/info) # J-Quants API - listed info def get_listed_companies(idToken: str): &#34;&#34;&#34;上場銘柄一覧を習得する Args: idToken (str): idToken Returns: listed_companies (pd.DataFrame): 上場銘柄が記録されたデータフレーム &#34;&#34;&#34; r = requests.get( &#34;https://api.jquants.com/v1/listed/info&#34;, headers={&#34;Authorization&#34;: &#34;Bearer {}&#34;.format(idToken)}, ) if r.status_code == requests.codes.ok: listed_companies = pd.DataFrame(r.json()[&#34;info&#34;]).set_index(&#34;Code&#34;) return listed_companies else: return None r_post = requests.post( f&#34;https://api.jquants.com/v1/token/auth_refresh?refreshtoken={REFRESH_TOKEN}&#34; ) idToken = r_post.json()[&#34;idToken&#34;] listed_companies = get_listed_companies(idToken) listed_companies.head() .dataframe tbody tr th {vertical-align: top;}.dataframe thead th {text-align: right;}">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="finance">
+<title>J-Quants API | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/finance/misc/jquants/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-finance">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>J-Quants API</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#j-quants-apiを使ってみる">J-Quants APIを使ってみる</a></li>
+    <li><a href="#上場銘柄一覧listedinfo">上場銘柄一覧(/listed/info)</a></li>
+    <li><a href="#セクターの分布">セクターの分布</a></li>
+    <li><a href="#規模コード">規模コード</a></li>
+    <li><a href="#財務情報の取得">財務情報の取得</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/ObXT8X-NmMM" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<h2 id="j-quants-apiを使ってみる">
+  J-Quants APIを使ってみる
+  
+  <a class="anchor" href="#j-quants-api%e3%82%92%e4%bd%bf%e3%81%a3%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h2>
+<ul>
+<li><a href="https://jpx-jquants.com/dashboard/menu/?lang=ja">J-Quants</a></li>
+<li><a href="https://github.com/J-Quants/jquants-api-client-python">jquants-api-client</a></li>
+<li><a href="https://jpx.gitbook.io/j-quants-ja/api-reference">API仕様書</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> jquantsapi
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> dateutil <span style="color:#f92672">import</span> tz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>REFRESH_TOKEN: str <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>environ<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;JQ_REFRESH_TOKEN&#34;</span>)
+</span></span><span style="display:flex;"><span>my_mail_address: str <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>environ<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;JQ_MAIL_ADDRESS&#34;</span>)
+</span></span><span style="display:flex;"><span>my_password: str <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>environ<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;JQ_PASSWORD&#34;</span>)
+</span></span><span style="display:flex;"><span>cli <span style="color:#f92672">=</span> jquantsapi<span style="color:#f92672">.</span>Client(mail_address<span style="color:#f92672">=</span>my_mail_address, password<span style="color:#f92672">=</span>my_password)
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">=</span> cli<span style="color:#f92672">.</span>get_price_range(
+</span></span><span style="display:flex;"><span>    start_dt<span style="color:#f92672">=</span>datetime(<span style="color:#ae81ff">2022</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">25</span>, tzinfo<span style="color:#f92672">=</span>tz<span style="color:#f92672">.</span>gettz(<span style="color:#e6db74">&#34;Asia/Tokyo&#34;</span>)),
+</span></span><span style="display:flex;"><span>    end_dt<span style="color:#f92672">=</span>datetime(<span style="color:#ae81ff">2022</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">26</span>, tzinfo<span style="color:#f92672">=</span>tz<span style="color:#f92672">.</span>gettz(<span style="color:#e6db74">&#34;Asia/Tokyo&#34;</span>)),
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>print(df)
+</span></span></code></pre></div><pre><code>           Date   Code    Open    High     Low   Close UpperLimit LowerLimit  \
+0    2022-07-25  13010  3615.0  3660.0  3615.0  3630.0          0          0   
+0    2022-07-26  13010  3615.0  3640.0  3610.0  3635.0          0          0   
+1    2022-07-25  13050  2026.5  2037.0  2022.0  2023.0          0          0   
+1    2022-07-26  13050  2026.0  2029.5  2022.0  2023.5          0          0   
+2    2022-07-25  13060  2002.5  2015.0  2000.0  2001.0          0          0   
+...         ...    ...     ...     ...     ...     ...        ...        ...   
+4191 2022-07-26  99950   403.0   404.0   402.0   404.0          0          0   
+4192 2022-07-25  99960  1274.0  1274.0  1263.0  1267.0          0          0   
+4192 2022-07-26  99960  1254.0  1266.0  1254.0  1255.0          0          0   
+4193 2022-07-25  99970   829.0   831.0   816.0   826.0          0          0   
+4193 2022-07-26  99970   826.0   827.0   816.0   825.0          0          0   
+
+        Volume  TurnoverValue  AdjustmentFactor  AdjustmentOpen  \
+0       8100.0   2.942050e+07               1.0          3615.0   
+0       8500.0   3.083550e+07               1.0          3615.0   
+1      54410.0   1.103787e+08               1.0          2026.5   
+1      22950.0   4.646586e+07               1.0          2026.0   
+2     943830.0   1.891360e+09               1.0          2002.5   
+...        ...            ...               ...             ...   
+4191   13000.0   5.240900e+06               1.0           403.0   
+4192    1500.0   1.902700e+06               1.0          1274.0   
+4192    4000.0   5.021300e+06               1.0          1254.0   
+4193  151200.0   1.245601e+08               1.0           829.0   
+4193  133600.0   1.099946e+08               1.0           826.0   
+
+      AdjustmentHigh  AdjustmentLow  AdjustmentClose  AdjustmentVolume  
+0             3660.0         3615.0           3630.0            8100.0  
+0             3640.0         3610.0           3635.0            8500.0  
+1             2037.0         2022.0           2023.0           54410.0  
+1             2029.5         2022.0           2023.5           22950.0  
+2             2015.0         2000.0           2001.0          943830.0  
+...              ...            ...              ...               ...  
+4191           404.0          402.0            404.0           13000.0  
+4192          1274.0         1263.0           1267.0            1500.0  
+4192          1266.0         1254.0           1255.0            4000.0  
+4193           831.0          816.0            826.0          151200.0  
+4193           827.0          816.0            825.0          133600.0  
+
+[8388 rows x 16 columns]
+</code></pre>
+<h2 id="上場銘柄一覧listedinfo">
+  上場銘柄一覧(/listed/info)
+  
+  <a class="anchor" href="#%e4%b8%8a%e5%a0%b4%e9%8a%98%e6%9f%84%e4%b8%80%e8%a6%a7listedinfo">#</a>
+  
+</h2>
+<ul>
+<li><a href="https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info">J-Quants API - listed info</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_listed_companies</span>(idToken: str):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;上場銘柄一覧を習得する
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Args:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        idToken (str): idToken
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Returns:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        listed_companies (pd.DataFrame): 上場銘柄が記録されたデータフレーム
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;https://api.jquants.com/v1/listed/info&#34;</span>,
+</span></span><span style="display:flex;"><span>        headers<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;Authorization&#34;</span>: <span style="color:#e6db74">&#34;Bearer </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(idToken)},
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>status_code <span style="color:#f92672">==</span> requests<span style="color:#f92672">.</span>codes<span style="color:#f92672">.</span>ok:
+</span></span><span style="display:flex;"><span>        listed_companies <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(r<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#34;info&#34;</span>])<span style="color:#f92672">.</span>set_index(<span style="color:#e6db74">&#34;Code&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> listed_companies
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>r_post <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>post(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;https://api.jquants.com/v1/token/auth_refresh?refreshtoken=</span><span style="color:#e6db74">{</span>REFRESH_TOKEN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>idToken <span style="color:#f92672">=</span> r_post<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#34;idToken&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>listed_companies <span style="color:#f92672">=</span> get_listed_companies(idToken)
+</span></span><span style="display:flex;"><span>listed_companies<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>paint_companies <span style="color:#f92672">=</span> listed_companies[
+</span></span><span style="display:flex;"><span>    listed_companies[<span style="color:#e6db74">&#34;CompanyName&#34;</span>]<span style="color:#f92672">.</span>str<span style="color:#f92672">.</span>contains(<span style="color:#e6db74">&#34;塗料|ペイント&#34;</span>)
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>paint_companies
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h2 id="セクターの分布">
+  セクターの分布
+  
+  <a class="anchor" href="#%e3%82%bb%e3%82%af%e3%82%bf%e3%83%bc%e3%81%ae%e5%88%86%e5%b8%83">#</a>
+  
+</h2>
+<ul>
+<li><a href="https://www.jpx.co.jp/markets/indices/line-up/files/fac_13_sector.pdf">東証業種別株価指数・TOPIX-17シリーズ</a></li>
+<li><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.pie.html">matplotlib.pyplot.pie — Matplotlib 3.8.3 documentation</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sector17_distribution <span style="color:#f92672">=</span> listed_companies[<span style="color:#e6db74">&#34;Sector17CodeName&#34;</span>]<span style="color:#f92672">.</span>value_counts()
+</span></span><span style="display:flex;"><span>colors <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>color_palette(<span style="color:#e6db74">&#34;Set2&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>pie(
+</span></span><span style="display:flex;"><span>    sector17_distribution,
+</span></span><span style="display:flex;"><span>    labels<span style="color:#f92672">=</span>sector17_distribution<span style="color:#f92672">.</span>index,
+</span></span><span style="display:flex;"><span>    colors<span style="color:#f92672">=</span>colors,
+</span></span><span style="display:flex;"><span>    autopct<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%.0f%%</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/finance/misc/jquants_files/jquants_7_0.png" alt="png" /></p>
+<h2 id="規模コード">
+  規模コード
+  
+  <a class="anchor" href="#%e8%a6%8f%e6%a8%a1%e3%82%b3%e3%83%bc%e3%83%89">#</a>
+  
+</h2>
+<ul>
+<li><a href="https://www.jpx.co.jp/markets/indices/line-up/files/fac_12_size.pdf">東証規模別株価指数</a></li>
+<li><a href="https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info">上場銘柄一覧(/listed/info)</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> plotly.express <span style="color:#66d9ef">as</span> px
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>midcap_categories <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;TOPIX Mid400&#34;</span>, <span style="color:#e6db74">&#34;TOPIX Large70&#34;</span>, <span style="color:#e6db74">&#34;TOPIX Core30&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">=</span> px<span style="color:#f92672">.</span>data<span style="color:#f92672">.</span>tips()
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> px<span style="color:#f92672">.</span>treemap(
+</span></span><span style="display:flex;"><span>    listed_companies[listed_companies[<span style="color:#e6db74">&#34;ScaleCategory&#34;</span>]<span style="color:#f92672">.</span>isin(midcap_categories)],
+</span></span><span style="display:flex;"><span>    path<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Sector17CodeName&#34;</span>, <span style="color:#e6db74">&#34;Sector33CodeName&#34;</span>],
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>fig<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">=</span> px<span style="color:#f92672">.</span>data<span style="color:#f92672">.</span>tips()
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> px<span style="color:#f92672">.</span>treemap(
+</span></span><span style="display:flex;"><span>    listed_companies[listed_companies[<span style="color:#e6db74">&#34;ScaleCategory&#34;</span>]<span style="color:#f92672">.</span>isin(midcap_categories)],
+</span></span><span style="display:flex;"><span>    path<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Sector17CodeName&#34;</span>, <span style="color:#e6db74">&#34;Sector33CodeName&#34;</span>, <span style="color:#e6db74">&#34;ScaleCategory&#34;</span>],
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>fig<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><h2 id="財務情報の取得">
+  財務情報の取得
+  
+  <a class="anchor" href="#%e8%b2%a1%e5%8b%99%e6%83%85%e5%a0%b1%e3%81%ae%e5%8f%96%e5%be%97">#</a>
+  
+</h2>
+<ul>
+<li><a href="https://jpx.gitbook.io/j-quants-ja/api-reference/statements">財務情報(/fins/statements)</a></li>
+<li><a href="https://www.jpx.co.jp/markets/paid-info-equities/listing/co3pgt0000005o97-att/tdnetapi_specifications.pdf">Ⅰ．インターフェイス仕様</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_statements</span>(idToken, code):
+</span></span><span style="display:flex;"><span>    time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">0.5</span>)
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;https://api.jquants.com/v1/fins/statements?code=</span><span style="color:#e6db74">{</span>code<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>        headers<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;Authorization&#34;</span>: <span style="color:#e6db74">&#34;Bearer </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(idToken)},
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> r<span style="color:#f92672">.</span>status_code <span style="color:#f92672">==</span> requests<span style="color:#f92672">.</span>codes<span style="color:#f92672">.</span>ok:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> r<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#34;statements&#34;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>res <span style="color:#f92672">=</span> get_statements(idToken, <span style="color:#ae81ff">86970</span>)
+</span></span><span style="display:flex;"><span>res
+</span></span></code></pre></div><pre><code>[{'DisclosedDate': '2022-01-27',
+  'DisclosedTime': '12:00:00',
+  'LocalCode': '86970',
+  'DisclosureNumber': '20220126573026',
+  'TypeOfDocument': '3QFinancialStatements_Consolidated_IFRS',
+  'TypeOfCurrentPeriod': '3Q',
+  'CurrentPeriodStartDate': '2021-04-01',
+  'CurrentPeriodEndDate': '2021-12-31',
+  'CurrentFiscalYearStartDate': '2021-04-01',
+  'CurrentFiscalYearEndDate': '2022-03-31',
+  'NextFiscalYearStartDate': '',
+  'NextFiscalYearEndDate': '',
+  'NetSales': '100586000000',
+  'OperatingProfit': '55967000000',
+  'OrdinaryProfit': '',
+  'Profit': '38013000000',
+  'EarningsPerShare': '71.71',
+  'DilutedEarningsPerShare': '',
+  'TotalAssets': '62076519000000',
+  'Equity': '311381000000',
+  ...
+  'NonConsolidatedProfit': '',
+  'NonConsolidatedEarningsPerShare': '',
+  'NonConsolidatedTotalAssets': '',
+  'NonConsolidatedEquity': '',
+  'NonConsolidatedEquityToAssetRatio': '',
+  'NonConsolidatedBookValuePerShare': '',
+  'ForecastNonConsolidatedNetSales2ndQuarter': '',
+  'ForecastNonConsolidatedOperatingProfit2ndQuarter': '',
+  'ForecastNonConsolidatedOrdinaryProfit2ndQuarter': '',
+  'ForecastNonConsolidatedProfit2ndQuarter': '',
+  'ForecastNonConsolidatedEarningsPerShare2ndQuarter': '',
+  'NextYearForecastNonConsolidatedNetSales2ndQuarter': '',
+  'NextYearForecastNonConsolidatedOperatingProfit2ndQuarter': '',
+  'NextYearForecastNonConsolidatedOrdinaryProfit2ndQuarter': '',
+  'NextYearForecastNonConsolidatedProfit2ndQuarter': '',
+  'NextYearForecastNonConsolidatedEarningsPerShare2ndQuarter': '',
+  'ForecastNonConsolidatedNetSales': '',
+  'ForecastNonConsolidatedOperatingProfit': '',
+  'ForecastNonConsolidatedOrdinaryProfit': '',
+  'ForecastNonConsolidatedProfit': '',
+  'ForecastNonConsolidatedEarningsPerShare': '',
+  'NextYearForecastNonConsolidatedNetSales': '',
+  'NextYearForecastNonConsolidatedOperatingProfit': '',
+  'NextYearForecastNonConsolidatedOrdinaryProfit': '',
+  'NextYearForecastNonConsolidatedProfit': '',
+  'NextYearForecastNonConsolidatedEarningsPerShare': ''}]
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>paint_companies_statements <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(
+</span></span><span style="display:flex;"><span>    [pd<span style="color:#f92672">.</span>DataFrame(get_statements(idToken, code)) <span style="color:#66d9ef">for</span> code <span style="color:#f92672">in</span> paint_companies<span style="color:#f92672">.</span>index]
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> paint_companies_statements<span style="color:#f92672">.</span>filter(
+</span></span><span style="display:flex;"><span>    regex<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Sales|Assets|CashFlows|Profit|Equity|EarningsPerShare&#34;</span>
+</span></span><span style="display:flex;"><span>)<span style="color:#f92672">.</span>columns:
+</span></span><span style="display:flex;"><span>    paint_companies_statements[c] <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>to_numeric(paint_companies_statements[c])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> paint_companies_statements<span style="color:#f92672">.</span>filter(regex<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Date&#34;</span>)<span style="color:#f92672">.</span>columns:
+</span></span><span style="display:flex;"><span>    paint_companies_statements[c] <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>to_datetime(paint_companies_statements[c])
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>sorted_data <span style="color:#f92672">=</span> paint_companies_statements<span style="color:#f92672">.</span>groupby([<span style="color:#e6db74">&#34;LocalCode&#34;</span>])<span style="color:#f92672">.</span>apply(
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>sort_values([<span style="color:#e6db74">&#34;DisclosureNumber&#34;</span>], ascending<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>sorted_data[<span style="color:#e6db74">&#34;決算期&#34;</span>] <span style="color:#f92672">=</span> sorted_data<span style="color:#f92672">.</span>apply(
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">lambda</span> row: <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>row[<span style="color:#e6db74">&#39;DisclosedDate&#39;</span>]<span style="color:#f92672">.</span>year<span style="color:#e6db74">}</span><span style="color:#e6db74">-</span><span style="color:#e6db74">{</span>row[<span style="color:#e6db74">&#39;TypeOfCurrentPeriod&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>sorted_data[<span style="color:#e6db74">&#34;会社名&#34;</span>] <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    paint_companies<span style="color:#f92672">.</span>at[code, <span style="color:#e6db74">&#34;CompanyName&#34;</span>] <span style="color:#66d9ef">for</span> code <span style="color:#f92672">in</span> sorted_data[<span style="color:#e6db74">&#34;LocalCode&#34;</span>]
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>sorted_data
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>hue_order <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2021-FY&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2021-1Q&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2021-2Q&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2022-3Q&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2022-FY&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2022-1Q&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2022-2Q&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2023-3Q&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2023-FY&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2023-1Q&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;2023-2Q&#34;</span>,
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>barplot(
+</span></span><span style="display:flex;"><span>    data<span style="color:#f92672">=</span>sorted_data,
+</span></span><span style="display:flex;"><span>    x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;会社名&#34;</span>,
+</span></span><span style="display:flex;"><span>    y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;EarningsPerShare&#34;</span>,
+</span></span><span style="display:flex;"><span>    hue<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;決算期&#34;</span>,
+</span></span><span style="display:flex;"><span>    hue_order<span style="color:#f92672">=</span>hue_order,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> ax<span style="color:#f92672">.</span>containers:
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>bar_label(c, rotation<span style="color:#f92672">=</span><span style="color:#ae81ff">90</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xticks(rotation<span style="color:#f92672">=</span><span style="color:#ae81ff">90</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend(loc<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;upper left&#34;</span>, bbox_to_anchor<span style="color:#f92672">=</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/finance/misc/jquants_files/jquants_15_0.png" alt="四半期ごとのEPSの比較" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#j-quants-apiを使ってみる">J-Quants APIを使ってみる</a></li>
+    <li><a href="#上場銘柄一覧listedinfo">上場銘柄一覧(/listed/info)</a></li>
+    <li><a href="#セクターの分布">セクターの分布</a></li>
+    <li><a href="#規模コード">規模コード</a></li>
+    <li><a href="#財務情報の取得">財務情報の取得</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+
+Customizing Matplotlib with style sheets and rcParams
+
+
+
+  デフォルトで読み込まれるスタイルシートのファイルを確認する
+  
+  #
+  
+
+matplotlibがデフォルトで読み込むスタイルシートを確認します。コマンドライン上で python -c &quot;import matplotlib;print(matplotlib.matplotlib_fname())&quot; と実行することで確認ができます。
+python -c &#34;import matplotlib;print(matplotlib.matplotlib_fname())&#34;
+C:\Users\xxx\env-py3.10\.venv\lib\site-packages\matplotlib\mpl-data\matplotlibrc
+このファイルを直接書き換えるか、以下に示すように plt.style.use(&quot;k_dm.mplstyle&quot;)  として指定したファイルを読み込むことによって、スタイルシートを変更できます。
+
+  自作したスタイルシートを読み込む
+  
+  #
+  
+
+以下では、自作したスタイルシート(k_dm.mplstyle)の表示を確認してみます。使用したスタイルシートの詳細な指定を知りたい方はgithub上で確認してください。
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+import japanize_matplotlib
+
+plt.style.use(&#34;k_dm.mplstyle&#34;)  # ここで自作したスタイルシートを読み込んでいます
+
+  散布図
+  
+  #
+  
+
+Xy = load_iris(as_frame=True)
+X = Xy[&#34;data&#34;].values
+y = Xy[&#34;target&#34;].values
+
+markers = [&#34;o&#34;, &#34;^&#34;, &#34;v&#34;]
+featname_1 = &#34;sepal length (cm)&#34;
+featname_2 = &#34;sepal width (cm)&#34;
+
+fig, ax = plt.subplots(figsize=(8, 8))
+for i in range(3):
+    plt.scatter(X[y == i, 0], X[y == i, 1], marker=markers[i])
+plt.xlabel(featname_1)
+plt.ylabel(featname_2)
+plt.legend(Xy.target_names)
+plt.title(&#34;sample title&#34;)
+plt.show()
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/visualize/tips/stylesheet/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="matplotlibスタイルシート">
+  <meta property="og:description" content="Customizing Matplotlib with style sheets and rcParams
+デフォルトで読み込まれるスタイルシートのファイルを確認する # matplotlibがデフォルトで読み込むスタイルシートを確認します。コマンドライン上で python -c &#34;import matplotlib;print(matplotlib.matplotlib_fname())&#34; と実行することで確認ができます。
+python -c &#34;import matplotlib;print(matplotlib.matplotlib_fname())&#34; C:\Users\xxx\env-py3.10\.venv\lib\site-packages\matplotlib\mpl-data\matplotlibrc このファイルを直接書き換えるか、以下に示すように plt.style.use(&#34;k_dm.mplstyle&#34;) として指定したファイルを読み込むことによって、スタイルシートを変更できます。
+自作したスタイルシートを読み込む # 以下では、自作したスタイルシート(k_dm.mplstyle)の表示を確認してみます。使用したスタイルシートの詳細な指定を知りたい方はgithub上で確認してください。
+import numpy as np import matplotlib.pyplot as plt from sklearn.datasets import load_iris import japanize_matplotlib plt.style.use(&#34;k_dm.mplstyle&#34;) # ここで自作したスタイルシートを読み込んでいます 散布図 # Xy = load_iris(as_frame=True) X = Xy[&#34;data&#34;].values y = Xy[&#34;target&#34;].values markers = [&#34;o&#34;, &#34;^&#34;, &#34;v&#34;] featname_1 = &#34;sepal length (cm)&#34; featname_2 = &#34;sepal width (cm)&#34; fig, ax = plt.subplots(figsize=(8, 8)) for i in range(3): plt.scatter(X[y == i, 0], X[y == i, 1], marker=markers[i]) plt.xlabel(featname_1) plt.ylabel(featname_2) plt.legend(Xy.target_names) plt.title(&#34;sample title&#34;) plt.show()">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="visualize">
+<title>matplotlibスタイルシート | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/visualize/tips/stylesheet/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-visualize">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>matplotlibスタイルシート</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#デフォルトで読み込まれるスタイルシートのファイルを確認する">デフォルトで読み込まれるスタイルシートのファイルを確認する</a></li>
+    <li><a href="#自作したスタイルシートを読み込む">自作したスタイルシートを読み込む</a>
+      <ul>
+        <li><a href="#散布図">散布図</a></li>
+        <li><a href="#プロット">プロット</a></li>
+        <li><a href="#箱髭図">箱髭図</a></li>
+        <li><a href="#棒グラフ">棒グラフ</a></li>
+        <li><a href="#stackplot">stackplot</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><!-- raw HTML omitted -->
+
+<div class="notices document" ><p><a href="https://matplotlib.org/stable/tutorials/introductory/customizing.html#customizing-with-matplotlibrc-files">Customizing Matplotlib with style sheets and rcParams</a></p>
+</div>
+
+<h2 id="デフォルトで読み込まれるスタイルシートのファイルを確認する">
+  デフォルトで読み込まれるスタイルシートのファイルを確認する
+  
+  <a class="anchor" href="#%e3%83%87%e3%83%95%e3%82%a9%e3%83%ab%e3%83%88%e3%81%a7%e8%aa%ad%e3%81%bf%e8%be%bc%e3%81%be%e3%82%8c%e3%82%8b%e3%82%b9%e3%82%bf%e3%82%a4%e3%83%ab%e3%82%b7%e3%83%bc%e3%83%88%e3%81%ae%e3%83%95%e3%82%a1%e3%82%a4%e3%83%ab%e3%82%92%e7%a2%ba%e8%aa%8d%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+<p>matplotlibがデフォルトで読み込むスタイルシートを確認します。コマンドライン上で <code>python -c &quot;import matplotlib;print(matplotlib.matplotlib_fname())&quot;</code> と実行することで確認ができます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>python <span style="color:#f92672">-</span>c <span style="color:#e6db74">&#34;import matplotlib;print(matplotlib.matplotlib_fname())&#34;</span>
+</span></span></code></pre></div><pre tabindex="0"><code>C:\Users\xxx\env-py3.10\.venv\lib\site-packages\matplotlib\mpl-data\matplotlibrc
+</code></pre><p>このファイルを直接書き換えるか、以下に示すように <code>plt.style.use(&quot;k_dm.mplstyle&quot;) </code> として指定したファイルを読み込むことによって、スタイルシートを変更できます。</p>
+<h2 id="自作したスタイルシートを読み込む">
+  自作したスタイルシートを読み込む
+  
+  <a class="anchor" href="#%e8%87%aa%e4%bd%9c%e3%81%97%e3%81%9f%e3%82%b9%e3%82%bf%e3%82%a4%e3%83%ab%e3%82%b7%e3%83%bc%e3%83%88%e3%82%92%e8%aa%ad%e3%81%bf%e8%be%bc%e3%82%80">#</a>
+  
+</h2>
+<p>以下では、自作したスタイルシート(<code>k_dm.mplstyle</code>)の表示を確認してみます。使用したスタイルシートの詳細な指定を知りたい方は<a href="https://github.com/nanjakorewa/kdm-notebooks/blob/main/stylesheet/k_dm.mplstyle">github上で確認</a>してください。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.datasets <span style="color:#f92672">import</span> load_iris
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>style<span style="color:#f92672">.</span>use(<span style="color:#e6db74">&#34;k_dm.mplstyle&#34;</span>)  <span style="color:#75715e"># ここで自作したスタイルシートを読み込んでいます</span>
+</span></span></code></pre></div><h3 id="散布図">
+  散布図
+  
+  <a class="anchor" href="#%e6%95%a3%e5%b8%83%e5%9b%b3">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>Xy <span style="color:#f92672">=</span> load_iris(as_frame<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>X <span style="color:#f92672">=</span> Xy[<span style="color:#e6db74">&#34;data&#34;</span>]<span style="color:#f92672">.</span>values
+</span></span><span style="display:flex;"><span>y <span style="color:#f92672">=</span> Xy[<span style="color:#e6db74">&#34;target&#34;</span>]<span style="color:#f92672">.</span>values
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>markers <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;o&#34;</span>, <span style="color:#e6db74">&#34;^&#34;</span>, <span style="color:#e6db74">&#34;v&#34;</span>]
+</span></span><span style="display:flex;"><span>featname_1 <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;sepal length (cm)&#34;</span>
+</span></span><span style="display:flex;"><span>featname_2 <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;sepal width (cm)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">8</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">3</span>):
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>scatter(X[y <span style="color:#f92672">==</span> i, <span style="color:#ae81ff">0</span>], X[y <span style="color:#f92672">==</span> i, <span style="color:#ae81ff">1</span>], marker<span style="color:#f92672">=</span>markers[i])
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlabel(featname_1)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylabel(featname_2)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend(Xy<span style="color:#f92672">.</span>target_names)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;sample title&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/visualize/stylesheet_files/stylesheet_3_0.png" alt="png" /></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">8</span>))
+</span></span><span style="display:flex;"><span>X, Y <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>meshgrid(np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">5.0</span>, <span style="color:#ae81ff">10</span>), np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">5.0</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>x, y <span style="color:#f92672">=</span> X<span style="color:#f92672">.</span>ravel(), Y<span style="color:#f92672">.</span>ravel()
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>scatter(x, y, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;A&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>scatter(x <span style="color:#f92672">+</span> <span style="color:#ae81ff">2.5</span>, y <span style="color:#f92672">+</span> <span style="color:#ae81ff">2.5</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;B&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>scatter(x <span style="color:#f92672">-</span> <span style="color:#ae81ff">2.5</span>, y <span style="color:#f92672">-</span> <span style="color:#ae81ff">2.5</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;C&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/visualize/stylesheet_files/stylesheet_4_0.png" alt="png" /></p>
+<h3 id="プロット">
+  プロット
+  
+  <a class="anchor" href="#%e3%83%97%e3%83%ad%e3%83%83%e3%83%88">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">13</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">100</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.0</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x, np<span style="color:#f92672">.</span>cos(x), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cos&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x, np<span style="color:#f92672">.</span>sin(x), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sin&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x, np<span style="color:#f92672">.</span>log(x), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;log&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x, np<span style="color:#f92672">.</span>cos(x) <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>sin(x), label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cos+sin&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;sample title&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">13</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">40</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.0</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x, np<span style="color:#f92672">.</span>cos(x), <span style="color:#e6db74">&#34;x&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cos&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x, np<span style="color:#f92672">.</span>sin(x), <span style="color:#e6db74">&#34;^&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sin&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x, np<span style="color:#f92672">.</span>log(x), <span style="color:#e6db74">&#34;.-&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;log&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(x, np<span style="color:#f92672">.</span>cos(x) <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>sin(x), <span style="color:#e6db74">&#34;v&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cos+sin&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;sample title&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/visualize/stylesheet_files/stylesheet_6_0.png" alt="png" /></p>
+<p><img src="/images/visualize/stylesheet_files/stylesheet_6_1.png" alt="png" /></p>
+<h3 id="箱髭図">
+  箱髭図
+  
+  <a class="anchor" href="#%e7%ae%b1%e9%ab%ad%e5%9b%b3">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>seed(<span style="color:#ae81ff">777</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>x1 <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>normal(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">200</span>)
+</span></span><span style="display:flex;"><span>x2 <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>normal(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">200</span>)
+</span></span><span style="display:flex;"><span>x3 <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>normal(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">200</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">13</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>boxplot([x1, x2, x3], labels<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;A&#34;</span>, <span style="color:#e6db74">&#34;B&#34;</span>, <span style="color:#e6db74">&#34;C&#34;</span>])
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;sample title&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/visualize/stylesheet_files/stylesheet_8_0.png" alt="png" /></p>
+<h3 id="棒グラフ">
+  棒グラフ
+  
+  <a class="anchor" href="#%e6%a3%92%e3%82%b0%e3%83%a9%e3%83%95">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>seed(<span style="color:#ae81ff">777</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">13</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>indexes <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>)]) <span style="color:#f92672">*</span> <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i, label <span style="color:#f92672">in</span> enumerate([<span style="color:#e6db74">&#34;あいうえお&#34;</span>, <span style="color:#e6db74">&#34;かきくけこ&#34;</span>, <span style="color:#e6db74">&#34;さしすせそ&#34;</span>, <span style="color:#e6db74">&#34;たちつてと&#34;</span>, <span style="color:#e6db74">&#34;なにぬねの&#34;</span>]):
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>bar(indexes <span style="color:#f92672">+</span> i, [np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>randint(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">10</span>) <span style="color:#f92672">+</span> i <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>)], label<span style="color:#f92672">=</span>label)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;sample title&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid(axis<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;y&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/visualize/stylesheet_files/stylesheet_10_0.png" alt="png" /></p>
+<h3 id="stackplot">
+  stackplot
+  
+  <a class="anchor" href="#stackplot">#</a>
+  
+</h3>
+<p>matplotlibのギャラリーより<a href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/stackplot_demo.html#sphx-glr-gallery-lines-bars-and-markers-stackplot-demo-py">Stackplots</a>
+コードを引用しています。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>year <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1950</span>, <span style="color:#ae81ff">1960</span>, <span style="color:#ae81ff">1970</span>, <span style="color:#ae81ff">1980</span>, <span style="color:#ae81ff">1990</span>, <span style="color:#ae81ff">2000</span>, <span style="color:#ae81ff">2010</span>, <span style="color:#ae81ff">2018</span>]
+</span></span><span style="display:flex;"><span>population_by_continent <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;africa&#34;</span>: [<span style="color:#ae81ff">228</span>, <span style="color:#ae81ff">284</span>, <span style="color:#ae81ff">365</span>, <span style="color:#ae81ff">477</span>, <span style="color:#ae81ff">631</span>, <span style="color:#ae81ff">814</span>, <span style="color:#ae81ff">1044</span>, <span style="color:#ae81ff">1275</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;americas&#34;</span>: [<span style="color:#ae81ff">340</span>, <span style="color:#ae81ff">425</span>, <span style="color:#ae81ff">519</span>, <span style="color:#ae81ff">619</span>, <span style="color:#ae81ff">727</span>, <span style="color:#ae81ff">840</span>, <span style="color:#ae81ff">943</span>, <span style="color:#ae81ff">1006</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;asia&#34;</span>: [<span style="color:#ae81ff">1394</span>, <span style="color:#ae81ff">1686</span>, <span style="color:#ae81ff">2120</span>, <span style="color:#ae81ff">2625</span>, <span style="color:#ae81ff">3202</span>, <span style="color:#ae81ff">3714</span>, <span style="color:#ae81ff">4169</span>, <span style="color:#ae81ff">4560</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;europe&#34;</span>: [<span style="color:#ae81ff">220</span>, <span style="color:#ae81ff">253</span>, <span style="color:#ae81ff">276</span>, <span style="color:#ae81ff">295</span>, <span style="color:#ae81ff">310</span>, <span style="color:#ae81ff">303</span>, <span style="color:#ae81ff">294</span>, <span style="color:#ae81ff">293</span>],
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;oceania&#34;</span>: [<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">15</span>, <span style="color:#ae81ff">19</span>, <span style="color:#ae81ff">22</span>, <span style="color:#ae81ff">26</span>, <span style="color:#ae81ff">31</span>, <span style="color:#ae81ff">36</span>, <span style="color:#ae81ff">39</span>],
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">13</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>stackplot(
+</span></span><span style="display:flex;"><span>    year,
+</span></span><span style="display:flex;"><span>    population_by_continent<span style="color:#f92672">.</span>values(),
+</span></span><span style="display:flex;"><span>    labels<span style="color:#f92672">=</span>population_by_continent<span style="color:#f92672">.</span>keys(),
+</span></span><span style="display:flex;"><span>    alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">0.8</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>legend(loc<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;upper left&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#34;World population&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#34;Year&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#34;Number of people (millions)&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/visualize/stylesheet_files/stylesheet_12_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#デフォルトで読み込まれるスタイルシートのファイルを確認する">デフォルトで読み込まれるスタイルシートのファイルを確認する</a></li>
+    <li><a href="#自作したスタイルシートを読み込む">自作したスタイルシートを読み込む</a>
+      <ul>
+        <li><a href="#散布図">散布図</a></li>
+        <li><a href="#プロット">プロット</a></li>
+        <li><a href="#箱髭図">箱髭図</a></li>
+        <li><a href="#棒グラフ">棒グラフ</a></li>
+        <li><a href="#stackplot">stackplot</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

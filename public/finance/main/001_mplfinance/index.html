@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+
+  データの読み込み
+  
+  #
+  
+
+
+Pandas-datareader | Remote Data Access
+
+
+import os
+import time
+import pandas as pd
+import pandas_datareader.data as web
+from pandas_datareader._utils import RemoteDataError
+
+Yahoo Terms of Service
+
+
+def get_finance_data(
+    ticker_symbol: str, start=&#34;2021-01-01&#34;, end=&#34;2021-06-30&#34;, savedir=&#34;data&#34;
+) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;株価を記録したデータを取得します
+
+    Args:
+        ticker_symbol (str): Description of param1
+        start (str): 期間はじめの日付, optional.
+        end (str): 期間終わりの日付, optional.
+
+    Returns:
+        res: 株価データ
+
+    &#34;&#34;&#34;
+    res = None
+    filepath = os.path.join(savedir, f&#34;{ticker_symbol}_{start}_{end}_historical.csv&#34;)
+    os.makedirs(savedir, exist_ok=True)
+
+    if not os.path.exists(filepath):
+        try:
+            time.sleep(5.0)
+            res = web.DataReader(ticker_symbol, &#34;yahoo&#34;, start=start, end=end)
+            res.to_csv(filepath, encoding=&#34;utf-8-sig&#34;)
+        except (RemoteDataError, KeyError):
+            print(f&#34;ticker_symbol ${ticker_symbol} が正しいか確認してください。&#34;)
+    else:
+        res = pd.read_csv(filepath, index_col=&#34;Date&#34;)
+        res.index = pd.to_datetime(res.index)
+
+    assert res is not None, &#34;データ取得に失敗しました&#34;
+    return res
+# 銘柄名、期間、保存先ファイル
+ticker_symbol = &#34;NVDA&#34;
+start = &#34;2021-01-01&#34;
+end = &#34;2021-06-30&#34;
+
+# データを取得する
+df = get_finance_data(ticker_symbol, start=start, end=end, savedir=&#34;../data&#34;)
+df.head()
+
+.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/finance/main/001_mplfinance/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="mplfinance">
+  <meta property="og:description" content="データの読み込み # Pandas-datareader | Remote Data Access
+import os import time import pandas as pd import pandas_datareader.data as web from pandas_datareader._utils import RemoteDataError Yahoo Terms of Service
+def get_finance_data( ticker_symbol: str, start=&#34;2021-01-01&#34;, end=&#34;2021-06-30&#34;, savedir=&#34;data&#34; ) -&gt; pd.DataFrame: &#34;&#34;&#34;株価を記録したデータを取得します Args: ticker_symbol (str): Description of param1 start (str): 期間はじめの日付, optional. end (str): 期間終わりの日付, optional. Returns: res: 株価データ &#34;&#34;&#34; res = None filepath = os.path.join(savedir, f&#34;{ticker_symbol}_{start}_{end}_historical.csv&#34;) os.makedirs(savedir, exist_ok=True) if not os.path.exists(filepath): try: time.sleep(5.0) res = web.DataReader(ticker_symbol, &#34;yahoo&#34;, start=start, end=end) res.to_csv(filepath, encoding=&#34;utf-8-sig&#34;) except (RemoteDataError, KeyError): print(f&#34;ticker_symbol ${ticker_symbol} が正しいか確認してください。&#34;) else: res = pd.read_csv(filepath, index_col=&#34;Date&#34;) res.index = pd.to_datetime(res.index) assert res is not None, &#34;データ取得に失敗しました&#34; return res # 銘柄名、期間、保存先ファイル ticker_symbol = &#34;NVDA&#34; start = &#34;2021-01-01&#34; end = &#34;2021-06-30&#34; # データを取得する df = get_finance_data(ticker_symbol, start=start, end=end, savedir=&#34;../data&#34;) df.head() .dataframe tbody tr th {vertical-align: top;}.dataframe thead th {text-align: right;}">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="finance">
+<title>mplfinance | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/finance/main/001_mplfinance/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/finance/main/001_mplfinance/" title="mplfinance">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-finance">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/finance/main/001_mplfinance/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>mplfinance</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#データの読み込み">データの読み込み</a></li>
+    <li><a href="#ohlcをプロット">OHLCをプロット</a></li>
+    <li><a href="#移動平均線">移動平均線</a></li>
+    <li><a href="#凡例の表示">凡例の表示</a></li>
+    <li><a href="#ボリュームの表示">ボリュームの表示</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/Z_3CmggMqCY" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<!-- raw HTML omitted -->
+<h2 id="データの読み込み">
+  データの読み込み
+  
+  <a class="anchor" href="#%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ae%e8%aa%ad%e3%81%bf%e8%be%bc%e3%81%bf">#</a>
+  
+</h2>
+
+<div class="notices document" ><p><a href="https://pandas-datareader.readthedocs.io/en/latest/remote_data.html">Pandas-datareader | Remote Data Access</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas_datareader.data <span style="color:#66d9ef">as</span> web
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pandas_datareader._utils <span style="color:#f92672">import</span> RemoteDataError
+</span></span></code></pre></div>
+<div class="notices info" ><p><a href="https://legal.yahoo.com/us/en/yahoo/terms/otos/index.html">Yahoo Terms of Service</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_finance_data</span>(
+</span></span><span style="display:flex;"><span>    ticker_symbol: str, start<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;2021-01-01&#34;</span>, end<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;2021-06-30&#34;</span>, savedir<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;data&#34;</span>
+</span></span><span style="display:flex;"><span>) <span style="color:#f92672">-&gt;</span> pd<span style="color:#f92672">.</span>DataFrame:
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;株価を記録したデータを取得します
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Args:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        ticker_symbol (str): Description of param1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        start (str): 期間はじめの日付, optional.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        end (str): 期間終わりの日付, optional.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Returns:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        res: 株価データ
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    res <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>    filepath <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(savedir, <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>ticker_symbol<span style="color:#e6db74">}</span><span style="color:#e6db74">_</span><span style="color:#e6db74">{</span>start<span style="color:#e6db74">}</span><span style="color:#e6db74">_</span><span style="color:#e6db74">{</span>end<span style="color:#e6db74">}</span><span style="color:#e6db74">_historical.csv&#34;</span>)
+</span></span><span style="display:flex;"><span>    os<span style="color:#f92672">.</span>makedirs(savedir, exist_ok<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(filepath):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">5.0</span>)
+</span></span><span style="display:flex;"><span>            res <span style="color:#f92672">=</span> web<span style="color:#f92672">.</span>DataReader(ticker_symbol, <span style="color:#e6db74">&#34;yahoo&#34;</span>, start<span style="color:#f92672">=</span>start, end<span style="color:#f92672">=</span>end)
+</span></span><span style="display:flex;"><span>            res<span style="color:#f92672">.</span>to_csv(filepath, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8-sig&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> (RemoteDataError, <span style="color:#a6e22e">KeyError</span>):
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;ticker_symbol $</span><span style="color:#e6db74">{</span>ticker_symbol<span style="color:#e6db74">}</span><span style="color:#e6db74"> が正しいか確認してください。&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        res <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(filepath, index_col<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Date&#34;</span>)
+</span></span><span style="display:flex;"><span>        res<span style="color:#f92672">.</span>index <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>to_datetime(res<span style="color:#f92672">.</span>index)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">assert</span> res <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">None</span>, <span style="color:#e6db74">&#34;データ取得に失敗しました&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> res
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 銘柄名、期間、保存先ファイル</span>
+</span></span><span style="display:flex;"><span>ticker_symbol <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;NVDA&#34;</span>
+</span></span><span style="display:flex;"><span>start <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;2021-01-01&#34;</span>
+</span></span><span style="display:flex;"><span>end <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;2021-06-30&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># データを取得する</span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">=</span> get_finance_data(ticker_symbol, start<span style="color:#f92672">=</span>start, end<span style="color:#f92672">=</span>end, savedir<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;../data&#34;</span>)
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h2 id="ohlcをプロット">
+  OHLCをプロット
+  
+  <a class="anchor" href="#ohlc%e3%82%92%e3%83%97%e3%83%ad%e3%83%83%e3%83%88">#</a>
+  
+</h2>
+<p>OHLCとは始値・高値・安値・終値のことで、普段最もよくみるグラフの一つです。
+ローソク足と、線でのプロットをしてみます。</p>
+
+<div class="notices document" ><p><a href="https://github.com/matplotlib/mplfinance">mplfinance | matplotlib utilities for the visualization, and visual analysis, of financial data</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> mplfinance <span style="color:#66d9ef">as</span> mpf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>mpf<span style="color:#f92672">.</span>plot(df, type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;candle&#34;</span>, style<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;starsandstripes&#34;</span>, figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">4</span>))
+</span></span><span style="display:flex;"><span>mpf<span style="color:#f92672">.</span>plot(df, type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;line&#34;</span>, style<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;starsandstripes&#34;</span>, figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">4</span>))
+</span></span></code></pre></div><p><img src="/images/finance/main/001_mplfinance_files/001_mplfinance_6_0.png" alt="png" /></p>
+<p><img src="/images/finance/main/001_mplfinance_files/001_mplfinance_6_1.png" alt="png" /></p>
+<h2 id="移動平均線">
+  移動平均線
+  
+  <a class="anchor" href="#%e7%a7%bb%e5%8b%95%e5%b9%b3%e5%9d%87%e7%b7%9a">#</a>
+  
+</h2>
+<p>株価や外国為替のテクニカル分析において使用される指標の一つに、移動平均線というものがあります。</p>
+
+<blockquote class='book-hint '>
+  <p>現在のテクニカル分析では、短期、中期、長期の3本の移動平均線を同時に表示させる例が多く、日足チャートでは、5日移動平均線、25日移動平均線、75日移動平均線がよく使われる。（引用元：<a href="https://ja.wikipedia.org/wiki/%E7%A7%BB%E5%8B%95%E5%B9%B3%E5%9D%87%E7%B7%9A">Wikipedia 移動平均線</a>）</p>
+</blockquote><p>5/25/75日移動平均線をプロットするために <code>mav</code> オプションを指定します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>mpf<span style="color:#f92672">.</span>plot(df, type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;candle&#34;</span>, style<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;starsandstripes&#34;</span>, figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">4</span>), mav<span style="color:#f92672">=</span>[<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">75</span>])
+</span></span></code></pre></div><p><img src="/images/finance/main/001_mplfinance_files/001_mplfinance_8_0.png" alt="png" /></p>
+<h2 id="凡例の表示">
+  凡例の表示
+  
+  <a class="anchor" href="#%e5%87%a1%e4%be%8b%e3%81%ae%e8%a1%a8%e7%a4%ba">#</a>
+  
+</h2>
+<p>どの線が何日移動平均線かわかりにくいので、凡例を追加します。
+
+<div class="notices document" ><p><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.legend.html">matplotlib.pyplot.legend</a></p>
+</div>
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.patches <span style="color:#66d9ef">as</span> mpatches
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig, axes <span style="color:#f92672">=</span> mpf<span style="color:#f92672">.</span>plot(
+</span></span><span style="display:flex;"><span>    df,
+</span></span><span style="display:flex;"><span>    type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;candle&#34;</span>,
+</span></span><span style="display:flex;"><span>    style<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;starsandstripes&#34;</span>,
+</span></span><span style="display:flex;"><span>    figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">4</span>),
+</span></span><span style="display:flex;"><span>    mav<span style="color:#f92672">=</span>[<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">75</span>],
+</span></span><span style="display:flex;"><span>    returnfig<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>fig<span style="color:#f92672">.</span>legend(
+</span></span><span style="display:flex;"><span>    [<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>days<span style="color:#e6db74">}</span><span style="color:#e6db74"> days&#34;</span> <span style="color:#66d9ef">for</span> days <span style="color:#f92672">in</span> [<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">75</span>]], bbox_to_anchor<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">0.78</span>, <span style="color:#ae81ff">0.28</span>, <span style="color:#ae81ff">0.102</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><pre><code>&lt;matplotlib.legend.Legend at 0x7f8be96e5b80&gt;
+</code></pre>
+<p><img src="/images/finance/main/001_mplfinance_files/001_mplfinance_10_1.png" alt="png" /></p>
+<h2 id="ボリュームの表示">
+  ボリュームの表示
+  
+  <a class="anchor" href="#%e3%83%9c%e3%83%aa%e3%83%a5%e3%83%bc%e3%83%a0%e3%81%ae%e8%a1%a8%e7%a4%ba">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>fig, axes <span style="color:#f92672">=</span> mpf<span style="color:#f92672">.</span>plot(
+</span></span><span style="display:flex;"><span>    df,
+</span></span><span style="display:flex;"><span>    title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;NVDA 2021/1/B~2021/6/E&#34;</span>,
+</span></span><span style="display:flex;"><span>    type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;candle&#34;</span>,
+</span></span><span style="display:flex;"><span>    style<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;starsandstripes&#34;</span>,
+</span></span><span style="display:flex;"><span>    figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">4</span>),
+</span></span><span style="display:flex;"><span>    mav<span style="color:#f92672">=</span>[<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">75</span>],
+</span></span><span style="display:flex;"><span>    volume<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>    datetime_format<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;%Y/%m/</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>    returnfig<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>fig<span style="color:#f92672">.</span>legend(
+</span></span><span style="display:flex;"><span>    [<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>days<span style="color:#e6db74">}</span><span style="color:#e6db74"> days&#34;</span> <span style="color:#66d9ef">for</span> days <span style="color:#f92672">in</span> [<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">75</span>]], bbox_to_anchor<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">0.78</span>, <span style="color:#ae81ff">0.28</span>, <span style="color:#ae81ff">0.102</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><pre><code>&lt;matplotlib.legend.Legend at 0x7f8beac867f0&gt;
+</code></pre>
+<p><img src="/images/finance/main/001_mplfinance_files/001_mplfinance_12_1.png" alt="png" /></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>fig, axes <span style="color:#f92672">=</span> mpf<span style="color:#f92672">.</span>plot(
+</span></span><span style="display:flex;"><span>    df,
+</span></span><span style="display:flex;"><span>    title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;NVDA 2021/1/B~2021/6/E&#34;</span>,
+</span></span><span style="display:flex;"><span>    type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;candle&#34;</span>,
+</span></span><span style="display:flex;"><span>    style<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yahoo&#34;</span>,
+</span></span><span style="display:flex;"><span>    figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">4</span>),
+</span></span><span style="display:flex;"><span>    mav<span style="color:#f92672">=</span>[<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">75</span>],
+</span></span><span style="display:flex;"><span>    volume<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>    datetime_format<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;%Y/%m/</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>    returnfig<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>fig<span style="color:#f92672">.</span>legend(
+</span></span><span style="display:flex;"><span>    [<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>days<span style="color:#e6db74">}</span><span style="color:#e6db74"> days&#34;</span> <span style="color:#66d9ef">for</span> days <span style="color:#f92672">in</span> [<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">75</span>]], bbox_to_anchor<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">0.78</span>, <span style="color:#ae81ff">0.28</span>, <span style="color:#ae81ff">0.102</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p><img src="/images/finance/main/001_mplfinance_files/001_mplfinance_13_1.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#データの読み込み">データの読み込み</a></li>
+    <li><a href="#ohlcをプロット">OHLCをプロット</a></li>
+    <li><a href="#移動平均線">移動平均線</a></li>
+    <li><a href="#凡例の表示">凡例の表示</a></li>
+    <li><a href="#ボリュームの表示">ボリュームの表示</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

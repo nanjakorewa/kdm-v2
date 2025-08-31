@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+Keogh, Eamonn J., and Michael J. Pazzani. &ldquo;Derivative dynamic time warping.&rdquo; Proceedings of the 2001 SIAM international conference on data mining. Society for Industrial and Applied Mathematics, 2001. (pdf) の式を参考に実装しています
+
+
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import japanize_matplotlib
+from IPython.display import display, HTML
+from utils import get_finance_data
+import warnings
+
+warnings.filterwarnings(&#34;ignore&#34;)  # TODO: フォントが見つからない場合のwarning抑制
+
+  Derivative DTW
+  
+  #
+  
+
+pythonで実行できるライブラリがすぐに見つけられなかったので、実装してみました。">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/timeseries/shape/003_ddtw/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="DDTW(Derivative-DTW)">
+  <meta property="og:description" content="Keogh, Eamonn J., and Michael J. Pazzani. “Derivative dynamic time warping.” Proceedings of the 2001 SIAM international conference on data mining. Society for Industrial and Applied Mathematics, 2001. (pdf) の式を参考に実装しています
+import numpy as np import pandas as pd import seaborn as sns import matplotlib.pyplot as plt import japanize_matplotlib from IPython.display import display, HTML from utils import get_finance_data import warnings warnings.filterwarnings(&#34;ignore&#34;) # TODO: フォントが見つからない場合のwarning抑制 Derivative DTW # pythonで実行できるライブラリがすぐに見つけられなかったので、実装してみました。">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="timeseries">
+<title>DDTW(Derivative-DTW) | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/timeseries/shape/003_ddtw/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-timeseries">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>DDTW(Derivative-DTW)</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#derivative-dtw">Derivative DTW</a></li>
+    <li><a href="#サンプルデータを確認する">サンプルデータを確認する</a></li>
+    <li><a href="#同じ波形を比較">同じ波形を比較</a></li>
+    <li><a href="#w2とw4のどちらがw1に近い形かddtwで調べる">w2とw4のどちらがw1に近い形かDDTWで調べる</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/rWPIE7EhuOQ" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
+<div class="notices ref" ><p>Keogh, Eamonn J., and Michael J. Pazzani. &ldquo;Derivative dynamic time warping.&rdquo; Proceedings of the 2001 SIAM international conference on data mining. Society for Industrial and Applied Mathematics, 2001. (<a href="https://www.ics.uci.edu/~pazzani/Publications/sdm01.pdf">pdf</a>) の式を参考に実装しています</p>
+</div>
+
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> IPython.display <span style="color:#f92672">import</span> display, HTML
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> utils <span style="color:#f92672">import</span> get_finance_data
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> warnings
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>warnings<span style="color:#f92672">.</span>filterwarnings(<span style="color:#e6db74">&#34;ignore&#34;</span>)  <span style="color:#75715e"># TODO: フォントが見つからない場合のwarning抑制</span>
+</span></span></code></pre></div><h2 id="derivative-dtw">
+  Derivative DTW
+  
+  <a class="anchor" href="#derivative-dtw">#</a>
+  
+</h2>
+<p>pythonで実行できるライブラリがすぐに見つけられなかったので、実装してみました。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">DDTW</span>(Q, C):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Args:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Q (np.array or list): 一つ目の波形
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        C (np.array or list): 二つ目の波形
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Returns:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        γ_mat (np.array): DDTWを計算するための行列
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        arrows (np.array): 各時点で←・↙︎・↓のどのマスが最小だったかを示す記号を保存する行列
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        ddtw (float): DDTW
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    Q, C <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(Q), np<span style="color:#f92672">.</span>array(C)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">assert</span> Q<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">3</span>, <span style="color:#e6db74">&#34;一つ目の波形のフォーマットがおかしいです。&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">assert</span> C<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">3</span>, <span style="color:#e6db74">&#34;二つ目の波形のフォーマットがおかしいです。&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 3.1 Algorithm details の式</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_Dq</span>(q):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ((q[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">-</span> q[<span style="color:#ae81ff">0</span>]) <span style="color:#f92672">+</span> (q[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">-</span> q[<span style="color:#ae81ff">0</span>]) <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 二つの時点間の距離</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_γ</span>(x, y):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> abs(_Dq(x) <span style="color:#f92672">-</span> _Dq(y))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 各変数</span>
+</span></span><span style="display:flex;"><span>    n, m <span style="color:#f92672">=</span> Q<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span>, C<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    γ_mat <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros((n, m))
+</span></span><span style="display:flex;"><span>    arrows <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(np<span style="color:#f92672">.</span>zeros((n, m)), dtype<span style="color:#f92672">=</span>str)  <span style="color:#75715e"># 可視化用の行列でDDTWの値とは無関係</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 一番左下のスタート地点</span>
+</span></span><span style="display:flex;"><span>    γ_mat[<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> _γ(Q[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">3</span>], C[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">3</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 一列目を計算</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, n):
+</span></span><span style="display:flex;"><span>        γ_mat[i, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> γ_mat[i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> _γ(Q[i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> : i <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>], C[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">3</span>])
+</span></span><span style="display:flex;"><span>        arrows[i, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;↓&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 一行目を計算</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, m):
+</span></span><span style="display:flex;"><span>        γ_mat[<span style="color:#ae81ff">0</span>, j] <span style="color:#f92672">=</span> γ_mat[<span style="color:#ae81ff">0</span>, j <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> _γ(Q[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">3</span>], C[j <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> : j <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>])
+</span></span><span style="display:flex;"><span>        arrows[<span style="color:#ae81ff">0</span>, j] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;←&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 残りのマスを計算</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, n):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, m):
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># DDTWを求めるためのマトリクスを埋める</span>
+</span></span><span style="display:flex;"><span>            d_ij <span style="color:#f92672">=</span> _γ(Q[i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> : i <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>], C[j <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> : j <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>])
+</span></span><span style="display:flex;"><span>            γ_mat[i, j] <span style="color:#f92672">=</span> d_ij <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>min(
+</span></span><span style="display:flex;"><span>                [γ_mat[i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, j <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>], γ_mat[i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, j], γ_mat[i, j <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>]]
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 矢印を書くための行列(DDTWの値とは関係無い処理)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (
+</span></span><span style="display:flex;"><span>                square_index <span style="color:#f92672">:=</span> np<span style="color:#f92672">.</span>argmin(
+</span></span><span style="display:flex;"><span>                    [γ_mat[i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, j <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>], γ_mat[i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, j], γ_mat[i, j <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>]]
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>            ) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                arrows[i, j] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;↙︎&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">elif</span> square_index <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>                arrows[i, j] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;↓&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">elif</span> square_index <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>:
+</span></span><span style="display:flex;"><span>                arrows[i, j] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;←&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> γ_mat, arrows, γ_mat[n <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, m <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>]
+</span></span></code></pre></div><h2 id="サンプルデータを確認する">
+  サンプルデータを確認する
+  
+  <a class="anchor" href="#%e3%82%b5%e3%83%b3%e3%83%97%e3%83%ab%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e7%a2%ba%e8%aa%8d%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+<p>実験に使用するデータを確認します。波形の長さはそれぞれ異なり、平均値もバラバラです。</p>
+<ul>
+<li>$w_1$と$w_2$は形が近いが、平均値が乖離している</li>
+<li>$w_2$と$w_4$は平均値が近いが、形が違う</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 銘柄名、期間、保存先ファイル</span>
+</span></span><span style="display:flex;"><span>ticker_symbol <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ZIM&#34;</span>
+</span></span><span style="display:flex;"><span>start <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;2021-01-01&#34;</span>
+</span></span><span style="display:flex;"><span>end <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;2022-01-01&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># データを取得する</span>
+</span></span><span style="display:flex;"><span>df1 <span style="color:#f92672">=</span> get_finance_data(ticker_symbol, start<span style="color:#f92672">=</span>start, end<span style="color:#f92672">=</span>end, savedir<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;data&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df1[<span style="color:#e6db74">&#34;Close&#34;</span>] <span style="color:#f92672">=</span> df1[<span style="color:#e6db74">&#34;Close&#34;</span>]<span style="color:#f92672">.</span>rolling(window<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)<span style="color:#f92672">.</span>mean()<span style="color:#f92672">.</span>fillna(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>w1, w2 <span style="color:#f92672">=</span> df1[<span style="color:#e6db74">&#34;Close&#34;</span>][<span style="color:#ae81ff">53</span>:<span style="color:#ae81ff">80</span>]<span style="color:#f92672">.</span>values, df1[<span style="color:#e6db74">&#34;Close&#34;</span>][<span style="color:#ae81ff">60</span>:<span style="color:#ae81ff">79</span>]<span style="color:#f92672">.</span>values <span style="color:#f92672">+</span> <span style="color:#ae81ff">20</span>
+</span></span><span style="display:flex;"><span>w3, w4 <span style="color:#f92672">=</span> df1[<span style="color:#e6db74">&#34;Close&#34;</span>][<span style="color:#ae81ff">100</span>:<span style="color:#ae81ff">120</span>]<span style="color:#f92672">.</span>values, df1[<span style="color:#e6db74">&#34;Close&#34;</span>][<span style="color:#ae81ff">145</span>:<span style="color:#ae81ff">167</span>]<span style="color:#f92672">.</span>values <span style="color:#f92672">-</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(w1, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;w1&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(w2, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;w2&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(w3, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;w3&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(w4, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;w4&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span></code></pre></div><pre><code>&lt;matplotlib.legend.Legend at 0x7f8cb27e7dc0&gt;
+</code></pre>
+<p><img src="/images/timeseries/shape/003_DDTW_files/003_DDTW_6_1.png" alt="png" /></p>
+<h2 id="同じ波形を比較">
+  同じ波形を比較
+  
+  <a class="anchor" href="#%e5%90%8c%e3%81%98%e6%b3%a2%e5%bd%a2%e3%82%92%e6%af%94%e8%bc%83">#</a>
+  
+</h2>
+<p>全く同じ波形を比較すれば、DDTWは０になるはずで、対角線上で常に「↙︎(=左下のマスが一番最小の値)」であるはずなのでそれを確認します。
+行列を可視化するためにヒートマップを使用しています。</p>
+
+<div class="notices document" ><p><a href="https://seaborn.pydata.org/generated/seaborn.heatmap.html">seaborn.heatmap</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>γ_mat, arrows, ddtw <span style="color:#f92672">=</span> DDTW(w2, w2)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>set(rc<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;figure.figsize&#34;</span>: (<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">10</span>)})
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>set(font<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IPAexGothic&#34;</span>)
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>heatmap(γ_mat, annot<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, fmt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;.2f&#34;</span>, cmap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YlGnBu&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;DDTW = </span><span style="color:#e6db74">{</span>ddtw<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>invert_yaxis()
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#34;w2&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#34;w2&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>heatmap(γ_mat, annot<span style="color:#f92672">=</span>arrows, fmt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>, cmap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YlGnBu&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>invert_yaxis()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/timeseries/shape/003_DDTW_files/003_DDTW_8_0.png" alt="png" /></p>
+<p><img src="/images/timeseries/shape/003_DDTW_files/003_DDTW_8_1.png" alt="png" /></p>
+<h2 id="w2とw4のどちらがw1に近い形かddtwで調べる">
+  w2とw4のどちらがw1に近い形かDDTWで調べる
+  
+  <a class="anchor" href="#w2%e3%81%a8w4%e3%81%ae%e3%81%a9%e3%81%a1%e3%82%89%e3%81%8cw1%e3%81%ab%e8%bf%91%e3%81%84%e5%bd%a2%e3%81%8bddtw%e3%81%a7%e8%aa%bf%e3%81%b9%e3%82%8b">#</a>
+  
+</h2>
+<ul>
+<li>w1 と w2は形が近いが、平均値が乖離している</li>
+<li>w2 と w4 は平均値が近いが、形が違う</li>
+</ul>
+<p>ことが上のプロットでわかっているので、$DDTW(w_1, w_2) &lt; DDTW(w_2, w_4)$ であってほしいです。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>γ_mat, arrows, ddtw <span style="color:#f92672">=</span> DDTW(w2, w4)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>set(rc<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;figure.figsize&#34;</span>: (<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">10</span>)})
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>set(font<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IPAexGothic&#34;</span>)
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>heatmap(γ_mat, annot<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, fmt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;.2f&#34;</span>, cmap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YlGnBu&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;DDTW(w2, w4) = </span><span style="color:#e6db74">{</span>ddtw<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>invert_yaxis()
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#34;w2&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#34;w4&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/timeseries/shape/003_DDTW_files/003_DDTW_10_0.png" alt="png" /></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>γ_mat, arrows, ddtw <span style="color:#f92672">=</span> DDTW(w1, w2)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>set(rc<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;figure.figsize&#34;</span>: (<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">10</span>)})
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>set(font<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IPAexGothic&#34;</span>)
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>heatmap(γ_mat, annot<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, fmt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;.2f&#34;</span>, cmap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YlGnBu&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;DDTW(w1, w2) = </span><span style="color:#e6db74">{</span>ddtw<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>invert_yaxis()
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#34;w1&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#34;w2&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/timeseries/shape/003_DDTW_files/003_DDTW_11_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#derivative-dtw">Derivative DTW</a></li>
+    <li><a href="#サンプルデータを確認する">サンプルデータを確認する</a></li>
+    <li><a href="#同じ波形を比較">同じ波形を比較</a></li>
+    <li><a href="#w2とw4のどちらがw1に近い形かddtwで調べる">w2とw4のどちらがw1に近い形かDDTWで調べる</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

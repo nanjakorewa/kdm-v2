@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+import numpy as np
+import matplotlib.pyplot as plt
+import japanize_matplotlib
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+japanize_matplotlib is imported to display Japanese in the graph.
+
+
+
+  Create regression data for experiments
+  
+  #
+  
+
+Use np.linspace to create data. It creates a list of values equally spaced between the values you specify. The following code creates 500 sample data for linear regression.
+# Training data
+n_samples = 500
+X = np.linspace(-10, 10, n_samples)[:, np.newaxis]
+epsolon = np.random.normal(size=n_samples)
+y = np.linspace(-2, 2, n_samples) &#43; epsolon
+
+# Visualize straight lines
+plt.figure(figsize=(10, 5))
+plt.scatter(X, y, marker=&#34;x&#34;, label=&#34;Target&#34;, c=&#34;orange&#34;)
+plt.xlabel(&#34;$x_1$&#34;)
+plt.xlabel(&#34;$y$&#34;)
+plt.legend()
+plt.show()
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/en/basic/regression/linear_regression/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="Least-squares method">
+  <meta property="og:description" content="import numpy as np import matplotlib.pyplot as plt import japanize_matplotlib from sklearn.linear_model import LinearRegression from sklearn.pipeline import make_pipeline from sklearn.preprocessing import StandardScaler japanize_matplotlib is imported to display Japanese in the graph.
+Create regression data for experiments # Use np.linspace to create data. It creates a list of values equally spaced between the values you specify. The following code creates 500 sample data for linear regression.
+# Training data n_samples = 500 X = np.linspace(-10, 10, n_samples)[:, np.newaxis] epsolon = np.random.normal(size=n_samples) y = np.linspace(-2, 2, n_samples) &#43; epsolon # Visualize straight lines plt.figure(figsize=(10, 5)) plt.scatter(X, y, marker=&#34;x&#34;, label=&#34;Target&#34;, c=&#34;orange&#34;) plt.xlabel(&#34;$x_1$&#34;) plt.xlabel(&#34;$y$&#34;) plt.legend() plt.show()">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="basic">
+<title>Least-squares method | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/en/basic/regression/linear_regression/">
+  <link rel="alternate" hreflang="ja" href="http://localhost:1313/basic/regression/linear_regression/" title="最小二乗法">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/basic/regression/linear_regression/" title="Método de mínimos cuadrados">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/basic/regression/linear_regression/" title="Metode kuadrat terkecil">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/en.search.min.8a44fa1abc5451ced25c796dc6ff27eb2d840fda90401b31bc09e7864db39f2e.js" integrity="sha256-ikT6GrxUUc7SXHltxv8n6y2ED9qQQBsxvAnnhk2zny4=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-basic">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/en/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>English</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/basic/regression/linear_regression/">
+          <span>日本語</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/basic/regression/linear_regression/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/basic/regression/linear_regression/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/" class="">Linear Regression</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/linear_regression/" class="active">Least-squares method</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/ridge_and_lasso/" class="">Ridge and Lasso regression</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/robust_regression/" class="">Outliers and Robustness</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/classification/" class="">Linear Classification</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/classification/logistic_regression/" class="">Logistic Regression</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/classification/linear_discriminant_analysis/" class="">Linear Discriminant Analysis</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/" class="">Decision Tree</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/decision_tree_classifier/" class="">Decision Tree (Classification)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/decision_tree_regressor/" class="">Decision tree (regression)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/parameter/" class="">Decision Tree Parameters</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/" class="">Ensemble</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/randomforest/" class="">Random Forests</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/stucking/" class="">Stacking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/adaboost_classification/" class="">Adaboost (classification)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/adaboost_regression/" class="">Adaboost(Regression)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/gradient_boosting1/" class="">Gradient boosting</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/" class="">Clustering</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/" class="">Dimensionality Reduction</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/feature_selection/" class="">Feature Selection</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/timeseries/" class="">Time Series</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/timeseries/prophet/" class="">Using Prophet</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/anomaly/" class="">Anomaly detection</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/anomaly/adtk1/" class="">Anomaly Detection ①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/anomaly/adtk2/" class="">Anomaly Detection②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>Least-squares method</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#create-regression-data-for-experiments">Create regression data for experiments</a></li>
+    <li><a href="#check-noise-on-y">Check noise on y</a></li>
+    <li><a href="#fit-a-straight-line-by-the-least-squares-method">Fit a straight line by the least-squares method</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.linear_model <span style="color:#f92672">import</span> LinearRegression
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.pipeline <span style="color:#f92672">import</span> make_pipeline
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.preprocessing <span style="color:#f92672">import</span> StandardScaler
+</span></span></code></pre></div>
+<div class="notices tip" ><p><code>japanize_matplotlib</code> is imported to display Japanese in the graph.</p>
+</div>
+
+<h2 id="create-regression-data-for-experiments">
+  Create regression data for experiments
+  
+  <a class="anchor" href="#create-regression-data-for-experiments">#</a>
+  
+</h2>
+<p>Use <code>np.linspace</code> to create data. It creates a list of values equally spaced between the values you specify. The following code creates 500 sample data for linear regression.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Training data</span>
+</span></span><span style="display:flex;"><span>n_samples <span style="color:#f92672">=</span> <span style="color:#ae81ff">500</span>
+</span></span><span style="display:flex;"><span>X <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>, n_samples)[:, np<span style="color:#f92672">.</span>newaxis]
+</span></span><span style="display:flex;"><span>epsolon <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>normal(size<span style="color:#f92672">=</span>n_samples)
+</span></span><span style="display:flex;"><span>y <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>, n_samples) <span style="color:#f92672">+</span> epsolon
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Visualize straight lines</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(X, y, marker<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;x&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Target&#34;</span>, c<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orange&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;$x_1$&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;$y$&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/regression/01_Linear_Regression_files/01_Linear_Regression_6_0.png" alt="png" /></p>
+<h2 id="check-noise-on-y">
+  Check noise on y
+  
+  <a class="anchor" href="#check-noise-on-y">#</a>
+  
+</h2>
+<p>About <code>y = np.linspace(-2, 2, n_samples) + epsolon</code>, I plot a histogram for <code>epsolon</code>.
+Confirm that noise with a distribution close to the normal distribution is on the target variable.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>hist(epsolon)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;$\epsilon$&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74">&#34;#data&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/regression/01_Linear_Regression_files/01_Linear_Regression_8_0.png" alt="png" /></p>
+<h2 id="fit-a-straight-line-by-the-least-squares-method">
+  Fit a straight line by the least-squares method
+  
+  <a class="anchor" href="#fit-a-straight-line-by-the-least-squares-method">#</a>
+  
+</h2>
+
+<div class="notices document" ><p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html">sklearn.linear_model.LinearRegression</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># fit your model</span>
+</span></span><span style="display:flex;"><span>lin_r <span style="color:#f92672">=</span> make_pipeline(StandardScaler(with_mean<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>), LinearRegression())<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>y_pred <span style="color:#f92672">=</span> lin_r<span style="color:#f92672">.</span>predict(X)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Visualize straight lines</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(X, y, marker<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;x&#34;</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;target&#34;</span>, c<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orange&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(X, y_pred, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Straight line fitted by linear regression&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;$x_1$&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;$y$&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/regression/01_Linear_Regression_files/01_Linear_Regression_10_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/en/basic/regression/" class="flex align-center book-icon">
+        <img src="/svg/backward.svg" class="book-icon" alt="Previous" title="Linear Regression" />
+        <span>Linear Regression</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/en/basic/regression/ridge_and_lasso/" class="flex align-center book-icon">
+        <span>Ridge and Lasso regression</span>
+        <img src="/svg/forward.svg" class="book-icon" alt="Next" title="Ridge and Lasso regression" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#create-regression-data-for-experiments">Create regression data for experiments</a></li>
+    <li><a href="#check-noise-on-y">Check noise on y</a></li>
+    <li><a href="#fit-a-straight-line-by-the-least-squares-method">Fit a straight line by the least-squares method</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

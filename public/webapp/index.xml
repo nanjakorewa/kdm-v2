@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>アプリケーション作成 on K_DM Book</title>
+    <link>http://localhost:1313/webapp/</link>
+    <description>Recent content in アプリケーション作成 on K_DM Book</description>
+    <generator>Hugo</generator>
+    <language>ja</language>
+    <atom:link href="http://localhost:1313/webapp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>streamlit</title>
+      <link>http://localhost:1313/webapp/streamlit/streamlit/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/webapp/streamlit/streamlit/</guid>
+      <description>&lt;h2 id=&#34;streamlit&#34;&gt;&#xA;  streamlit&#xA;  &#xA;  &lt;a class=&#34;anchor&#34; href=&#34;#streamlit&#34;&gt;#&lt;/a&gt;&#xA;  &#xA;&lt;/h2&gt;&#xA;&lt;h4 id=&#34;アプリの作り方&#34;&gt;&#xA;  アプリの作り方&#xA;  &#xA;  &lt;a class=&#34;anchor&#34; href=&#34;#%e3%82%a2%e3%83%97%e3%83%aa%e3%81%ae%e4%bd%9c%e3%82%8a%e6%96%b9&#34;&gt;#&lt;/a&gt;&#xA;  &#xA;&lt;/h4&gt;&#xA;&lt;p&gt;以下のyoutube動画と&lt;a href=&#34;https://github.com/nanjakorewa/streamlit-example&#34;&gt;github&lt;/a&gt;のコードを参考にしてください。&#xA;実行に必要な環境はpython3.9かそれ以降のバージョンが動作する環境のみです。&lt;/p&gt;&#xA;&lt;h4 id=&#34;アプリの起動方法&#34;&gt;&#xA;  アプリの起動方法&#xA;  &#xA;  &lt;a class=&#34;anchor&#34; href=&#34;#%e3%82%a2%e3%83%97%e3%83%aa%e3%81%ae%e8%b5%b7%e5%8b%95%e6%96%b9%e6%b3%95&#34;&gt;#&lt;/a&gt;&#xA;  &#xA;&lt;/h4&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://github.com/nanjakorewa/streamlit-example&#34;&gt;github&lt;/a&gt;からコードをクローンしてくる&lt;/li&gt;&#xA;&lt;li&gt;&lt;code&gt;pip3 install -r requirements.txt&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;code&gt;streamlit run app.py  --server.address=localhost&lt;/code&gt; をコマンドラインで実行&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;http://localhost:8501&#34;&gt;http://localhost:8501&lt;/a&gt;にアクセス&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;元の動画&#34;&gt;&#xA;  元の動画&#xA;  &#xA;  &lt;a class=&#34;anchor&#34; href=&#34;#%e5%85%83%e3%81%ae%e5%8b%95%e7%94%bb&#34;&gt;#&lt;/a&gt;&#xA;  &#xA;&lt;/h2&gt;&#xA;&lt;!-- raw HTML omitted --&gt;</description>
+    </item>
+  </channel>
+</rss>

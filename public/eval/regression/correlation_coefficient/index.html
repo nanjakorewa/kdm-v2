@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+
+  相関係数とは、2つのデータまたは確率変数の間にある線形な関係の強弱を測る指標である。 出典：
+相関係数 出典: フリー百科事典『ウィキペディア（Wikipedia）』
+二つの変数の間に直線的な形の傾向変化があるかどうかを確認することができる指標であり、式で表すと以下のようになります。
+$
+\frac{\Sigma_{i=1}^N (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\Sigma_{i=1}^N(x_i - \bar{x})^2 \Sigma_{i=1}^N(y_i - \bar{y})^2 }}
+$
+以下のような性質があります。
+
+−1 以上 1 以下の値をとる
+相関係数が1に近いならば、$x$が増加 → $y$も増加
+$x, y$を低数倍しても相関係数の値は変化しない
+
+
+  二つの数値列の相関係数を計算
+  
+  #
+  
+
+import numpy as np
+
+np.random.seed(777)  # 乱数を固定するため
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = [xi &#43; np.random.rand() for xi in np.linspace(0, 100, 40)]
+y = [yi &#43; np.random.rand() for yi in np.linspace(1, 50, 40)]
+
+plt.figure(figsize=(5, 5))
+plt.scatter(x, y)
+plt.show()
+
+coef = np.corrcoef(x, y)
+print(coef)
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/eval/regression/correlation_coefficient/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="相関係数">
+  <meta property="og:description" content="相関係数とは、2つのデータまたは確率変数の間にある線形な関係の強弱を測る指標である。 出典： 相関係数 出典: フリー百科事典『ウィキペディア（Wikipedia）』
+二つの変数の間に直線的な形の傾向変化があるかどうかを確認することができる指標であり、式で表すと以下のようになります。
+$ \frac{\Sigma_{i=1}^N (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\Sigma_{i=1}^N(x_i - \bar{x})^2 \Sigma_{i=1}^N(y_i - \bar{y})^2 }} $
+以下のような性質があります。
+−1 以上 1 以下の値をとる 相関係数が1に近いならば、$x$が増加 → $y$も増加 $x, y$を低数倍しても相関係数の値は変化しない 二つの数値列の相関係数を計算 # import numpy as np np.random.seed(777) # 乱数を固定するため import matplotlib.pyplot as plt import numpy as np x = [xi &#43; np.random.rand() for xi in np.linspace(0, 100, 40)] y = [yi &#43; np.random.rand() for yi in np.linspace(1, 50, 40)] plt.figure(figsize=(5, 5)) plt.scatter(x, y) plt.show() coef = np.corrcoef(x, y) print(coef)">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="eval">
+<title>相関係数 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/eval/regression/correlation_coefficient/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/eval/regression/correlation_coefficient/" title="Correlation coefficient">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/eval/regression/correlation_coefficient/" title="Coeficiente de correlación">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/eval/regression/correlation_coefficient/" title="Koefisien korelasi">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-eval">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/eval/regression/correlation_coefficient/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/eval/regression/correlation_coefficient/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/eval/regression/correlation_coefficient/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>相関係数</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#二つの数値列の相関係数を計算">二つの数値列の相関係数を計算</a></li>
+    <li><a href="#複数の変数の間の相関係数をまとめて計算">複数の変数の間の相関係数をまとめて計算</a>
+      <ul>
+        <li><a href="#全ての変数間の相関係数を確認する">全ての変数間の相関係数を確認する</a></li>
+      </ul>
+    </li>
+    <li><a href="#相関係数が低い場合">相関係数が低い場合</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/l1cpV9_u1Uk" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
+<blockquote class='book-hint '>
+  <p>相関係数とは、2つのデータまたは確率変数の間にある線形な関係の強弱を測る指標である。 出典：
+<a href="https://ja.wikipedia.org/wiki/%E7%9B%B8%E9%96%A2%E4%BF%82%E6%95%B0">相関係数 出典: フリー百科事典『ウィキペディア（Wikipedia）』</a></p>
+</blockquote><p>二つの変数の間に直線的な形の傾向変化があるかどうかを確認することができる指標であり、式で表すと以下のようになります。</p>
+<p>$
+\frac{\Sigma_{i=1}^N (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\Sigma_{i=1}^N(x_i - \bar{x})^2 \Sigma_{i=1}^N(y_i - \bar{y})^2 }}
+$</p>
+<p>以下のような性質があります。</p>
+<ul>
+<li>−1 以上 1 以下の値をとる</li>
+<li>相関係数が1に近いならば、$x$が増加 → $y$も増加</li>
+<li>$x, y$を低数倍しても相関係数の値は変化しない</li>
+</ul>
+<h2 id="二つの数値列の相関係数を計算">
+  二つの数値列の相関係数を計算
+  
+  <a class="anchor" href="#%e4%ba%8c%e3%81%a4%e3%81%ae%e6%95%b0%e5%80%a4%e5%88%97%e3%81%ae%e7%9b%b8%e9%96%a2%e4%bf%82%e6%95%b0%e3%82%92%e8%a8%88%e7%ae%97">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>seed(<span style="color:#ae81ff">777</span>)  <span style="color:#75715e"># 乱数を固定するため</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> [xi <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand() <span style="color:#66d9ef">for</span> xi <span style="color:#f92672">in</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">40</span>)]
+</span></span><span style="display:flex;"><span>y <span style="color:#f92672">=</span> [yi <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand() <span style="color:#66d9ef">for</span> yi <span style="color:#f92672">in</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">40</span>)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(x, y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>coef <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>corrcoef(x, y)
+</span></span><span style="display:flex;"><span>print(coef)
+</span></span></code></pre></div><p><img src="/images/eval/regression/correlation_coefficient_files/correlation_coefficient_3_0.png" alt="png" /></p>
+<pre><code>[[1.         0.99979848]
+ [0.99979848 1.        ]]
+</code></pre>
+<h2 id="複数の変数の間の相関係数をまとめて計算">
+  複数の変数の間の相関係数をまとめて計算
+  
+  <a class="anchor" href="#%e8%a4%87%e6%95%b0%e3%81%ae%e5%a4%89%e6%95%b0%e3%81%ae%e9%96%93%e3%81%ae%e7%9b%b8%e9%96%a2%e4%bf%82%e6%95%b0%e3%82%92%e3%81%be%e3%81%a8%e3%82%81%e3%81%a6%e8%a8%88%e7%ae%97">#</a>
+  
+</h2>
+
+<div class="notices document" ><p><a href="https://pandas.pydata.org/docs/reference/api/pandas.io.formats.style.Styler.background_gradient.html">pandas.io.formats.style.Styler.background_gradient</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>load_dataset(<span style="color:#e6db74">&#34;iris&#34;</span>)
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h3 id="全ての変数間の相関係数を確認する">
+  全ての変数間の相関係数を確認する
+  
+  <a class="anchor" href="#%e5%85%a8%e3%81%a6%e3%81%ae%e5%a4%89%e6%95%b0%e9%96%93%e3%81%ae%e7%9b%b8%e9%96%a2%e4%bf%82%e6%95%b0%e3%82%92%e7%a2%ba%e8%aa%8d%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<p>irisデータセットを使って、変数間の相関を見てみます。</p>
+
+<div class="notices document" ><ul>
+<li><a href="https://scikit-learn.org/stable/auto_examples/datasets/plot_iris_dataset.html">The Iris Dataset</a></li>
+<li><a href="https://pandas.pydata.org/docs/reference/api/pandas.io.formats.style.Styler.background_gradient.html">pandas.io.formats.style.Styler.background_gradient</a></li>
+</ul>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df<span style="color:#f92672">.</span>corr()<span style="color:#f92672">.</span>style<span style="color:#f92672">.</span>background_gradient(cmap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YlOrRd&#34;</span>)
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>ヒートマップだとどこが最も相関が高いか見づらいです。<code>sepal_length</code> と相関が高い変数はどれか、棒グラフで確認します。</p>
+
+<div class="notices document" ><p><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.plot.bar.html">pandas.DataFrame.plot.bar</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df<span style="color:#f92672">.</span>corr()[<span style="color:#e6db74">&#34;sepal_length&#34;</span>]<span style="color:#f92672">.</span>plot<span style="color:#f92672">.</span>bar(grid<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, ylabel<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;corr&#34;</span>)
+</span></span></code></pre></div><pre><code>&lt;AxesSubplot:ylabel='corr'&gt;
+</code></pre>
+<p><img src="/images/eval/regression/correlation_coefficient_files/correlation_coefficient_9_1.png" alt="png" /></p>
+<h2 id="相関係数が低い場合">
+  相関係数が低い場合
+  
+  <a class="anchor" href="#%e7%9b%b8%e9%96%a2%e4%bf%82%e6%95%b0%e3%81%8c%e4%bd%8e%e3%81%84%e5%a0%b4%e5%90%88">#</a>
+  
+</h2>
+<p>相関係数が低い場合のデータ分布を確認し、変数間に関係がある場合でも相関係数が低くなる可能性があることを確認します。</p>
+
+<div class="notices document" ><p><a href="numpy.random.multivariate_normal">numpy.random.multivariate_normal — NumPy v1.22 Manual</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>n_samples <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">12</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i, ci <span style="color:#f92672">in</span> enumerate(np<span style="color:#f92672">.</span>linspace(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">16</span>)):
+</span></span><span style="display:flex;"><span>    ci <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>round(ci, <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    mean <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span>    cov <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([[<span style="color:#ae81ff">1</span>, ci], [ci, <span style="color:#ae81ff">1</span>]])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    v1, v2 <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>multivariate_normal(mean, cov, size<span style="color:#f92672">=</span>n_samples)<span style="color:#f92672">.</span>T
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">4</span>, i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>plot(v1, v2, <span style="color:#e6db74">&#34;x&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;r=</span><span style="color:#e6db74">{</span>ci<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>tight_layout()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/eval/regression/correlation_coefficient_files/correlation_coefficient_11_0.png" alt="png" /></p>
+<p>相関係数が低くても、変数の間に関係があるケースもあります。
+そのような例を簡単にですが作ってみます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> datasets
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>japanize_matplotlib<span style="color:#f92672">.</span>japanize()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>n_samples <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>circle, _ <span style="color:#f92672">=</span> datasets<span style="color:#f92672">.</span>make_circles(n_samples<span style="color:#f92672">=</span>n_samples, factor<span style="color:#f92672">=</span><span style="color:#ae81ff">0.1</span>, noise<span style="color:#f92672">=</span><span style="color:#ae81ff">0.05</span>)
+</span></span><span style="display:flex;"><span>moon, _ <span style="color:#f92672">=</span> datasets<span style="color:#f92672">.</span>make_moons(n_samples<span style="color:#f92672">=</span>n_samples, noise<span style="color:#f92672">=</span><span style="color:#ae81ff">0.05</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>corr_circle <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>round(np<span style="color:#f92672">.</span>corrcoef(circle[:, <span style="color:#ae81ff">0</span>], circle[:, <span style="color:#ae81ff">1</span>])[<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;相関係数=</span><span style="color:#e6db74">{</span>corr_circle<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">23</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(circle[:, <span style="color:#ae81ff">0</span>], circle[:, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>corr_moon <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>round(np<span style="color:#f92672">.</span>corrcoef(moon[:, <span style="color:#ae81ff">0</span>], moon[:, <span style="color:#ae81ff">1</span>])[<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;相関係数=</span><span style="color:#e6db74">{</span>corr_moon<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">23</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(moon[:, <span style="color:#ae81ff">0</span>], moon[:, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/eval/regression/correlation_coefficient_files/correlation_coefficient_13_0.png" alt="png" /></p>
+<p><img src="/images/eval/regression/correlation_coefficient_files/correlation_coefficient_13_1.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#二つの数値列の相関係数を計算">二つの数値列の相関係数を計算</a></li>
+    <li><a href="#複数の変数の間の相関係数をまとめて計算">複数の変数の間の相関係数をまとめて計算</a>
+      <ul>
+        <li><a href="#全ての変数間の相関係数を確認する">全ての変数間の相関係数を確認する</a></li>
+      </ul>
+    </li>
+    <li><a href="#相関係数が低い場合">相関係数が低い場合</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

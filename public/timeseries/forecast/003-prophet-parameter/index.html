@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Prophetにどのようなパラメータがあるか整理します。
+
+このページは書きかけです
+
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import japanize_matplotlib
+from prophet import Prophet
+
+  実験に使用するデータ
+  
+  #
+  
+
+date = pd.date_range(&#34;2020-01-01&#34;, periods=365, freq=&#34;D&#34;)
+
+# 予測対象
+y = [
+    np.cos(di.weekday()) / 3
+    &#43; di.month % 2 / 5
+    &#43; np.log(i &#43; 1) / 5.0
+    &#43; (i &gt; 182) * 0.5
+    &#43; np.random.rand() / 10
+    for i, di in enumerate(date)
+]
+
+# トレンド成分
+x = [18627 &#43; i - 364 for i in range(365)]
+trend_y = [np.log(i &#43; 1) / 3.0 for i, di in enumerate(date)]
+weekly_y = [np.cos(di.weekday()) for i, di in enumerate(date)]
+seasonal_y = [di.month % 2 / 2 for i, di in enumerate(date)]
+noise_y = [np.random.rand() / 10 for i in range(365)]
+
+df = pd.DataFrame({&#34;ds&#34;: date, &#34;y&#34;: y})
+df.index = date
+
+# 実験に使用するデータ
+plt.title(&#34;サンプルデータ&#34;)
+sns.lineplot(data=df)
+plt.show()
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/timeseries/forecast/003-prophet-parameter/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content=" Prophetのパラメータ">
+  <meta property="og:description" content="Prophetにどのようなパラメータがあるか整理します。
+このページは書きかけです
+import numpy as np import pandas as pd import seaborn as sns import matplotlib.pyplot as plt import japanize_matplotlib from prophet import Prophet 実験に使用するデータ # date = pd.date_range(&#34;2020-01-01&#34;, periods=365, freq=&#34;D&#34;) # 予測対象 y = [ np.cos(di.weekday()) / 3 &#43; di.month % 2 / 5 &#43; np.log(i &#43; 1) / 5.0 &#43; (i &gt; 182) * 0.5 &#43; np.random.rand() / 10 for i, di in enumerate(date) ] # トレンド成分 x = [18627 &#43; i - 364 for i in range(365)] trend_y = [np.log(i &#43; 1) / 3.0 for i, di in enumerate(date)] weekly_y = [np.cos(di.weekday()) for i, di in enumerate(date)] seasonal_y = [di.month % 2 / 2 for i, di in enumerate(date)] noise_y = [np.random.rand() / 10 for i in range(365)] df = pd.DataFrame({&#34;ds&#34;: date, &#34;y&#34;: y}) df.index = date # 実験に使用するデータ plt.title(&#34;サンプルデータ&#34;) sns.lineplot(data=df) plt.show()">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="timeseries">
+<title> Prophetのパラメータ | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/timeseries/forecast/003-prophet-parameter/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-timeseries">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3> Prophetのパラメータ</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#実験に使用するデータ">実験に使用するデータ</a></li>
+    <li><a href="#growthパラメータ">growthパラメータ</a>
+      <ul>
+        <li><a href="#growthlinearとした場合の予測">growth=&ldquo;linear&quot;とした場合の予測</a></li>
+        <li><a href="#growthlinearで表現できるトレンド成分">growth=&ldquo;linear&quot;で表現できるトレンド成分</a></li>
+        <li><a href="#linear_trendで表現できるトレンドを可視化する"><code>linear_trend</code>で表現できるトレンドを可視化する</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><p>Prophetにどのようなパラメータがあるか整理します。</p>
+
+<div class="notices warning" ><p>このページは書きかけです</p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> prophet <span style="color:#f92672">import</span> Prophet
+</span></span></code></pre></div><h2 id="実験に使用するデータ">
+  実験に使用するデータ
+  
+  <a class="anchor" href="#%e5%ae%9f%e9%a8%93%e3%81%ab%e4%bd%bf%e7%94%a8%e3%81%99%e3%82%8b%e3%83%87%e3%83%bc%e3%82%bf">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>date <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>date_range(<span style="color:#e6db74">&#34;2020-01-01&#34;</span>, periods<span style="color:#f92672">=</span><span style="color:#ae81ff">365</span>, freq<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;D&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 予測対象</span>
+</span></span><span style="display:flex;"><span>y <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    np<span style="color:#f92672">.</span>cos(di<span style="color:#f92672">.</span>weekday()) <span style="color:#f92672">/</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> di<span style="color:#f92672">.</span>month <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>log(i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">5.0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> (i <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">182</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.5</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand() <span style="color:#f92672">/</span> <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i, di <span style="color:#f92672">in</span> enumerate(date)
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># トレンド成分</span>
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> [<span style="color:#ae81ff">18627</span> <span style="color:#f92672">+</span> i <span style="color:#f92672">-</span> <span style="color:#ae81ff">364</span> <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">365</span>)]
+</span></span><span style="display:flex;"><span>trend_y <span style="color:#f92672">=</span> [np<span style="color:#f92672">.</span>log(i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">3.0</span> <span style="color:#66d9ef">for</span> i, di <span style="color:#f92672">in</span> enumerate(date)]
+</span></span><span style="display:flex;"><span>weekly_y <span style="color:#f92672">=</span> [np<span style="color:#f92672">.</span>cos(di<span style="color:#f92672">.</span>weekday()) <span style="color:#66d9ef">for</span> i, di <span style="color:#f92672">in</span> enumerate(date)]
+</span></span><span style="display:flex;"><span>seasonal_y <span style="color:#f92672">=</span> [di<span style="color:#f92672">.</span>month <span style="color:#f92672">%</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">for</span> i, di <span style="color:#f92672">in</span> enumerate(date)]
+</span></span><span style="display:flex;"><span>noise_y <span style="color:#f92672">=</span> [np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand() <span style="color:#f92672">/</span> <span style="color:#ae81ff">10</span> <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">365</span>)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame({<span style="color:#e6db74">&#34;ds&#34;</span>: date, <span style="color:#e6db74">&#34;y&#34;</span>: y})
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">.</span>index <span style="color:#f92672">=</span> date
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 実験に使用するデータ</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;サンプルデータ&#34;</span>)
+</span></span><span style="display:flex;"><span>sns<span style="color:#f92672">.</span>lineplot(data<span style="color:#f92672">=</span>df)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/timeseries/forecast/003-Prophet-parameter_files/003-Prophet-parameter_5_0.png" alt="png" /></p>
+<h2 id="growthパラメータ">
+  growthパラメータ
+  
+  <a class="anchor" href="#growth%e3%83%91%e3%83%a9%e3%83%a1%e3%83%bc%e3%82%bf">#</a>
+  
+</h2>
+<h3 id="growthlinearとした場合の予測">
+  growth=&ldquo;linear&quot;とした場合の予測
+  
+  <a class="anchor" href="#growthlinear%e3%81%a8%e3%81%97%e3%81%9f%e5%a0%b4%e5%90%88%e3%81%ae%e4%ba%88%e6%b8%ac">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># モデルを訓練</span>
+</span></span><span style="display:flex;"><span>m <span style="color:#f92672">=</span> Prophet(
+</span></span><span style="display:flex;"><span>    yearly_seasonality<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>    weekly_seasonality<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>    daily_seasonality<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>    growth<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;linear&#34;</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>m<span style="color:#f92672">.</span>fit(df)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 将来を予測</span>
+</span></span><span style="display:flex;"><span>future <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>make_future_dataframe(periods<span style="color:#f92672">=</span><span style="color:#ae81ff">90</span>)
+</span></span><span style="display:flex;"><span>forecast <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>predict(future)
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>plot(forecast)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>axvspan(<span style="color:#ae81ff">18627</span>, <span style="color:#ae81ff">18627</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">90</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;coral&#34;</span>, alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">0.4</span>, label<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;予測期間&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><pre><code>Initial log joint probability = -16.6231
+    Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
+      81       792.152    0.00138864       97.2266   2.443e-05       0.001      145  LS failed, Hessian reset 
+      99       792.228   7.40168e-07       55.8404     0.03797     0.03797      168   
+    Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
+     138       792.388   3.51776e-05       59.7965    6.64e-07       0.001      263  LS failed, Hessian reset 
+     199        792.62    3.0252e-05       72.8985      0.4243           1      340   
+    Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
+     247       792.799   0.000165183       55.2724   3.174e-06       0.001      440  LS failed, Hessian reset 
+     299       792.972   0.000162358       62.7075           1           1      508   
+    Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
+     347       792.991   3.19534e-05       38.7196   4.536e-07       0.001      634  LS failed, Hessian reset 
+     392       792.994   7.68689e-07       61.3331   1.015e-08       0.001      733  LS failed, Hessian reset 
+     399       792.994     9.628e-08       55.3164      0.2134           1      742   
+    Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
+     404       792.994   3.74603e-08       39.3307      0.2405      0.7727      749   
+Optimization terminated normally: 
+  Convergence detected: relative gradient magnitude is below tolerance
+</code></pre>
+<p><img src="/images/timeseries/forecast/003-Prophet-parameter_files/003-Prophet-parameter_7_1.png" alt="png" /></p>
+<h3 id="growthlinearで表現できるトレンド成分">
+  growth=&ldquo;linear&quot;で表現できるトレンド成分
+  
+  <a class="anchor" href="#growthlinear%e3%81%a7%e8%a1%a8%e7%8f%be%e3%81%a7%e3%81%8d%e3%82%8b%e3%83%88%e3%83%ac%e3%83%b3%e3%83%89%e6%88%90%e5%88%86">#</a>
+  
+</h3>
+<p>growth=&ldquo;linear&quot;でどのようなトレンドを表現できるか確認してみます。 <code>linear_trend</code> はprophetで <code>growth=&quot;linear&quot;</code>　を指定した時にトレンド作成に使用するコードを再現してみます。</p>
+<p>※参考文献のコードと記号を合わせました、ミスがある場合はお手数ですがissueに指摘いただけると大変助かります</p>
+
+<div class="notices document" ><p><a href="https://github.com/facebook/prophet/blob/ba9a5a2c6e2400206017a5ddfd71f5042da9f65b/R/inst/stan/prophet.stan#L64-L82">prophet/R/inst/stan/prophet.stan</a></p>
+</div>
+
+<p>$A$の各行の次元数は変化点の数です。また、各次元の値は
+$ a_j(t) \left{ \begin{array}{ll} 1, &amp; \text{if}　\ t \ge s_j \ 0, &amp; \text{otherwise} \end{array} \right. $
+となっています。時刻$t$の$a$の$j$次元目は、$t$が$j$番目の変化点よりあとの時刻ならば$1$になる、ということです。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">linear_trend</span>(
+</span></span><span style="display:flex;"><span>    k: float, m: float, delta: np<span style="color:#f92672">.</span>array, t: np<span style="color:#f92672">.</span>array, t_change: list
+</span></span><span style="display:flex;"><span>) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>array:
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;線形トレンドを作成する
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Args:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k (float): 係数
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        m (float): 係数
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        delta (np.array): delta
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        t (np.array): タイムスタンプ
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        t_change (list): トレンド変化点
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Returns:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        np.array: トレンド
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    A <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>vstack([np<span style="color:#f92672">.</span>where(t_change <span style="color:#f92672">&lt;</span> ti, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">for</span> ti <span style="color:#f92672">in</span> t])
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (k <span style="color:#f92672">+</span> (A <span style="color:#f92672">*</span> delta)<span style="color:#f92672">.</span>sum(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)) <span style="color:#f92672">*</span> t <span style="color:#f92672">+</span> (
+</span></span><span style="display:flex;"><span>        m <span style="color:#f92672">+</span> (A <span style="color:#f92672">*</span> (<span style="color:#f92672">-</span>t_change <span style="color:#f92672">*</span> delta))<span style="color:#f92672">.</span>sum(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    )
+</span></span></code></pre></div><h3 id="linear_trendで表現できるトレンドを可視化する">
+  <code>linear_trend</code>で表現できるトレンドを可視化する
+  
+  <a class="anchor" href="#linear_trend%e3%81%a7%e8%a1%a8%e7%8f%be%e3%81%a7%e3%81%8d%e3%82%8b%e3%83%88%e3%83%ac%e3%83%b3%e3%83%89%e3%82%92%e5%8f%af%e8%a6%96%e5%8c%96%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 適当にトレンドのような線を作成するため、変化点の数と各区間での線の傾きを指定します</span>
+</span></span><span style="display:flex;"><span>change_point_num <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>t <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">100</span>)
+</span></span><span style="display:flex;"><span>t_change <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>, change_point_num <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>delta <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand() <span style="color:#f92672">-</span> <span style="color:#ae81ff">0.5</span> <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(change_point_num <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># linear_trendで線を引く</span>
+</span></span><span style="display:flex;"><span>trend_y <span style="color:#f92672">=</span> linear_trend(<span style="color:#ae81ff">0.1</span>, <span style="color:#ae81ff">0</span>, delta, t, t_change)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># できた線をプロットしてみる</span>
+</span></span><span style="display:flex;"><span>[plt<span style="color:#f92672">.</span>axvline(x<span style="color:#f92672">=</span>tci, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;red&#34;</span>, alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>) <span style="color:#66d9ef">for</span> tci <span style="color:#f92672">in</span> t_change]  <span style="color:#75715e"># 変化点をプロット</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(t, trend_y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/timeseries/forecast/003-Prophet-parameter_files/003-Prophet-parameter_11_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#実験に使用するデータ">実験に使用するデータ</a></li>
+    <li><a href="#growthパラメータ">growthパラメータ</a>
+      <ul>
+        <li><a href="#growthlinearとした場合の予測">growth=&ldquo;linear&quot;とした場合の予測</a></li>
+        <li><a href="#growthlinearで表現できるトレンド成分">growth=&ldquo;linear&quot;で表現できるトレンド成分</a></li>
+        <li><a href="#linear_trendで表現できるトレンドを可視化する"><code>linear_trend</code>で表現できるトレンドを可視化する</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

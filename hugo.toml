@@ -1,0 +1,32 @@
+baseURL = "http://localhost:1313/"
+title   = "K_DM Book"
+enableGitInfo = true
+ignoreLogs = ['warning-goldmark-raw-html']
+
+# 既定言語を日本語、既定言語はサブディレクトリにしない（/ で表示）
+defaultContentLanguage = 'ja'
+defaultContentLanguageInSubdir = false
+
+[params]
+  BookSection = 'basic'
+  BookTheme   = 'auto'
+  BookToC     = true
+  BookSearch  = true
+
+[languages]
+  [languages.ja]
+    languageName = '日本語'
+    weight = 1
+  [languages.en]
+    languageName = 'English'
+    weight = 2
+  [languages.es]
+    languageName = 'Español'
+    weight = 3
+  [languages.id]
+    languageName = 'Indonesia'
+    weight = 4
+
+[module]
+  [[module.imports]]
+    path = 'github.com/alex-shpak/hugo-book'

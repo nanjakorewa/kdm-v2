@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+import statsmodels.api as sm
+import numpy as np
+import matplotlib.pyplot as plt
+import japanize_matplotlib
+
+  AR過程のデータを作成する
+  
+  #
+  
+
+データを生成するための関数を用意します
+def create_ARdata(phis=[0.1], N=500, init=1, c=1, sigma=0.3):
+    &#34;&#34;&#34;AR過程のデータを作成する&#34;&#34;&#34;
+    print(f&#34;==AR({len(phis)})過程の長さ{N}のデータを作成==&#34;)
+    data = np.zeros(N)
+    data[0] = init &#43; np.random.normal(0, sigma)
+
+    for t in range(2, N):
+        res = c &#43; np.random.normal(0, sigma)
+        for j, phi_j in enumerate(phis):
+            res &#43;= phi_j * data[t - j - 1]
+        data[t] = res
+    return data
+
+  係数が1より小さい場合
+  
+  #
+  
+
+plt.figure(figsize=(12, 6))
+phis = [0.1]
+ar1_1 = create_ARdata(phis=phis)
+plt.plot(ar1_1)
+plt.title(f&#34;係数が{phis[0]}である場合&#34;, fontsize=15)
+plt.show()
+==AR(1)過程の長さ500のデータを作成==
+
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/timeseries/model/005-ar-process/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="AR過程">
+  <meta property="og:description" content="import statsmodels.api as sm import numpy as np import matplotlib.pyplot as plt import japanize_matplotlib AR過程のデータを作成する # データを生成するための関数を用意します
+def create_ARdata(phis=[0.1], N=500, init=1, c=1, sigma=0.3): &#34;&#34;&#34;AR過程のデータを作成する&#34;&#34;&#34; print(f&#34;==AR({len(phis)})過程の長さ{N}のデータを作成==&#34;) data = np.zeros(N) data[0] = init &#43; np.random.normal(0, sigma) for t in range(2, N): res = c &#43; np.random.normal(0, sigma) for j, phi_j in enumerate(phis): res &#43;= phi_j * data[t - j - 1] data[t] = res return data 係数が1より小さい場合 # plt.figure(figsize=(12, 6)) phis = [0.1] ar1_1 = create_ARdata(phis=phis) plt.plot(ar1_1) plt.title(f&#34;係数が{phis[0]}である場合&#34;, fontsize=15) plt.show() ==AR(1)過程の長さ500のデータを作成==">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="timeseries">
+<title>AR過程 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/timeseries/model/005-ar-process/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/timeseries/model/005-ar-process/" title="AR Process">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/timeseries/model/005-ar-process/" title="AR Process">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/timeseries/model/005-ar-process/" title="Proses AR">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-timeseries">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/timeseries/model/005-ar-process/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/timeseries/model/005-ar-process/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/timeseries/model/005-ar-process/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>AR過程</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#ar過程のデータを作成する">AR過程のデータを作成する</a>
+      <ul>
+        <li><a href="#係数が1より小さい場合">係数が1より小さい場合</a></li>
+        <li><a href="#係数が１である場合">係数が１である場合</a></li>
+        <li><a href="#係数が１より大きい場合">係数が１より大きい場合</a></li>
+      </ul>
+    </li>
+    <li><a href="#ar2">AR(2)</a></li>
+    <li><a href="#モデルの推定">モデルの推定</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/J418ZrK5p08" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> statsmodels.api <span style="color:#66d9ef">as</span> sm
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span></code></pre></div><h2 id="ar過程のデータを作成する">
+  AR過程のデータを作成する
+  
+  <a class="anchor" href="#ar%e9%81%8e%e7%a8%8b%e3%81%ae%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e4%bd%9c%e6%88%90%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+<p>データを生成するための関数を用意します</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_ARdata</span>(phis<span style="color:#f92672">=</span>[<span style="color:#ae81ff">0.1</span>], N<span style="color:#f92672">=</span><span style="color:#ae81ff">500</span>, init<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, c<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, sigma<span style="color:#f92672">=</span><span style="color:#ae81ff">0.3</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;AR過程のデータを作成する&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;==AR(</span><span style="color:#e6db74">{</span>len(phis)<span style="color:#e6db74">}</span><span style="color:#e6db74">)過程の長さ</span><span style="color:#e6db74">{</span>N<span style="color:#e6db74">}</span><span style="color:#e6db74">のデータを作成==&#34;</span>)
+</span></span><span style="display:flex;"><span>    data <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(N)
+</span></span><span style="display:flex;"><span>    data[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> init <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>normal(<span style="color:#ae81ff">0</span>, sigma)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> t <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">2</span>, N):
+</span></span><span style="display:flex;"><span>        res <span style="color:#f92672">=</span> c <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>normal(<span style="color:#ae81ff">0</span>, sigma)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> j, phi_j <span style="color:#f92672">in</span> enumerate(phis):
+</span></span><span style="display:flex;"><span>            res <span style="color:#f92672">+=</span> phi_j <span style="color:#f92672">*</span> data[t <span style="color:#f92672">-</span> j <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>        data[t] <span style="color:#f92672">=</span> res
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> data
+</span></span></code></pre></div><h3 id="係数が1より小さい場合">
+  係数が1より小さい場合
+  
+  <a class="anchor" href="#%e4%bf%82%e6%95%b0%e3%81%8c1%e3%82%88%e3%82%8a%e5%b0%8f%e3%81%95%e3%81%84%e5%a0%b4%e5%90%88">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>phis <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0.1</span>]
+</span></span><span style="display:flex;"><span>ar1_1 <span style="color:#f92672">=</span> create_ARdata(phis<span style="color:#f92672">=</span>phis)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(ar1_1)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;係数が</span><span style="color:#e6db74">{</span>phis[<span style="color:#ae81ff">0</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">である場合&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><pre><code>==AR(1)過程の長さ500のデータを作成==
+</code></pre>
+<p><img src="/images/timeseries/model/005-AR-process_files/005-AR-process_4_1.png" alt="png" /></p>
+<h3 id="係数が１である場合">
+  係数が１である場合
+  
+  <a class="anchor" href="#%e4%bf%82%e6%95%b0%e3%81%8c%ef%bc%91%e3%81%a7%e3%81%82%e3%82%8b%e5%a0%b4%e5%90%88">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>phis <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>ar1_2 <span style="color:#f92672">=</span> create_ARdata(phis<span style="color:#f92672">=</span>phis)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(ar1_2)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;係数が</span><span style="color:#e6db74">{</span>phis[<span style="color:#ae81ff">0</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">である場合&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><pre><code>==AR(1)過程の長さ500のデータを作成==
+</code></pre>
+<p><img src="/images/timeseries/model/005-AR-process_files/005-AR-process_6_1.png" alt="png" /></p>
+<h3 id="係数が１より大きい場合">
+  係数が１より大きい場合
+  
+  <a class="anchor" href="#%e4%bf%82%e6%95%b0%e3%81%8c%ef%bc%91%e3%82%88%e3%82%8a%e5%a4%a7%e3%81%8d%e3%81%84%e5%a0%b4%e5%90%88">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>phis <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1.04</span>]
+</span></span><span style="display:flex;"><span>ar1_2 <span style="color:#f92672">=</span> create_ARdata(phis<span style="color:#f92672">=</span>phis)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(ar1_2)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;係数が</span><span style="color:#e6db74">{</span>phis[<span style="color:#ae81ff">0</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">である場合&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><pre><code>==AR(1)過程の長さ500のデータを作成==
+</code></pre>
+<p><img src="/images/timeseries/model/005-AR-process_files/005-AR-process_8_1.png" alt="png" /></p>
+<h2 id="ar2">
+  AR(2)
+  
+  <a class="anchor" href="#ar2">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>phis <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0.1</span>, <span style="color:#ae81ff">0.3</span>]
+</span></span><span style="display:flex;"><span>ar2_1 <span style="color:#f92672">=</span> create_ARdata(phis<span style="color:#f92672">=</span>phis, N<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(ar2_1)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;係数が</span><span style="color:#e6db74">{</span>phis<span style="color:#e6db74">}</span><span style="color:#e6db74">である場合&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><pre><code>==AR(2)過程の長さ100のデータを作成==
+</code></pre>
+<p><img src="/images/timeseries/model/005-AR-process_files/005-AR-process_10_1.png" alt="png" /></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>))
+</span></span><span style="display:flex;"><span>phis <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0.1</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1.11</span>]
+</span></span><span style="display:flex;"><span>ar2_1 <span style="color:#f92672">=</span> create_ARdata(phis<span style="color:#f92672">=</span>phis)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(ar2_1)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;係数が</span><span style="color:#e6db74">{</span>phis<span style="color:#e6db74">}</span><span style="color:#e6db74">である場合&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><pre><code>==AR(2)過程の長さ500のデータを作成==
+</code></pre>
+<p><img src="/images/timeseries/model/005-AR-process_files/005-AR-process_11_1.png" alt="png" /></p>
+<h2 id="モデルの推定">
+  モデルの推定
+  
+  <a class="anchor" href="#%e3%83%a2%e3%83%87%e3%83%ab%e3%81%ae%e6%8e%a8%e5%ae%9a">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> statsmodels.tsa.ar_model <span style="color:#f92672">import</span> AutoReg
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>res <span style="color:#f92672">=</span> AutoReg(ar1_1, lags<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)<span style="color:#f92672">.</span>fit()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>out <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;AIC: </span><span style="color:#e6db74">{0:0.3f}</span><span style="color:#e6db74">, HQIC: </span><span style="color:#e6db74">{1:0.3f}</span><span style="color:#e6db74">, BIC: </span><span style="color:#e6db74">{2:0.3f}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>print(out<span style="color:#f92672">.</span>format(res<span style="color:#f92672">.</span>aic, res<span style="color:#f92672">.</span>hqic, res<span style="color:#f92672">.</span>bic))
+</span></span></code></pre></div><pre><code>AIC: 231.486, HQIC: 236.445, BIC: 244.124
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>print(res<span style="color:#f92672">.</span>params)
+</span></span><span style="display:flex;"><span>print(res<span style="color:#f92672">.</span>sigma2)
+</span></span><span style="display:flex;"><span>res<span style="color:#f92672">.</span>summary()
+</span></span></code></pre></div><pre><code>[1.03832755 0.07236388]
+0.09199676371696269
+</code></pre>
+<!-- raw HTML omitted -->
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#ar過程のデータを作成する">AR過程のデータを作成する</a>
+      <ul>
+        <li><a href="#係数が1より小さい場合">係数が1より小さい場合</a></li>
+        <li><a href="#係数が１である場合">係数が１である場合</a></li>
+        <li><a href="#係数が１より大きい場合">係数が１より大きい場合</a></li>
+      </ul>
+    </li>
+    <li><a href="#ar2">AR(2)</a></li>
+    <li><a href="#モデルの推定">モデルの推定</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

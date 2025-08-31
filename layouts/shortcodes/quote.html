@@ -1,0 +1,5 @@
+{{ $_hugo_config := `{ "version": 1 }` }}
+<blockquote class="quotearea">
+<p class="quotetext"><i class="fas fa-quote-left"></i> {{ .Inner | markdownify }}<i class="fas fa-quote-right"></i></p>
+<p class="quotefrom"><i class="fas fa-book-open"></i> <a href="{{.Get 1}}" target="_blank" rel="noopener noreferrer">{{.Get 0}}</a></p>
+</blockquote>

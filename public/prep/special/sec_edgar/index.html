@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+EDGAR(Electronic Data Gathering, Analysis, and Retrieval system)とは、米国の証券取引委員会の運営するサイトです。
+米国の法による法定開示書類が管理されています。ここでは米国企業の財務諸表も管理されています。
+今回は指定した企業の財務諸表を取得して、データをプロットしてみようと思います。
+import os
+from sec_edgar_downloader import Downloader
+
+dl = Downloader(&#34;./data/&#34;)
+ticker_symbol = &#34;MSFT&#34;
+
+if os.path.exists(f&#34;./data/sec-edgar-filings/{ticker_symbol}/10-K/&#34;):
+    print(&#34;ダウンロード済みです。&#34;)
+elif dl.get(&#34;10-K&#34;, ticker_symbol, after=&#34;2021-01-01&#34;, before=&#34;2021-12-31&#34;) &gt; 0:
+    print(&#34;ダウンロードに成功しました。&#34;)
+else:
+    print(&#34;ダウンロードに失敗しました。&#34;)
+ダウンロード済みです。
+
+
+  10-Kに含まれる表を抜き出す
+  
+  #
+  
+
+pandasのread_htmlを用いることでテーブルをDataFrameの形で抜き出すことができます。
+
+pandas.read_html
+
+
+import glob
+import pandas as pd
+
+filing_details_filepath = glob.glob(
+    f&#34;./data/sec-edgar-filings/{ticker_symbol}/10-K/*/filing-details.html&#34;
+)[0]
+tables = pd.read_html(filing_details_filepath)
+
+  CASH FLOWS STATEMENTSのテーブルを抽出
+  
+  #
+  
+
+「CASH FLOWS STATEMENTS」のページのテーブルを抽出します。
+様々な方法が考えられますが、ここでは「Cash and cash equivalents, end of period」というワードを見つけたらそのテーブルを抜き出すように指定しています。">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/prep/special/sec_edgar/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="EDGARのデータを取得">
+  <meta property="og:description" content="EDGAR(Electronic Data Gathering, Analysis, and Retrieval system)とは、米国の証券取引委員会の運営するサイトです。 米国の法による法定開示書類が管理されています。ここでは米国企業の財務諸表も管理されています。
+今回は指定した企業の財務諸表を取得して、データをプロットしてみようと思います。
+import os from sec_edgar_downloader import Downloader dl = Downloader(&#34;./data/&#34;) ticker_symbol = &#34;MSFT&#34; if os.path.exists(f&#34;./data/sec-edgar-filings/{ticker_symbol}/10-K/&#34;): print(&#34;ダウンロード済みです。&#34;) elif dl.get(&#34;10-K&#34;, ticker_symbol, after=&#34;2021-01-01&#34;, before=&#34;2021-12-31&#34;) &gt; 0: print(&#34;ダウンロードに成功しました。&#34;) else: print(&#34;ダウンロードに失敗しました。&#34;) ダウンロード済みです。10-Kに含まれる表を抜き出す # pandasのread_htmlを用いることでテーブルをDataFrameの形で抜き出すことができます。
+pandas.read_html
+import glob import pandas as pd filing_details_filepath = glob.glob( f&#34;./data/sec-edgar-filings/{ticker_symbol}/10-K/*/filing-details.html&#34; )[0] tables = pd.read_html(filing_details_filepath) CASH FLOWS STATEMENTSのテーブルを抽出 # 「CASH FLOWS STATEMENTS」のページのテーブルを抽出します。 様々な方法が考えられますが、ここでは「Cash and cash equivalents, end of period」というワードを見つけたらそのテーブルを抜き出すように指定しています。">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="prep">
+<title>EDGARのデータを取得 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/prep/special/sec_edgar/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-prep">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>EDGARのデータを取得</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#10-kに含まれる表を抜き出す">10-Kに含まれる表を抜き出す</a></li>
+    <li><a href="#cash-flows-statementsのテーブルを抽出">CASH FLOWS STATEMENTSのテーブルを抽出</a></li>
+    <li><a href="#データの前処理">データの前処理</a></li>
+    <li><a href="#データをプロットする">データをプロットする</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/twu1fOw7ZBo" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<p>EDGAR(Electronic Data Gathering, Analysis, and Retrieval system)とは、米国の証券取引委員会の運営するサイトです。
+米国の法による法定開示書類が管理されています。ここでは米国企業の財務諸表も管理されています。</p>
+<p>今回は指定した企業の財務諸表を取得して、データをプロットしてみようと思います。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sec_edgar_downloader <span style="color:#f92672">import</span> Downloader
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dl <span style="color:#f92672">=</span> Downloader(<span style="color:#e6db74">&#34;./data/&#34;</span>)
+</span></span><span style="display:flex;"><span>ticker_symbol <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;MSFT&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;./data/sec-edgar-filings/</span><span style="color:#e6db74">{</span>ticker_symbol<span style="color:#e6db74">}</span><span style="color:#e6db74">/10-K/&#34;</span>):
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;ダウンロード済みです。&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">elif</span> dl<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;10-K&#34;</span>, ticker_symbol, after<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;2021-01-01&#34;</span>, before<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;2021-12-31&#34;</span>) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;ダウンロードに成功しました。&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;ダウンロードに失敗しました。&#34;</span>)
+</span></span></code></pre></div><pre><code>ダウンロード済みです。
+</code></pre>
+<h2 id="10-kに含まれる表を抜き出す">
+  10-Kに含まれる表を抜き出す
+  
+  <a class="anchor" href="#10-k%e3%81%ab%e5%90%ab%e3%81%be%e3%82%8c%e3%82%8b%e8%a1%a8%e3%82%92%e6%8a%9c%e3%81%8d%e5%87%ba%e3%81%99">#</a>
+  
+</h2>
+<p>pandasの<code>read_html</code>を用いることでテーブルをDataFrameの形で抜き出すことができます。</p>
+
+<div class="notices document" ><p><a href="https://pandas.pydata.org/docs/reference/api/pandas.read_html.html">pandas.read_html</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> glob
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>filing_details_filepath <span style="color:#f92672">=</span> glob<span style="color:#f92672">.</span>glob(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;./data/sec-edgar-filings/</span><span style="color:#e6db74">{</span>ticker_symbol<span style="color:#e6db74">}</span><span style="color:#e6db74">/10-K/*/filing-details.html&#34;</span>
+</span></span><span style="display:flex;"><span>)[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>tables <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_html(filing_details_filepath)
+</span></span></code></pre></div><h2 id="cash-flows-statementsのテーブルを抽出">
+  CASH FLOWS STATEMENTSのテーブルを抽出
+  
+  <a class="anchor" href="#cash-flows-statements%e3%81%ae%e3%83%86%e3%83%bc%e3%83%96%e3%83%ab%e3%82%92%e6%8a%bd%e5%87%ba">#</a>
+  
+</h2>
+<p>「CASH FLOWS STATEMENTS」のページのテーブルを抽出します。
+様々な方法が考えられますが、ここでは「<em>Cash and cash equivalents, end of period</em>」というワードを見つけたらそのテーブルを抜き出すように指定しています。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>cs_table <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>  <span style="color:#75715e"># CASH FLOWS STATEMENTSのページのテーブル</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> table <span style="color:#f92672">in</span> tables:
+</span></span><span style="display:flex;"><span>    tab_html <span style="color:#f92672">=</span> table<span style="color:#f92672">.</span>to_html()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#34;Cash and cash equivalents, end of period&#34;</span> <span style="color:#f92672">in</span> tab_html:
+</span></span><span style="display:flex;"><span>        cs_table <span style="color:#f92672">=</span> table
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cs_table<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">10</span>)
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h2 id="データの前処理">
+  データの前処理
+  
+  <a class="anchor" href="#%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ae%e5%89%8d%e5%87%a6%e7%90%86">#</a>
+  
+</h2>
+<p>NaNが多く含まれる上、文字列扱いになっていてこのままでは数値を読み取れません。
+NaNや不要な記号を取り除き、文字列を数値に変換します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 「(」「)」「,」の文字列を削除する</span>
+</span></span><span style="display:flex;"><span>cs_table <span style="color:#f92672">=</span> cs_table<span style="color:#f92672">.</span>replace([<span style="color:#e6db74">&#34;,&#34;</span>, <span style="color:#e6db74">&#34;\)&#34;</span>, <span style="color:#e6db74">&#34;\(&#34;</span>], <span style="color:#e6db74">&#34;&#34;</span>, regex<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>cs_table <span style="color:#f92672">=</span> cs_table<span style="color:#f92672">.</span>replace([<span style="color:#e6db74">&#34;&#34;</span>], np<span style="color:#f92672">.</span>nan)  <span style="color:#75715e"># 空白セルはnan扱いにする</span>
+</span></span><span style="display:flex;"><span>cs_table<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">10</span>)
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># データがない列を削除する</span>
+</span></span><span style="display:flex;"><span>row_num <span style="color:#f92672">=</span> cs_table<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> colname <span style="color:#f92672">in</span> cs_table<span style="color:#f92672">.</span>columns:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> cs_table[colname]<span style="color:#f92672">.</span>isna()<span style="color:#f92672">.</span>sum() <span style="color:#f92672">&gt;</span> row_num <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.8</span>:  <span style="color:#75715e"># 8割以上の行がNaNの列は</span>
+</span></span><span style="display:flex;"><span>        cs_table<span style="color:#f92672">.</span>drop(colname, inplace<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)  <span style="color:#75715e"># 不要な列として削除する</span>
+</span></span><span style="display:flex;"><span>cs_table<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">10</span>)
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># NaNの多い行も削除する</span>
+</span></span><span style="display:flex;"><span>col_num <span style="color:#f92672">=</span> cs_table<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>cs_table[cs_table<span style="color:#f92672">.</span>isna()<span style="color:#f92672">.</span>sum(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">&lt;</span> col_num <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.8</span>]
+</span></span><span style="display:flex;"><span>cs_table<span style="color:#f92672">.</span>columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;item&#34;</span>, <span style="color:#e6db74">&#34;2021&#34;</span>, <span style="color:#e6db74">&#34;2020&#34;</span>, <span style="color:#e6db74">&#34;2019&#34;</span>]
+</span></span><span style="display:flex;"><span>cs_table <span style="color:#f92672">=</span> cs_table[[<span style="color:#e6db74">&#34;item&#34;</span>, <span style="color:#e6db74">&#34;2019&#34;</span>, <span style="color:#e6db74">&#34;2020&#34;</span>, <span style="color:#e6db74">&#34;2021&#34;</span>]]
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># years = cs_table.fillna(&#39;&#39;).query(&#34;item.str.contains(&#39;Year Ended&#39;)&#34;).iloc[0, 1:]</span>
+</span></span></code></pre></div><h2 id="データをプロットする">
+  データをプロットする
+  
+  <a class="anchor" href="#%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e3%83%97%e3%83%ad%e3%83%83%e3%83%88%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>years <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;2019&#34;</span>, <span style="color:#e6db74">&#34;2020&#34;</span>, <span style="color:#e6db74">&#34;2021&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> item_name <span style="color:#f92672">in</span> cs_table[<span style="color:#e6db74">&#34;item&#34;</span>][:<span style="color:#ae81ff">10</span>]:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        data <span style="color:#f92672">=</span> [float(v) <span style="color:#66d9ef">for</span> v <span style="color:#f92672">in</span> cs_table<span style="color:#f92672">.</span>query(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;item==&#39;</span><span style="color:#e6db74">{</span>item_name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;&#34;</span>)<span style="color:#f92672">.</span>iloc[<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>:]]
+</span></span><span style="display:flex;"><span>        plt<span style="color:#f92672">.</span>plot(data)
+</span></span><span style="display:flex;"><span>        plt<span style="color:#f92672">.</span>xticks([i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(years))], years)
+</span></span><span style="display:flex;"><span>        plt<span style="color:#f92672">.</span>title(item_name)
+</span></span><span style="display:flex;"><span>        plt<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>        plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">IndexError</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span></code></pre></div><p><img src="/images/prep/special/SEC_EDGAR_files/SEC_EDGAR_11_0.png" alt="png" /></p>
+<p><img src="/images/prep/special/SEC_EDGAR_files/SEC_EDGAR_11_1.png" alt="png" /></p>
+<p><img src="/images/prep/special/SEC_EDGAR_files/SEC_EDGAR_11_2.png" alt="png" /></p>
+<p><img src="/images/prep/special/SEC_EDGAR_files/SEC_EDGAR_11_3.png" alt="png" /></p>
+<p><img src="/images/prep/special/SEC_EDGAR_files/SEC_EDGAR_11_4.png" alt="png" /></p>
+<p><img src="/images/prep/special/SEC_EDGAR_files/SEC_EDGAR_11_5.png" alt="png" /></p>
+<p><img src="/images/prep/special/SEC_EDGAR_files/SEC_EDGAR_11_6.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#10-kに含まれる表を抜き出す">10-Kに含まれる表を抜き出す</a></li>
+    <li><a href="#cash-flows-statementsのテーブルを抽出">CASH FLOWS STATEMENTSのテーブルを抽出</a></li>
+    <li><a href="#データの前処理">データの前処理</a></li>
+    <li><a href="#データをプロットする">データをプロットする</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

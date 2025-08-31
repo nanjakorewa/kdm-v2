@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+  EDINETのAPIを使用してみる
+  
+  #
+  
+
+
+import os
+import requests
+import pandas as pd
+
+API_ENDPOINT = &#34;https://disclosure.edinet-fsa.go.jp/api/v2&#34;  # v2を使用する
+
+  書類一覧APIのリクエストURL
+  
+  #
+  
+
+11_EDINET_API仕様書に従って書類一覧を取得してみます。
+request_params = {
+    &#34;date&#34;: &#34;2024-02-09&#34;,
+    &#34;type&#34;: 2,  # 1=メタデータのみ、2=提出書類一覧及びメタデータ
+    &#34;Subscription-Key&#34;: os.environ.get(
+        &#34;EDINET_API_KEY&#34;
+    ),  # v1を使用する場合は不要, 2024年３月29日（金）まで利用可能
+}
+
+docs_submitted_json = requests.get(
+    f&#34;{API_ENDPOINT}/documents.json&#34;, request_params
+).json()
+
+  取得データの確認
+  
+  #
+  
+
+今は四半期報告書を取得したいので、『四半期報告書』が文書の説明（docDescription）に含まれている行のみを抽出して確認します。
+sd_df = pd.DataFrame(docs_submitted_json[&#34;results&#34;])
+sd_df = sd_df[sd_df[&#34;docDescription&#34;].str.contains(&#34;四半期報告書&#34;, na=False)]
+sd_df.head()
+
+.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/finance/misc/edinet/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="EDINET">
+  <meta property="og:description" content="EDINETのAPIを使用してみる # import os import requests import pandas as pd API_ENDPOINT = &#34;https://disclosure.edinet-fsa.go.jp/api/v2&#34; # v2を使用する 書類一覧APIのリクエストURL # 11_EDINET_API仕様書に従って書類一覧を取得してみます。
+request_params = { &#34;date&#34;: &#34;2024-02-09&#34;, &#34;type&#34;: 2, # 1=メタデータのみ、2=提出書類一覧及びメタデータ &#34;Subscription-Key&#34;: os.environ.get( &#34;EDINET_API_KEY&#34; ), # v1を使用する場合は不要, 2024年３月29日（金）まで利用可能 } docs_submitted_json = requests.get( f&#34;{API_ENDPOINT}/documents.json&#34;, request_params ).json() 取得データの確認 # 今は四半期報告書を取得したいので、『四半期報告書』が文書の説明（docDescription）に含まれている行のみを抽出して確認します。
+sd_df = pd.DataFrame(docs_submitted_json[&#34;results&#34;]) sd_df = sd_df[sd_df[&#34;docDescription&#34;].str.contains(&#34;四半期報告書&#34;, na=False)] sd_df.head() .dataframe tbody tr th {vertical-align: top;}.dataframe thead th {text-align: right;}">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="finance">
+<title>EDINET | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/finance/misc/edinet/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-finance">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>EDINET</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#edinetのapiを使用してみる">EDINETのAPIを使用してみる</a>
+      <ul>
+        <li><a href="#書類一覧apiのリクエストurl">書類一覧APIのリクエストURL</a></li>
+      </ul>
+    </li>
+    <li><a href="#取得データの確認">取得データの確認</a>
+      <ul>
+        <li><a href="#docidの確認">DocIDの確認</a></li>
+        <li><a href="#四半期報告書の取得">四半期報告書の取得</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/LAHV8tmzNso" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<h2 id="edinetのapiを使用してみる">
+  EDINETのAPIを使用してみる
+  
+  <a class="anchor" href="#edinet%e3%81%aeapi%e3%82%92%e4%bd%bf%e7%94%a8%e3%81%97%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h2>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>API_ENDPOINT <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://disclosure.edinet-fsa.go.jp/api/v2&#34;</span>  <span style="color:#75715e"># v2を使用する</span>
+</span></span></code></pre></div><h3 id="書類一覧apiのリクエストurl">
+  書類一覧APIのリクエストURL
+  
+  <a class="anchor" href="#%e6%9b%b8%e9%a1%9e%e4%b8%80%e8%a6%a7api%e3%81%ae%e3%83%aa%e3%82%af%e3%82%a8%e3%82%b9%e3%83%88url">#</a>
+  
+</h3>
+<p>11_EDINET_API仕様書に従って書類一覧を取得してみます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>request_params <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;date&#34;</span>: <span style="color:#e6db74">&#34;2024-02-09&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#ae81ff">2</span>,  <span style="color:#75715e"># 1=メタデータのみ、2=提出書類一覧及びメタデータ</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Subscription-Key&#34;</span>: os<span style="color:#f92672">.</span>environ<span style="color:#f92672">.</span>get(
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;EDINET_API_KEY&#34;</span>
+</span></span><span style="display:flex;"><span>    ),  <span style="color:#75715e"># v1を使用する場合は不要, 2024年３月29日（金）まで利用可能</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>docs_submitted_json <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>API_ENDPOINT<span style="color:#e6db74">}</span><span style="color:#e6db74">/documents.json&#34;</span>, request_params
+</span></span><span style="display:flex;"><span>)<span style="color:#f92672">.</span>json()
+</span></span></code></pre></div><h2 id="取得データの確認">
+  取得データの確認
+  
+  <a class="anchor" href="#%e5%8f%96%e5%be%97%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ae%e7%a2%ba%e8%aa%8d">#</a>
+  
+</h2>
+<p>今は四半期報告書を取得したいので、『四半期報告書』が文書の説明（<code>docDescription</code>）に含まれている行のみを抽出して確認します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>sd_df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(docs_submitted_json[<span style="color:#e6db74">&#34;results&#34;</span>])
+</span></span><span style="display:flex;"><span>sd_df <span style="color:#f92672">=</span> sd_df[sd_df[<span style="color:#e6db74">&#34;docDescription&#34;</span>]<span style="color:#f92672">.</span>str<span style="color:#f92672">.</span>contains(<span style="color:#e6db74">&#34;四半期報告書&#34;</span>, na<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)]
+</span></span><span style="display:flex;"><span>sd_df<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h3 id="docidの確認">
+  DocIDの確認
+  
+  <a class="anchor" href="#docid%e3%81%ae%e7%a2%ba%e8%aa%8d">#</a>
+  
+</h3>
+<p>商船三井の四半期報告書のDocIDを確認してみます。<code>filerName</code>に商船三井が含まれる行のみを抽出します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>sd_df[sd_df<span style="color:#f92672">.</span>filerName<span style="color:#f92672">.</span>str<span style="color:#f92672">.</span>contains(<span style="color:#e6db74">&#34;商船三井&#34;</span>)]
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h3 id="四半期報告書の取得">
+  四半期報告書の取得
+  
+  <a class="anchor" href="#%e5%9b%9b%e5%8d%8a%e6%9c%9f%e5%a0%b1%e5%91%8a%e6%9b%b8%e3%81%ae%e5%8f%96%e5%be%97">#</a>
+  
+</h3>
+<p><code>docID</code> をもとに四半期報告書の取得に必要なデータを取得します。pdfを取得したい場合はマニュアルに従い、type=2を指定します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>docID <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;S100STH6&#34;</span>
+</span></span><span style="display:flex;"><span>pdf_response <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>API_ENDPOINT<span style="color:#e6db74">}</span><span style="color:#e6db74">/documents/</span><span style="color:#e6db74">{</span>docID<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Subscription-Key&#34;</span>: os<span style="color:#f92672">.</span>environ<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;EDINET_API_KEY&#34;</span>),
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;sample.pdf&#34;</span>, <span style="color:#e6db74">&#34;wb&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>    f<span style="color:#f92672">.</span>write(pdf_response<span style="color:#f92672">.</span>content)
+</span></span></code></pre></div><h4 id="ダウンロードしたpdfを表示する">
+  ダウンロードしたpdfを表示する
+  
+  <a class="anchor" href="#%e3%83%80%e3%82%a6%e3%83%b3%e3%83%ad%e3%83%bc%e3%83%89%e3%81%97%e3%81%9fpdf%e3%82%92%e8%a1%a8%e7%a4%ba%e3%81%99%e3%82%8b">#</a>
+  
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> IPython.display <span style="color:#f92672">import</span> display_pdf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;sample.pdf&#34;</span>, <span style="color:#e6db74">&#34;rb&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>    display_pdf(f<span style="color:#f92672">.</span>read(), raw<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span></code></pre></div><p>（pdfの表示は省略します）</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#edinetのapiを使用してみる">EDINETのAPIを使用してみる</a>
+      <ul>
+        <li><a href="#書類一覧apiのリクエストurl">書類一覧APIのリクエストURL</a></li>
+      </ul>
+    </li>
+    <li><a href="#取得データの確認">取得データの確認</a>
+      <ul>
+        <li><a href="#docidの確認">DocIDの確認</a></li>
+        <li><a href="#四半期報告書の取得">四半期報告書の取得</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

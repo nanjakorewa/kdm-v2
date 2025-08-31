@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+import japanize_matplotlib
+from sklearn.datasets import make_blobs
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+  サンプル用データの作成
+  
+  #
+  
+
+n_samples = 200
+X, y = make_blobs(n_samples=200, centers=2, n_features=2, cluster_std=2)
+X[:, 0] -= np.mean(X[:, 0])
+X[:, 1] -= np.mean(X[:, 1])
+
+fig = plt.figure(figsize=(7, 7))
+plt.title(&#34;データの散布図&#34;, fontsize=20)
+plt.scatter(X[:, 0], X[:, 1], c=y)
+plt.show()
+
+
+  線形判別分析法で決定境界を求める
+  
+  #
+  
+
+
+sklearn.discriminant_analysis.LinearDiscriminantAnalysis
+
+
+# 決定境界を求める
+clf = LinearDiscriminantAnalysis(store_covariance=True)
+clf.fit(X, y)
+
+# どのような決定境界が引かれたかを確認する
+w = clf.coef_[0]
+wt = -1 / (w[1] / w[0])  ## wに垂直な傾きを求める
+xs = np.linspace(-10, 10, 100)
+ys_w = [(w[1] / w[0]) * xi for xi in xs]
+ys_wt = [wt * xi for xi in xs]
+
+fig = plt.figure(figsize=(7, 7))
+plt.title(&#34;決定境界の傾きを可視化&#34;, fontsize=20)
+plt.scatter(X[:, 0], X[:, 1], c=y)  # サンプルデータ
+plt.plot(xs, ys_w, &#34;-.&#34;, color=&#34;k&#34;, alpha=0.5)  # ｗの向き
+plt.plot(xs, ys_wt, &#34;--&#34;, color=&#34;k&#34;)  # ｗに垂直な向き
+
+plt.xlim(-10, 10)
+plt.ylim(-10, 10)
+plt.show()
+
+# 求めたベクトルｗを元に１次元にデータを移した結果
+X_1d = clf.transform(X).reshape(1, -1)[0]
+fig = plt.figure(figsize=(7, 7))
+plt.title(&#34;１次元にデータを移した場合のデータの位置&#34;, fontsize=15)
+plt.scatter(X_1d, [0 for _ in range(n_samples)], c=y)
+plt.show()
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/basic/classification/linear_discriminant_analysis/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="判別分析">
+  <meta property="og:description" content="import numpy as np import matplotlib.pyplot as plt import japanize_matplotlib from sklearn.datasets import make_blobs from sklearn.discriminant_analysis import LinearDiscriminantAnalysis サンプル用データの作成 # n_samples = 200 X, y = make_blobs(n_samples=200, centers=2, n_features=2, cluster_std=2) X[:, 0] -= np.mean(X[:, 0]) X[:, 1] -= np.mean(X[:, 1]) fig = plt.figure(figsize=(7, 7)) plt.title(&#34;データの散布図&#34;, fontsize=20) plt.scatter(X[:, 0], X[:, 1], c=y) plt.show() 線形判別分析法で決定境界を求める # sklearn.discriminant_analysis.LinearDiscriminantAnalysis
+# 決定境界を求める clf = LinearDiscriminantAnalysis(store_covariance=True) clf.fit(X, y) # どのような決定境界が引かれたかを確認する w = clf.coef_[0] wt = -1 / (w[1] / w[0]) ## wに垂直な傾きを求める xs = np.linspace(-10, 10, 100) ys_w = [(w[1] / w[0]) * xi for xi in xs] ys_wt = [wt * xi for xi in xs] fig = plt.figure(figsize=(7, 7)) plt.title(&#34;決定境界の傾きを可視化&#34;, fontsize=20) plt.scatter(X[:, 0], X[:, 1], c=y) # サンプルデータ plt.plot(xs, ys_w, &#34;-.&#34;, color=&#34;k&#34;, alpha=0.5) # ｗの向き plt.plot(xs, ys_wt, &#34;--&#34;, color=&#34;k&#34;) # ｗに垂直な向き plt.xlim(-10, 10) plt.ylim(-10, 10) plt.show() # 求めたベクトルｗを元に１次元にデータを移した結果 X_1d = clf.transform(X).reshape(1, -1)[0] fig = plt.figure(figsize=(7, 7)) plt.title(&#34;１次元にデータを移した場合のデータの位置&#34;, fontsize=15) plt.scatter(X_1d, [0 for _ in range(n_samples)], c=y) plt.show()">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="basic">
+<title>判別分析 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/basic/classification/linear_discriminant_analysis/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/basic/classification/linear_discriminant_analysis/" title="Linear Discriminant Analysis">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/basic/classification/linear_discriminant_analysis/" title="Análisis discriminante lineal">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/basic/classification/linear_discriminant_analysis/" title="Analisis Diskriminan Linier">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-basic">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/basic/classification/linear_discriminant_analysis/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/basic/classification/linear_discriminant_analysis/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/basic/classification/linear_discriminant_analysis/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="active">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>判別分析</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#サンプル用データの作成">サンプル用データの作成</a></li>
+    <li><a href="#線形判別分析法で決定境界を求める">線形判別分析法で決定境界を求める</a></li>
+    <li><a href="#2次元以上のデータでの例">2次元以上のデータでの例</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/mw2V9rhJ0lE" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.datasets <span style="color:#f92672">import</span> make_blobs
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.discriminant_analysis <span style="color:#f92672">import</span> LinearDiscriminantAnalysis
+</span></span></code></pre></div><h2 id="サンプル用データの作成">
+  サンプル用データの作成
+  
+  <a class="anchor" href="#%e3%82%b5%e3%83%b3%e3%83%97%e3%83%ab%e7%94%a8%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ae%e4%bd%9c%e6%88%90">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>n_samples <span style="color:#f92672">=</span> <span style="color:#ae81ff">200</span>
+</span></span><span style="display:flex;"><span>X, y <span style="color:#f92672">=</span> make_blobs(n_samples<span style="color:#f92672">=</span><span style="color:#ae81ff">200</span>, centers<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, n_features<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, cluster_std<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>X[:, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">-=</span> np<span style="color:#f92672">.</span>mean(X[:, <span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span>X[:, <span style="color:#ae81ff">1</span>] <span style="color:#f92672">-=</span> np<span style="color:#f92672">.</span>mean(X[:, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;データの散布図&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(X[:, <span style="color:#ae81ff">0</span>], X[:, <span style="color:#ae81ff">1</span>], c<span style="color:#f92672">=</span>y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_5_0.png" alt="png" /></p>
+<h2 id="線形判別分析法で決定境界を求める">
+  線形判別分析法で決定境界を求める
+  
+  <a class="anchor" href="#%e7%b7%9a%e5%bd%a2%e5%88%a4%e5%88%a5%e5%88%86%e6%9e%90%e6%b3%95%e3%81%a7%e6%b1%ba%e5%ae%9a%e5%a2%83%e7%95%8c%e3%82%92%e6%b1%82%e3%82%81%e3%82%8b">#</a>
+  
+</h2>
+
+<div class="notices document" ><p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html">sklearn.discriminant_analysis.LinearDiscriminantAnalysis</a></p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 決定境界を求める</span>
+</span></span><span style="display:flex;"><span>clf <span style="color:#f92672">=</span> LinearDiscriminantAnalysis(store_covariance<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>clf<span style="color:#f92672">.</span>fit(X, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># どのような決定境界が引かれたかを確認する</span>
+</span></span><span style="display:flex;"><span>w <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>coef_[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>wt <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> (w[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">/</span> w[<span style="color:#ae81ff">0</span>])  <span style="color:#75715e">## wに垂直な傾きを求める</span>
+</span></span><span style="display:flex;"><span>xs <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">100</span>)
+</span></span><span style="display:flex;"><span>ys_w <span style="color:#f92672">=</span> [(w[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">/</span> w[<span style="color:#ae81ff">0</span>]) <span style="color:#f92672">*</span> xi <span style="color:#66d9ef">for</span> xi <span style="color:#f92672">in</span> xs]
+</span></span><span style="display:flex;"><span>ys_wt <span style="color:#f92672">=</span> [wt <span style="color:#f92672">*</span> xi <span style="color:#66d9ef">for</span> xi <span style="color:#f92672">in</span> xs]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;決定境界の傾きを可視化&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(X[:, <span style="color:#ae81ff">0</span>], X[:, <span style="color:#ae81ff">1</span>], c<span style="color:#f92672">=</span>y)  <span style="color:#75715e"># サンプルデータ</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(xs, ys_w, <span style="color:#e6db74">&#34;-.&#34;</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;k&#34;</span>, alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>)  <span style="color:#75715e"># ｗの向き</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(xs, ys_wt, <span style="color:#e6db74">&#34;--&#34;</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;k&#34;</span>)  <span style="color:#75715e"># ｗに垂直な向き</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlim(<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylim(<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 求めたベクトルｗを元に１次元にデータを移した結果</span>
+</span></span><span style="display:flex;"><span>X_1d <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>transform(X)<span style="color:#f92672">.</span>reshape(<span style="color:#ae81ff">1</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;１次元にデータを移した場合のデータの位置&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(X_1d, [<span style="color:#ae81ff">0</span> <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(n_samples)], c<span style="color:#f92672">=</span>y)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_7_0.png" alt="png" /></p>
+<p><img src="/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_7_1.png" alt="png" /></p>
+<h2 id="2次元以上のデータでの例">
+  2次元以上のデータでの例
+  
+  <a class="anchor" href="#2%e6%ac%a1%e5%85%83%e4%bb%a5%e4%b8%8a%e3%81%ae%e3%83%87%e3%83%bc%e3%82%bf%e3%81%a7%e3%81%ae%e4%be%8b">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>X_3d, y_3d <span style="color:#f92672">=</span> make_blobs(n_samples<span style="color:#f92672">=</span><span style="color:#ae81ff">200</span>, centers<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, n_features<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, cluster_std<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># サンプルデータの分布</span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;データの散布図&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span>)
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> fig<span style="color:#f92672">.</span>add_subplot(projection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;3d&#34;</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>scatter(X_3d[:, <span style="color:#ae81ff">0</span>], X_3d[:, <span style="color:#ae81ff">1</span>], X_3d[:, <span style="color:#ae81ff">2</span>], c<span style="color:#f92672">=</span>y_3d)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 線形判別分析を適用</span>
+</span></span><span style="display:flex;"><span>clf_3d <span style="color:#f92672">=</span> LinearDiscriminantAnalysis()
+</span></span><span style="display:flex;"><span>clf_3d<span style="color:#f92672">.</span>fit(X_3d, y_3d)
+</span></span><span style="display:flex;"><span>X_2d <span style="color:#f92672">=</span> clf_3d<span style="color:#f92672">.</span>transform(X_3d)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 判別分析で次元削減した結果</span>
+</span></span><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;2次元にデータを移した場合のデータの位置&#34;</span>, fontsize<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(X_2d[:, <span style="color:#ae81ff">0</span>], X_2d[:, <span style="color:#ae81ff">1</span>], c<span style="color:#f92672">=</span>y_3d)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_9_0.png" alt="png" /></p>
+<p><img src="/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_9_1.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/basic/classification/logistic_regression/" class="flex align-center book-icon">
+        <img src="/svg/backward.svg" class="book-icon" alt="Previous" title="ロジスティック回帰" />
+        <span>ロジスティック回帰</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/basic/tree/" class="flex align-center book-icon">
+        <span>決定木</span>
+        <img src="/svg/forward.svg" class="book-icon" alt="Next" title="決定木" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#サンプル用データの作成">サンプル用データの作成</a></li>
+    <li><a href="#線形判別分析法で決定境界を求める">線形判別分析法で決定境界を求める</a></li>
+    <li><a href="#2次元以上のデータでの例">2次元以上のデータでの例</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

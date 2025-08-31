@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+本書のゴール＝pythonで売上高や配当金のグラフを作成する
+以下のコンテンツではEDINET閲覧サイト（url）から取得できる情報をもとにデータを加工して作成しています。本ページに記載されているコードの実行や取得したデータの利用についてはEDINETの利用規約を確認し理解した上で利用してください。また、Version2のAPIを使用する際はログイン認証＋APIキーの発行が必要になります。
+※注意：使用時には必ず利用規約（pdf・web)を確認した上で常識の範囲内での使用にとどめてください。
+import os
+import time
+import zipfile
+
+import pandas as pd
+import requests
+
+API_ENDPOINT = &#34;https://disclosure.edinet-fsa.go.jp/api/v2&#34;  # v2を使用する
+
+
+def save_csv(docID, type=5):
+    &#34;&#34;&#34;EDINETからデータを取得してフォルダに保存する
+
+    Args:
+        docID (str): DocID
+    &#34;&#34;&#34;
+    assert type in [1, 2, 3, 4, 5], &#34;typeの指定が間違っている&#34;
+    if type == 1:
+        print(f&#34;{docID}のXBRLデータを取得中&#34;)
+    elif type == 2:
+        print(f&#34;{docID}のpdfデータを取得中&#34;)
+    elif type in {3, 4}:
+        print(f&#34;{docID}のデータを取得中&#34;)
+    elif type == 5:
+        print(f&#34;{docID}のcsvデータを取得中&#34;)
+        time.sleep(5)
+
+    r = requests.get(
+        f&#34;{API_ENDPOINT}/documents/{docID}&#34;,
+        {
+            &#34;type&#34;: type,
+            &#34;Subscription-Key&#34;: os.environ.get(&#34;EDINET_API_KEY&#34;),
+        },
+    )
+
+    if r is None:
+        print(&#34;データの取得に失敗しました。csvFlag==1かどうか確認してください。&#34;)
+    else:
+        os.makedirs(f&#34;{docID}&#34;, exist_ok=True)
+        temp_zip = &#34;uuid_89FD71B5_CD7B_4833-B30D‗5AA5006097E2.zip&#34;
+
+        with open(temp_zip, &#34;wb&#34;) as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                f.write(chunk)
+
+        with zipfile.ZipFile(temp_zip) as z:
+            z.extractall(f&#34;{docID}&#34;)
+
+        os.remove(temp_zip)
+
+  書類取得API
+  
+  #
+  
+
+csvデータをAPI経由で取得してzipファイルに保存します。">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/finance/misc/edinet2/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="EDINET②">
+  <meta property="og:description" content="本書のゴール＝pythonで売上高や配当金のグラフを作成する
+以下のコンテンツではEDINET閲覧サイト（url）から取得できる情報をもとにデータを加工して作成しています。本ページに記載されているコードの実行や取得したデータの利用についてはEDINETの利用規約を確認し理解した上で利用してください。また、Version2のAPIを使用する際はログイン認証＋APIキーの発行が必要になります。
+※注意：使用時には必ず利用規約（pdf・web)を確認した上で常識の範囲内での使用にとどめてください。
+import os import time import zipfile import pandas as pd import requests API_ENDPOINT = &#34;https://disclosure.edinet-fsa.go.jp/api/v2&#34; # v2を使用する def save_csv(docID, type=5): &#34;&#34;&#34;EDINETからデータを取得してフォルダに保存する Args: docID (str): DocID &#34;&#34;&#34; assert type in [1, 2, 3, 4, 5], &#34;typeの指定が間違っている&#34; if type == 1: print(f&#34;{docID}のXBRLデータを取得中&#34;) elif type == 2: print(f&#34;{docID}のpdfデータを取得中&#34;) elif type in {3, 4}: print(f&#34;{docID}のデータを取得中&#34;) elif type == 5: print(f&#34;{docID}のcsvデータを取得中&#34;) time.sleep(5) r = requests.get( f&#34;{API_ENDPOINT}/documents/{docID}&#34;, { &#34;type&#34;: type, &#34;Subscription-Key&#34;: os.environ.get(&#34;EDINET_API_KEY&#34;), }, ) if r is None: print(&#34;データの取得に失敗しました。csvFlag==1かどうか確認してください。&#34;) else: os.makedirs(f&#34;{docID}&#34;, exist_ok=True) temp_zip = &#34;uuid_89FD71B5_CD7B_4833-B30D‗5AA5006097E2.zip&#34; with open(temp_zip, &#34;wb&#34;) as f: for chunk in r.iter_content(chunk_size=1024): f.write(chunk) with zipfile.ZipFile(temp_zip) as z: z.extractall(f&#34;{docID}&#34;) os.remove(temp_zip) 書類取得API # csvデータをAPI経由で取得してzipファイルに保存します。">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="finance">
+<title>EDINET② | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/finance/misc/edinet2/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-finance">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>EDINET②</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#書類取得api">書類取得API</a></li>
+        <li><a href="#取得したデータの確認">取得したデータの確認</a></li>
+      </ul>
+    </li>
+    <li><a href="#xbrlファイルからデータを取得する">XBRLファイルからデータを取得する</a></li>
+    <li><a href="#配当の推移">配当の推移</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/0AWPr306ocg" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<p>本書のゴール＝pythonで売上高や配当金のグラフを作成する</p>
+<p>以下のコンテンツではEDINET閲覧サイト（<a href="https://disclosure2.edinet-fsa.go.jp/WEEE0030.aspx?bXVsPeWVhuiIueS4ieS6lSZjdGY9b2ZmJmZscz1vbiZscHI9b2ZmJnJwcj1vZmYmb3RoPW9mZiZwZnM9NiZ5ZXI9Jm1vbj0=">url</a>）から取得できる情報をもとにデータを加工して作成しています。本ページに記載されているコードの実行や取得したデータの利用についてはEDINETの利用規約を確認し理解した上で利用してください。また、Version2のAPIを使用する際はログイン認証＋APIキーの発行が必要になります。</p>
+<p>※注意：使用時には必ず利用規約（<a href="https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/download/ESE140191.pdf">pdf</a>・<a href="https://disclosure2dl.edinet-fsa.go.jp/guide/static/submit/WZEK0030.html">web</a>)を確認した上で常識の範囲内での使用にとどめてください。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> zipfile
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>API_ENDPOINT <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://disclosure.edinet-fsa.go.jp/api/v2&#34;</span>  <span style="color:#75715e"># v2を使用する</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">save_csv</span>(docID, type<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;EDINETからデータを取得してフォルダに保存する
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    Args:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        docID (str): DocID
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">assert</span> type <span style="color:#f92672">in</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>], <span style="color:#e6db74">&#34;typeの指定が間違っている&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> type <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>docID<span style="color:#e6db74">}</span><span style="color:#e6db74">のXBRLデータを取得中&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> type <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>docID<span style="color:#e6db74">}</span><span style="color:#e6db74">のpdfデータを取得中&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> type <span style="color:#f92672">in</span> {<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>}:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>docID<span style="color:#e6db74">}</span><span style="color:#e6db74">のデータを取得中&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> type <span style="color:#f92672">==</span> <span style="color:#ae81ff">5</span>:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>docID<span style="color:#e6db74">}</span><span style="color:#e6db74">のcsvデータを取得中&#34;</span>)
+</span></span><span style="display:flex;"><span>        time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">5</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>API_ENDPOINT<span style="color:#e6db74">}</span><span style="color:#e6db74">/documents/</span><span style="color:#e6db74">{</span>docID<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>,
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;type&#34;</span>: type,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Subscription-Key&#34;</span>: os<span style="color:#f92672">.</span>environ<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;EDINET_API_KEY&#34;</span>),
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> r <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;データの取得に失敗しました。csvFlag==1かどうか確認してください。&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        os<span style="color:#f92672">.</span>makedirs(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>docID<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>, exist_ok<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>        temp_zip <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;uuid_89FD71B5_CD7B_4833-B30D‗5AA5006097E2.zip&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> open(temp_zip, <span style="color:#e6db74">&#34;wb&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> chunk <span style="color:#f92672">in</span> r<span style="color:#f92672">.</span>iter_content(chunk_size<span style="color:#f92672">=</span><span style="color:#ae81ff">1024</span>):
+</span></span><span style="display:flex;"><span>                f<span style="color:#f92672">.</span>write(chunk)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> zipfile<span style="color:#f92672">.</span>ZipFile(temp_zip) <span style="color:#66d9ef">as</span> z:
+</span></span><span style="display:flex;"><span>            z<span style="color:#f92672">.</span>extractall(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>docID<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        os<span style="color:#f92672">.</span>remove(temp_zip)
+</span></span></code></pre></div><h3 id="書類取得api">
+  書類取得API
+  
+  <a class="anchor" href="#%e6%9b%b8%e9%a1%9e%e5%8f%96%e5%be%97api">#</a>
+  
+</h3>
+<p>csvデータをAPI経由で取得してzipファイルに保存します。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>docID_dict <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;商船三井&#34;</span>: <span style="color:#e6db74">&#34;S100STH6&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;日本郵船&#34;</span>: <span style="color:#e6db74">&#34;S100SS7P&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;玉井商船株式会社&#34;</span>: <span style="color:#e6db74">&#34;S100STLS&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;川崎汽船&#34;</span>: <span style="color:#e6db74">&#34;S100SRTI&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;飯野海運&#34;</span>: <span style="color:#e6db74">&#34;S100SP9O&#34;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> docID <span style="color:#f92672">in</span> docID_dict<span style="color:#f92672">.</span>values():
+</span></span><span style="display:flex;"><span>    save_csv(docID, type<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)
+</span></span></code></pre></div><pre><code>S100STH6のcsvデータを取得中
+S100SS7Pのcsvデータを取得中
+S100STLSのcsvデータを取得中
+S100SRTIのcsvデータを取得中
+S100SP9Oのcsvデータを取得中
+</code></pre>
+<h3 id="取得したデータの確認">
+  取得したデータの確認
+  
+  <a class="anchor" href="#%e5%8f%96%e5%be%97%e3%81%97%e3%81%9f%e3%83%87%e3%83%bc%e3%82%bf%e3%81%ae%e7%a2%ba%e8%aa%8d">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dfs <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> companyName, docID <span style="color:#f92672">in</span> docID_dict<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>    csv_savedir <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(docID, <span style="color:#e6db74">&#34;XBRL_TO_CSV&#34;</span>)
+</span></span><span style="display:flex;"><span>    filelist <span style="color:#f92672">=</span> [f <span style="color:#66d9ef">for</span> f <span style="color:#f92672">in</span> os<span style="color:#f92672">.</span>listdir(csv_savedir) <span style="color:#66d9ef">if</span> f<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74">&#34;jpcrp&#34;</span>)]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(filelist) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(
+</span></span><span style="display:flex;"><span>            os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(csv_savedir, filelist[<span style="color:#ae81ff">0</span>]), encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-16&#34;</span>, sep<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        df[<span style="color:#e6db74">&#34;会社名&#34;</span>] <span style="color:#f92672">=</span> [companyName <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(df<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>])]
+</span></span><span style="display:flex;"><span>        dfs<span style="color:#f92672">.</span>append(df)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>all_data <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(dfs)
+</span></span><span style="display:flex;"><span>all_data<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h4 id="取得したデータを確認してみる">
+  取得したデータを確認してみる
+  
+  <a class="anchor" href="#%e5%8f%96%e5%be%97%e3%81%97%e3%81%9f%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e7%a2%ba%e8%aa%8d%e3%81%97%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h4>
+<p><a href="https://www.fsa.go.jp/search/20221108/1b-1_GaiyoSetsumei.pdf">EDINET タクソノミ の概要説明</a>を見ながらデータのある項目を抽出してみます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>print(
+</span></span><span style="display:flex;"><span>    all_data<span style="color:#f92672">.</span>query(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;要素ID==&#39;jpcrp_cor:NotesRegardingDividendTextBlock&#39;&#34;</span>)[[<span style="color:#e6db74">&#34;会社名&#34;</span>, <span style="color:#e6db74">&#34;値&#34;</span>]]
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><pre><code>          会社名                                                  値
+462      商船三井  １．配当金支払額（決議）株式の種類配当金の総額（百万円）１株当たり配当額（円）基準日効力発生...
+463      商船三井  １．配当金支払額（決議）株式の種類配当金の総額（百万円）１株当たり配当額（円）基準日効力発生...
+431      日本郵船  配当金支払額（決議）株式の種類配当金の総額（百万円）配当の原資１株当たり配当額（円）基準日効...
+432      日本郵船  配当金支払額（決議）株式の種類配当金の総額（百万円）配当の原資１株当たり配当額（円）基準日効...
+334  玉井商船株式会社  前第３四半期連結累計期間（自　2022年４月１日　至　2022年12月31日）１．配当金支払...
+335  玉井商船株式会社  当第３四半期連結累計期間（自　2023年４月１日　至　2023年12月31日）１．配当金支払...
+380      川崎汽船  １．配当金支払額（決議）株式の種類配当金の総額（百万円）１株当たり配当額（円）基準日効力発生...
+382      川崎汽船  １．配当金支払額（決議）株式の種類配当金の総額（百万円）１株当たり配当額（円）基準日効力発生...
+385      飯野海運  １　配当金支払額（決議）株式の種類配当金の総額（百万円）１株当たり配当額（円）基準日効力発生...
+386      飯野海運  １　配当金支払額（決議）株式の種類配当金の総額（百万円）１株当たり配当額（円）基準日効力発生...
+</code></pre>
+<h4 id="グラフを作る">
+  グラフを作る
+  
+  <a class="anchor" href="#%e3%82%b0%e3%83%a9%e3%83%95%e3%82%92%e4%bd%9c%e3%82%8b">#</a>
+  
+</h4>
+<p>１株当たり当期純利益又は当期純損失(いわゆるEPS)の変化を可視化して比較したいと思います。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> japanize_matplotlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> seaborn <span style="color:#66d9ef">as</span> sns
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compare_company_IR</span>(data, contextId, elementId, elementJpName):
+</span></span><span style="display:flex;"><span>    plot_data <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>query(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;要素ID==&#39;</span><span style="color:#e6db74">{</span>elementId<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39; and コンテキストID==&#39;</span><span style="color:#e6db74">{</span>contextId<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;&#34;</span>)<span style="color:#f92672">.</span>copy()
+</span></span><span style="display:flex;"><span>    plot_data[elementJpName] <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>to_numeric(plot_data[<span style="color:#e6db74">&#34;値&#34;</span>])
+</span></span><span style="display:flex;"><span>    sns<span style="color:#f92672">.</span>barplot(data<span style="color:#f92672">=</span>plot_data, x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;会社名&#34;</span>, y<span style="color:#f92672">=</span>elementJpName)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>ylabel(elementJpName)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>compare_company_IR(
+</span></span><span style="display:flex;"><span>    all_data,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;CurrentQuarterDuration&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;jpcrp_cor:BasicEarningsLossPerShareSummaryOfBusinessResults&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;EPS&#34;</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>compare_company_IR(all_data, <span style="color:#e6db74">&#34;CurrentYTDDuration&#34;</span>, <span style="color:#e6db74">&#34;jppfs_cor:GrossProfit&#34;</span>, <span style="color:#e6db74">&#34;粗利益&#34;</span>)
+</span></span></code></pre></div><p><img src="/images/finance/misc/edinet2_files/edinet2_9_0.png" alt="png" /></p>
+<p><img src="/images/finance/misc/edinet2_files/edinet2_9_1.png" alt="png" /></p>
+<h2 id="xbrlファイルからデータを取得する">
+  XBRLファイルからデータを取得する
+  
+  <a class="anchor" href="#xbrl%e3%83%95%e3%82%a1%e3%82%a4%e3%83%ab%e3%81%8b%e3%82%89%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e5%8f%96%e5%be%97%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+<p><code>pip install edinet-xbrl</code>にてライブラリをインストールし使用します。
+参考文献：<a href="https://qiita.com/shoe116/items/dd362ad880f2b6baa96f">EDINETのXBRL用のPythonライブラリを作った - Parser編</a></p>
+<p>コンテキストIDを指定することで指定した時期のデータを取得できます。以下の<code>__NUM__</code>には0~9の値が入ります（<a href="https://disclosure2dl.edinet-fsa.go.jp/guide/static/submit/download/ESE140119.pdf">ドキュメント</a>）。</p>
+<pre tabindex="0"><code>Prior__NUM__YearDuration
+CurrentYearDuration
+Prior__NUM__YearInstant
+CurrentYearInstant
+CurrentQuarterDuration
+CurrentQuarterInstant
+Prior__NUM__QuarterDuration
+Prior__NUM__QuarterInstant
+CurrentYTDDuration
+Prior__NUM__YTDDuration
+InterimDuration
+InterimInstant
+Prior__NUM__InterimDuration
+Prior__NUM__InterimInstant
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> docID <span style="color:#f92672">in</span> docID_dict<span style="color:#f92672">.</span>values():
+</span></span><span style="display:flex;"><span>    save_csv(docID, type<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span></code></pre></div><pre><code>S100STH6のXBRLデータを取得中
+S100SS7PのXBRLデータを取得中
+S100STLSのXBRLデータを取得中
+S100SRTIのXBRLデータを取得中
+S100SP9OのXBRLデータを取得中
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> edinet_xbrl.edinet_xbrl_parser <span style="color:#f92672">import</span> EdinetXbrlParser
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>parser <span style="color:#f92672">=</span> EdinetXbrlParser()
+</span></span><span style="display:flex;"><span>edinet_xbrl_object <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_file(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;S100QZLI/XBRL/PublicDoc/jpcrp030000-asr-001_E04236-000_2023-03-31_01_2023-06-20.xbrl&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;jppfs_cor:Assets&#34;</span>
+</span></span><span style="display:flex;"><span>context_ref <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Prior1YearInstant&#34;</span>
+</span></span><span style="display:flex;"><span>current_year_assets <span style="color:#f92672">=</span> edinet_xbrl_object<span style="color:#f92672">.</span>get_data_by_context_ref(
+</span></span><span style="display:flex;"><span>    key, context_ref
+</span></span><span style="display:flex;"><span>)<span style="color:#f92672">.</span>get_value()
+</span></span><span style="display:flex;"><span>current_year_assets
+</span></span></code></pre></div><pre><code>c:\Users\nanja-win-ms\miniconda3\envs\py39\lib\site-packages\bs4\builder\__init__.py:545: XMLParsedAsHTMLWarning: It looks like you're parsing an XML document using an HTML parser. If this really is an HTML document (maybe it's XHTML?), you can ignore or filter this warning. If it's XML, you should know that using an XML parser will be more reliable. To parse this document as XML, make sure you have the lxml package installed, and pass the keyword argument `features=&quot;xml&quot;` into the BeautifulSoup constructor.
+  warnings.warn(
+
+
+
+
+
+'2686701000000'
+</code></pre>
+<h2 id="配当の推移">
+  配当の推移
+  
+  <a class="anchor" href="#%e9%85%8d%e5%bd%93%e3%81%ae%e6%8e%a8%e7%a7%bb">#</a>
+  
+</h2>
+<p>１株当たり配当額（<code>DividendPaidPerShareSummaryOfBusinessResults</code>）をプロットしてみます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;jpcrp_cor:DividendPaidPerShareSummaryOfBusinessResults&#34;</span>
+</span></span><span style="display:flex;"><span>edinet_xbrl_object <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_file(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;S100QZLI\XBRL\PublicDoc\jpcrp030000-asr-001_E04236-000_2023-03-31_01_2023-06-20.xbrl&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>interimDividendPaidPerShares <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>context_refs <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Prior4YearDuration_NonConsolidatedMember&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Prior3YearDuration_NonConsolidatedMember&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Prior2YearDuration_NonConsolidatedMember&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Prior1YearDuration_NonConsolidatedMember&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;CurrentYearDuration_NonConsolidatedMember&#34;</span>,
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> context_ref <span style="color:#f92672">in</span> context_refs:
+</span></span><span style="display:flex;"><span>    current_year_assets <span style="color:#f92672">=</span> edinet_xbrl_object<span style="color:#f92672">.</span>get_data_by_context_ref(
+</span></span><span style="display:flex;"><span>        key, context_ref
+</span></span><span style="display:flex;"><span>    )<span style="color:#f92672">.</span>get_value()
+</span></span><span style="display:flex;"><span>    interimDividendPaidPerShares<span style="color:#f92672">.</span>append(pd<span style="color:#f92672">.</span>to_numeric(current_year_assets))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>bar(
+</span></span><span style="display:flex;"><span>    [i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(interimDividendPaidPerShares))], interimDividendPaidPerShares
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><pre><code>&lt;BarContainer object of 5 artists&gt;
+</code></pre>
+<p><img src="/images/finance/misc/edinet2_files/edinet2_14_1.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#書類取得api">書類取得API</a></li>
+        <li><a href="#取得したデータの確認">取得したデータの確認</a></li>
+      </ul>
+    </li>
+    <li><a href="#xbrlファイルからデータを取得する">XBRLファイルからデータを取得する</a></li>
+    <li><a href="#配当の推移">配当の推移</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

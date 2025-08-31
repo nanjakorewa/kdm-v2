@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="レーダーチャートは複数の項目をまとめて比較する方法のひとつ。複数の項目がバランスよく高い値か、低い値かを確認するときに役に立つ。
+すべての項目を「高ければ高いほど良い」か「低ければ低いほど良い」状態にすると比較しやすくなる。
+
+
+  レーダーチャートは、複数の項目がある変量を構成比に直すことなく正多角形上に表現したグラフ。中心を0とし各項目ごとに値が大きいほど外側になるよう表現する。主に、それらの項目を属性としてもつ主体の性能などを比較するために用いる。（出典：Wikipedia）
+import matplotlib.pyplot as plt
+import pandas as pd
+from math import pi
+
+df = pd.DataFrame(
+    index=[&#34;$AAA&#34;, &#34;$BBB&#34;, &#34;$CCC&#34;],
+    data={
+        &#34;EPS&#34;: [1, 2, 3],
+        &#34;Revenue&#34;: [3, 3, 2],
+        &#34;Guidance&#34;: [1, 2, 3],
+        &#34;D/E&#34;: [3, 2, 1],
+        &#34;PER&#34;: [1, 2, 3],
+        &#34;Dividend&#34;: [2, 3, 3],
+    },
+)
+
+  レーダーチャートのプロット
+  
+  #
+  
+
+
+matplotlib.projections
+set_theta_offset(offset)
+
+plt.figure(figsize=(7, 7))
+ax = plt.subplot(111, polar=True)
+ax.set_theta_offset(pi / 2.0)
+ax.set_theta_direction(-1)
+
+# 各ラベルの位置調整
+angles = [2 * n * pi / len(df.columns) for n in range(len((df.columns)))]
+plt.xticks(angles, df.columns, size=20)
+ax.set_rlabel_position(0)
+plt.yticks([1, 2, 3], [&#34;★&#34;, &#34;★★&#34;, &#34;★★★&#34;], color=&#34;grey&#34;, size=13)
+plt.ylim(0, 3.5)
+
+# 指定範囲の塗りつぶし
+for ticker_symbol in [&#34;$AAA&#34;, &#34;$BBB&#34;, &#34;$CCC&#34;]:
+    values = df.loc[ticker_symbol].values.flatten().tolist()
+    ax.plot(
+        angles &#43; [0],
+        values &#43; [values[0]],
+        linewidth=1,
+        linestyle=&#34;solid&#34;,
+        c=&#34;#000&#34;,
+        label=ticker_symbol,
+    )
+    ax.fill(angles &#43; [0], values &#43; [values[0]], &#34;#aaa&#34;, alpha=0.2)
+
+plt.legend(bbox_to_anchor=(0.9, 1.1))
+plt.show()
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/finance/visualize/003-radar-circle/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="レーダーチャート">
+  <meta property="og:description" content="レーダーチャートは複数の項目をまとめて比較する方法のひとつ。複数の項目がバランスよく高い値か、低い値かを確認するときに役に立つ。 すべての項目を「高ければ高いほど良い」か「低ければ低いほど良い」状態にすると比較しやすくなる。
+レーダーチャートは、複数の項目がある変量を構成比に直すことなく正多角形上に表現したグラフ。中心を0とし各項目ごとに値が大きいほど外側になるよう表現する。主に、それらの項目を属性としてもつ主体の性能などを比較するために用いる。（出典：Wikipedia）
+import matplotlib.pyplot as plt import pandas as pd from math import pi df = pd.DataFrame( index=[&#34;$AAA&#34;, &#34;$BBB&#34;, &#34;$CCC&#34;], data={ &#34;EPS&#34;: [1, 2, 3], &#34;Revenue&#34;: [3, 3, 2], &#34;Guidance&#34;: [1, 2, 3], &#34;D/E&#34;: [3, 2, 1], &#34;PER&#34;: [1, 2, 3], &#34;Dividend&#34;: [2, 3, 3], }, ) レーダーチャートのプロット # matplotlib.projections set_theta_offset(offset) plt.figure(figsize=(7, 7)) ax = plt.subplot(111, polar=True) ax.set_theta_offset(pi / 2.0) ax.set_theta_direction(-1) # 各ラベルの位置調整 angles = [2 * n * pi / len(df.columns) for n in range(len((df.columns)))] plt.xticks(angles, df.columns, size=20) ax.set_rlabel_position(0) plt.yticks([1, 2, 3], [&#34;★&#34;, &#34;★★&#34;, &#34;★★★&#34;], color=&#34;grey&#34;, size=13) plt.ylim(0, 3.5) # 指定範囲の塗りつぶし for ticker_symbol in [&#34;$AAA&#34;, &#34;$BBB&#34;, &#34;$CCC&#34;]: values = df.loc[ticker_symbol].values.flatten().tolist() ax.plot( angles &#43; [0], values &#43; [values[0]], linewidth=1, linestyle=&#34;solid&#34;, c=&#34;#000&#34;, label=ticker_symbol, ) ax.fill(angles &#43; [0], values &#43; [values[0]], &#34;#aaa&#34;, alpha=0.2) plt.legend(bbox_to_anchor=(0.9, 1.1)) plt.show()">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="finance">
+<title>レーダーチャート | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/finance/visualize/003-radar-circle/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/finance/visualize/003-radar-circle/" title="Radar chart">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/finance/visualize/003-radar-circle/" title="Carta del radar">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/finance/visualize/003-radar-circle/" title="Radar chart">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-finance">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/finance/visualize/003-radar-circle/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/finance/visualize/003-radar-circle/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/finance/visualize/003-radar-circle/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>レーダーチャート</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#レーダーチャートのプロット">レーダーチャートのプロット</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><p>レーダーチャートは複数の項目をまとめて比較する方法のひとつ。複数の項目がバランスよく高い値か、低い値かを確認するときに役に立つ。
+すべての項目を「高ければ高いほど良い」か「低ければ低いほど良い」状態にすると比較しやすくなる。</p>
+
+<blockquote class='book-hint '>
+  <p>レーダーチャートは、複数の項目がある変量を構成比に直すことなく正多角形上に表現したグラフ。中心を0とし各項目ごとに値が大きいほど外側になるよう表現する。主に、それらの項目を属性としてもつ主体の性能などを比較するために用いる。（出典：<a href="https://ja.wikipedia.org/wiki/%E3%83%AC%E3%83%BC%E3%83%80%E3%83%BC%E3%83%81%E3%83%A3%E3%83%BC%E3%83%88">Wikipedia</a>）</p>
+</blockquote><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> math <span style="color:#f92672">import</span> pi
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(
+</span></span><span style="display:flex;"><span>    index<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;$AAA&#34;</span>, <span style="color:#e6db74">&#34;$BBB&#34;</span>, <span style="color:#e6db74">&#34;$CCC&#34;</span>],
+</span></span><span style="display:flex;"><span>    data<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;EPS&#34;</span>: [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>],
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Revenue&#34;</span>: [<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">2</span>],
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Guidance&#34;</span>: [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>],
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;D/E&#34;</span>: [<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>],
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;PER&#34;</span>: [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>],
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Dividend&#34;</span>: [<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">3</span>],
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><h2 id="レーダーチャートのプロット">
+  レーダーチャートのプロット
+  
+  <a class="anchor" href="#%e3%83%ac%e3%83%bc%e3%83%80%e3%83%bc%e3%83%81%e3%83%a3%e3%83%bc%e3%83%88%e3%81%ae%e3%83%97%e3%83%ad%e3%83%83%e3%83%88">#</a>
+  
+</h2>
+<ul>
+<li><a href="https://matplotlib.org/stable/api/projections_api.html">matplotlib.projections</a></li>
+<li><a href="https://matplotlib.org/stable/api/projections_api.html#matplotlib.projections.polar.PolarAxes.set_theta_offset">set_theta_offset(offset)</a></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">7</span>))
+</span></span><span style="display:flex;"><span>ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">111</span>, polar<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_theta_offset(pi <span style="color:#f92672">/</span> <span style="color:#ae81ff">2.0</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_theta_direction(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 各ラベルの位置調整</span>
+</span></span><span style="display:flex;"><span>angles <span style="color:#f92672">=</span> [<span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> n <span style="color:#f92672">*</span> pi <span style="color:#f92672">/</span> len(df<span style="color:#f92672">.</span>columns) <span style="color:#66d9ef">for</span> n <span style="color:#f92672">in</span> range(len((df<span style="color:#f92672">.</span>columns)))]
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xticks(angles, df<span style="color:#f92672">.</span>columns, size<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span>)
+</span></span><span style="display:flex;"><span>ax<span style="color:#f92672">.</span>set_rlabel_position(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>yticks([<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>], [<span style="color:#e6db74">&#34;★&#34;</span>, <span style="color:#e6db74">&#34;★★&#34;</span>, <span style="color:#e6db74">&#34;★★★&#34;</span>], color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;grey&#34;</span>, size<span style="color:#f92672">=</span><span style="color:#ae81ff">13</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylim(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">3.5</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 指定範囲の塗りつぶし</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> ticker_symbol <span style="color:#f92672">in</span> [<span style="color:#e6db74">&#34;$AAA&#34;</span>, <span style="color:#e6db74">&#34;$BBB&#34;</span>, <span style="color:#e6db74">&#34;$CCC&#34;</span>]:
+</span></span><span style="display:flex;"><span>    values <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>loc[ticker_symbol]<span style="color:#f92672">.</span>values<span style="color:#f92672">.</span>flatten()<span style="color:#f92672">.</span>tolist()
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>plot(
+</span></span><span style="display:flex;"><span>        angles <span style="color:#f92672">+</span> [<span style="color:#ae81ff">0</span>],
+</span></span><span style="display:flex;"><span>        values <span style="color:#f92672">+</span> [values[<span style="color:#ae81ff">0</span>]],
+</span></span><span style="display:flex;"><span>        linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>        linestyle<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;solid&#34;</span>,
+</span></span><span style="display:flex;"><span>        c<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#000&#34;</span>,
+</span></span><span style="display:flex;"><span>        label<span style="color:#f92672">=</span>ticker_symbol,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>fill(angles <span style="color:#f92672">+</span> [<span style="color:#ae81ff">0</span>], values <span style="color:#f92672">+</span> [values[<span style="color:#ae81ff">0</span>]], <span style="color:#e6db74">&#34;#aaa&#34;</span>, alpha<span style="color:#f92672">=</span><span style="color:#ae81ff">0.2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>legend(bbox_to_anchor<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0.9</span>, <span style="color:#ae81ff">1.1</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/finance/visualize/003-radar-circle_files/003-radar-circle_3_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#レーダーチャートのプロット">レーダーチャートのプロット</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

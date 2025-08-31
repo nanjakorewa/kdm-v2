@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Anomaly Detection Toolkit (ADTK)を使った異常検知をしてみます。
+オリジナルデータはNumenta Anomaly Benchmarkのものを使用しています。
+import pandas as pd
+
+s_train = pd.read_csv(
+    &#34;./training.csv&#34;, index_col=&#34;timestamp&#34;, parse_dates=True, squeeze=True
+)
+from adtk.data import validate_series
+
+s_train = validate_series(s_train)
+print(s_train)
+timestamp
+2014-04-01 00:00:00    18.090486
+2014-04-01 00:05:00    20.359843
+2014-04-01 00:10:00    21.105470
+2014-04-01 00:15:00    21.151585
+2014-04-01 00:20:00    18.137141
+                         ...    
+2014-04-14 23:35:00    18.269290
+2014-04-14 23:40:00    19.087351
+2014-04-14 23:45:00    19.594689
+2014-04-14 23:50:00    19.767817
+2014-04-14 23:55:00    20.479156
+Freq: 5T, Name: value, Length: 4032, dtype: float64
+
+
+  s_train = pd.read_csv(&quot;./training.csv&quot;, index_col=&quot;timestamp&quot;, parse_dates=True, squeeze=True)
+
+from adtk.visualization import plot
+
+plot(s_train)
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/basic/anomaly/adtk1/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="異常検知①">
+  <meta property="og:description" content="Anomaly Detection Toolkit (ADTK)を使った異常検知をしてみます。 オリジナルデータはNumenta Anomaly Benchmarkのものを使用しています。
+import pandas as pd s_train = pd.read_csv( &#34;./training.csv&#34;, index_col=&#34;timestamp&#34;, parse_dates=True, squeeze=True ) from adtk.data import validate_series s_train = validate_series(s_train) print(s_train) timestamp2014-04-01 00:00:00 18.0904862014-04-01 00:05:00 20.3598432014-04-01 00:10:00 21.1054702014-04-01 00:15:00 21.1515852014-04-01 00:20:00 18.137141... 2014-04-14 23:35:00 18.2692902014-04-14 23:40:00 19.0873512014-04-14 23:45:00 19.5946892014-04-14 23:50:00 19.7678172014-04-14 23:55:00 20.479156Freq: 5T, Name: value, Length: 4032, dtype: float64s_train = pd.read_csv(&#34;./training.csv&#34;, index_col=&#34;timestamp&#34;, parse_dates=True, squeeze=True)from adtk.visualization import plot plot(s_train)">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="basic">
+<title>異常検知① | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/basic/anomaly/adtk1/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/basic/anomaly/adtk1/" title="Anomaly Detection ①">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/basic/anomaly/adtk1/" title="Detección de anomalías①">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/basic/anomaly/adtk1/" title="Deteksi Anomali①">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-basic">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/basic/anomaly/adtk1/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/basic/anomaly/adtk1/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/basic/anomaly/adtk1/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="active">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>異常検知①</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#異常検知手法の比較">異常検知手法の比較</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><p><a href="https://adtk.readthedocs.io/en/stable/index.html">Anomaly Detection Toolkit (ADTK)</a>を使った異常検知をしてみます。
+オリジナルデータは<a href="https://github.com/numenta/NAB/blob/master/data/artificialWithAnomaly/art_daily_jumpsdown.csv">Numenta Anomaly Benchmark</a>のものを使用しています。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>s_train <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;./training.csv&#34;</span>, index_col<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;timestamp&#34;</span>, parse_dates<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, squeeze<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> adtk.data <span style="color:#f92672">import</span> validate_series
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>s_train <span style="color:#f92672">=</span> validate_series(s_train)
+</span></span><span style="display:flex;"><span>print(s_train)
+</span></span></code></pre></div><pre><code>timestamp
+2014-04-01 00:00:00    18.090486
+2014-04-01 00:05:00    20.359843
+2014-04-01 00:10:00    21.105470
+2014-04-01 00:15:00    21.151585
+2014-04-01 00:20:00    18.137141
+                         ...    
+2014-04-14 23:35:00    18.269290
+2014-04-14 23:40:00    19.087351
+2014-04-14 23:45:00    19.594689
+2014-04-14 23:50:00    19.767817
+2014-04-14 23:55:00    20.479156
+Freq: 5T, Name: value, Length: 4032, dtype: float64
+
+
+  s_train = pd.read_csv(&quot;./training.csv&quot;, index_col=&quot;timestamp&quot;, parse_dates=True, squeeze=True)
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> adtk.visualization <span style="color:#f92672">import</span> plot
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plot(s_train)
+</span></span></code></pre></div><p><img src="/images/basic/anomaly/adtk1_files/adtk1_2_1.png" alt="png" /></p>
+<h2 id="異常検知手法の比較">
+  異常検知手法の比較
+  
+  <a class="anchor" href="#%e7%95%b0%e5%b8%b8%e6%a4%9c%e7%9f%a5%e6%89%8b%e6%b3%95%e3%81%ae%e6%af%94%e8%bc%83">#</a>
+  
+</h2>
+<p><a href="https://adtk.readthedocs.io/en/stable/notebooks/demo.html?highlight=SeasonalAD#SeasonalAD">SeasonalAD</a>を用いた異常検知を行います。他の手法は<a href="https://adtk.readthedocs.io/en/stable/notebooks/demo.html?highlight=SeasonalAD#Detector">Detector</a>を参照してください。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> adtk.detector <span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    AutoregressionAD,
+</span></span><span style="display:flex;"><span>    InterQuartileRangeAD,
+</span></span><span style="display:flex;"><span>    LevelShiftAD,
+</span></span><span style="display:flex;"><span>    PersistAD,
+</span></span><span style="display:flex;"><span>    SeasonalAD,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>model_dict <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;LevelShiftAD&#34;</span>: LevelShiftAD(window<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;SeasonalAD&#34;</span>: SeasonalAD(),
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;PersistAD&#34;</span>: PersistAD(c<span style="color:#f92672">=</span><span style="color:#ae81ff">3.0</span>, side<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;positive&#34;</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;InterQuartileRangeAD&#34;</span>: InterQuartileRangeAD(c<span style="color:#f92672">=</span><span style="color:#ae81ff">1.5</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;AutoregressionAD&#34;</span>: AutoregressionAD(n_steps<span style="color:#f92672">=</span><span style="color:#ae81ff">7</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>, step_size<span style="color:#f92672">=</span><span style="color:#ae81ff">24</span>, c<span style="color:#f92672">=</span><span style="color:#ae81ff">3.0</span>),
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> model_name, model <span style="color:#f92672">in</span> model_dict<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>    anomalies <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>fit_detect(s_train)
+</span></span><span style="display:flex;"><span>    plot(s_train, anomaly<span style="color:#f92672">=</span>anomalies, anomaly_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;red&#34;</span>, anomaly_tag<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;marker&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>title(model_name)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/anomaly/adtk1_files/adtk1_4_0.png" alt="png" /></p>
+<p><img src="/images/basic/anomaly/adtk1_files/adtk1_4_1.png" alt="png" /></p>
+<p><img src="/images/basic/anomaly/adtk1_files/adtk1_4_2.png" alt="png" /></p>
+<p><img src="/images/basic/anomaly/adtk1_files/adtk1_4_3.png" alt="png" /></p>
+<p><img src="/images/basic/anomaly/adtk1_files/adtk1_4_4.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/basic/anomaly/" class="flex align-center book-icon">
+        <img src="/svg/backward.svg" class="book-icon" alt="Previous" title="異常検知" />
+        <span>異常検知</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/basic/anomaly/adtk2/" class="flex align-center book-icon">
+        <span>異常検知②</span>
+        <img src="/svg/forward.svg" class="book-icon" alt="Next" title="異常検知②" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#異常検知手法の比較">異常検知手法の比較</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

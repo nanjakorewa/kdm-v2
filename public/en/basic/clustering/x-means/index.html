@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+
+pyclustering.cluster.xmeans.xmeans Class Reference
+
+
+
+Pelleg, Dan, and Andrew W. Moore. &ldquo;X-means: Extending k-means with efficient estimation of the number of clusters.&rdquo; Icml. Vol. 1. 2000.
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+
+  When k is pre-specified in k-means
+  
+  #
+  
+
+def plot_by_kmeans(X, k=5):
+    y_pred = KMeans(n_clusters=k, random_state=random_state, init=&#34;random&#34;).fit_predict(
+        X
+    )
+
+    plt.scatter(X[:, 0], X[:, 1], c=y_pred, marker=&#34;x&#34;)
+    plt.title(f&#34;k-means, n_clusters={k}&#34;)
+
+
+# Create sample data
+n_samples = 1000
+random_state = 117117
+X, _ = make_blobs(
+    n_samples=n_samples, random_state=random_state, cluster_std=1, centers=10
+)
+
+# Run k-means&#43;&#43;.
+plot_by_kmeans(X)
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/en/basic/clustering/x-means/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="X-means">
+  <meta property="og:description" content="pyclustering.cluster.xmeans.xmeans Class Reference
+Pelleg, Dan, and Andrew W. Moore. “X-means: Extending k-means with efficient estimation of the number of clusters.” Icml. Vol. 1. 2000.
+import numpy as np import matplotlib.pyplot as plt from sklearn.cluster import KMeans from sklearn.datasets import make_blobs When k is pre-specified in k-means # def plot_by_kmeans(X, k=5): y_pred = KMeans(n_clusters=k, random_state=random_state, init=&#34;random&#34;).fit_predict( X ) plt.scatter(X[:, 0], X[:, 1], c=y_pred, marker=&#34;x&#34;) plt.title(f&#34;k-means, n_clusters={k}&#34;) # Create sample data n_samples = 1000 random_state = 117117 X, _ = make_blobs( n_samples=n_samples, random_state=random_state, cluster_std=1, centers=10 ) # Run k-means&#43;&#43;. plot_by_kmeans(X)">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="basic">
+<title>X-means | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/en/basic/clustering/x-means/">
+  <link rel="alternate" hreflang="ja" href="http://localhost:1313/basic/clustering/x-means/" title="X-means">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/basic/clustering/x-means/" title="X-means">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/basic/clustering/x-means/" title="X-means">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/en.search.min.8a44fa1abc5451ced25c796dc6ff27eb2d840fda90401b31bc09e7864db39f2e.js" integrity="sha256-ikT6GrxUUc7SXHltxv8n6y2ED9qQQBsxvAnnhk2zny4=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-basic">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/en/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>English</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/basic/clustering/x-means/">
+          <span>日本語</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/basic/clustering/x-means/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/basic/clustering/x-means/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/" class="">Linear Regression</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/linear_regression/" class="">Least-squares method</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/ridge_and_lasso/" class="">Ridge and Lasso regression</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/robust_regression/" class="">Outliers and Robustness</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/classification/" class="">Linear Classification</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/classification/logistic_regression/" class="">Logistic Regression</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/classification/linear_discriminant_analysis/" class="">Linear Discriminant Analysis</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/" class="">Decision Tree</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/decision_tree_classifier/" class="">Decision Tree (Classification)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/decision_tree_regressor/" class="">Decision tree (regression)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/parameter/" class="">Decision Tree Parameters</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/" class="">Ensemble</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/randomforest/" class="">Random Forests</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/stucking/" class="">Stacking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/adaboost_classification/" class="">Adaboost (classification)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/adaboost_regression/" class="">Adaboost(Regression)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/gradient_boosting1/" class="">Gradient boosting</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/" class="">Clustering</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/x-means/" class="active">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/" class="">Dimensionality Reduction</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/feature_selection/" class="">Feature Selection</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/timeseries/" class="">Time Series</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/timeseries/prophet/" class="">Using Prophet</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/anomaly/" class="">Anomaly detection</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/anomaly/adtk1/" class="">Anomaly Detection ①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/anomaly/adtk2/" class="">Anomaly Detection②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>X-means</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#when-k-is-pre-specified-in-k-means">When k is pre-specified in k-means</a></li>
+    <li><a href="#run-without-specifying-the-number-of-clusters-in-x-mean">Run without specifying the number of clusters in x-mean</a>
+      <ul>
+        <li><a href="#bicbayesian-information-criterion">BIC(bayesian information criterion)</a></li>
+        <li><a href="#minimum_noiseless_description_length">MINIMUM_NOISELESS_DESCRIPTION_LENGTH</a></li>
+        <li><a href="#influence-of-tolerance-parameter">Influence of tolerance parameter</a></li>
+        <li><a href="#compare-k-means-and-x-means-for-various-data">Compare k-means and x-means for various data</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><!-- raw HTML omitted -->
+
+<div class="notices document" ><p><a href="https://pyclustering.github.io/docs/0.9.0/html/dd/db4/classpyclustering_1_1cluster_1_1xmeans_1_1xmeans.html">pyclustering.cluster.xmeans.xmeans Class Reference</a></p>
+</div>
+
+
+<div class="notices ref" ><p>Pelleg, Dan, and Andrew W. Moore. &ldquo;X-means: Extending k-means with efficient estimation of the number of clusters.&rdquo; Icml. Vol. 1. 2000.</p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.cluster <span style="color:#f92672">import</span> KMeans
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.datasets <span style="color:#f92672">import</span> make_blobs
+</span></span></code></pre></div><h2 id="when-k-is-pre-specified-in-k-means">
+  When k is pre-specified in k-means
+  
+  <a class="anchor" href="#when-k-is-pre-specified-in-k-means">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">plot_by_kmeans</span>(X, k<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>):
+</span></span><span style="display:flex;"><span>    y_pred <span style="color:#f92672">=</span> KMeans(n_clusters<span style="color:#f92672">=</span>k, random_state<span style="color:#f92672">=</span>random_state, init<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;random&#34;</span>)<span style="color:#f92672">.</span>fit_predict(
+</span></span><span style="display:flex;"><span>        X
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>scatter(X[:, <span style="color:#ae81ff">0</span>], X[:, <span style="color:#ae81ff">1</span>], c<span style="color:#f92672">=</span>y_pred, marker<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;x&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;k-means, n_clusters=</span><span style="color:#e6db74">{</span>k<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create sample data</span>
+</span></span><span style="display:flex;"><span>n_samples <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>random_state <span style="color:#f92672">=</span> <span style="color:#ae81ff">117117</span>
+</span></span><span style="display:flex;"><span>X, _ <span style="color:#f92672">=</span> make_blobs(
+</span></span><span style="display:flex;"><span>    n_samples<span style="color:#f92672">=</span>n_samples, random_state<span style="color:#f92672">=</span>random_state, cluster_std<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, centers<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Run k-means++.</span>
+</span></span><span style="display:flex;"><span>plot_by_kmeans(X)
+</span></span></code></pre></div><p><img src="/images/basic/clustering/X-means_files/X-means_5_0.png" alt="png" /></p>
+<h2 id="run-without-specifying-the-number-of-clusters-in-x-mean">
+  Run without specifying the number of clusters in x-mean
+  
+  <a class="anchor" href="#run-without-specifying-the-number-of-clusters-in-x-mean">#</a>
+  
+</h2>
+<h3 id="bicbayesian-information-criterion">
+  BIC(bayesian information criterion)
+  
+  <a class="anchor" href="#bicbayesian-information-criterion">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pyclustering.cluster.xmeans <span style="color:#f92672">import</span> xmeans
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pyclustering.cluster.center_initializer <span style="color:#f92672">import</span> kmeans_plusplus_initializer
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>BAYESIAN_INFORMATION_CRITERION <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>MINIMUM_NOISELESS_DESCRIPTION_LENGTH <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">plot_by_xmeans</span>(
+</span></span><span style="display:flex;"><span>    X, c_min<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, c_max<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, criterion<span style="color:#f92672">=</span>BAYESIAN_INFORMATION_CRITERION, tolerance<span style="color:#f92672">=</span><span style="color:#ae81ff">0.025</span>
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>    initial_centers <span style="color:#f92672">=</span> kmeans_plusplus_initializer(X, c_min)<span style="color:#f92672">.</span>initialize()
+</span></span><span style="display:flex;"><span>    xmeans_instance <span style="color:#f92672">=</span> xmeans(
+</span></span><span style="display:flex;"><span>        X, initial_centers, c_max, criterion<span style="color:#f92672">=</span>criterion, tolerance<span style="color:#f92672">=</span>tolerance
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    xmeans_instance<span style="color:#f92672">.</span>process()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Create data for plots</span>
+</span></span><span style="display:flex;"><span>    clusters <span style="color:#f92672">=</span> xmeans_instance<span style="color:#f92672">.</span>get_clusters()
+</span></span><span style="display:flex;"><span>    n_samples <span style="color:#f92672">=</span> X<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    c <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i, cluster_i <span style="color:#f92672">in</span> enumerate(clusters):
+</span></span><span style="display:flex;"><span>        X_ci <span style="color:#f92672">=</span> X[cluster_i]
+</span></span><span style="display:flex;"><span>        color_ci <span style="color:#f92672">=</span> [i <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> cluster_i]
+</span></span><span style="display:flex;"><span>        plt<span style="color:#f92672">.</span>scatter(X_ci[:, <span style="color:#ae81ff">0</span>], X_ci[:, <span style="color:#ae81ff">1</span>], marker<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;x&#34;</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#34;x-means&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Run x-means</span>
+</span></span><span style="display:flex;"><span>plot_by_xmeans(X, c_min<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, c_max<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, criterion<span style="color:#f92672">=</span>BAYESIAN_INFORMATION_CRITERION)
+</span></span></code></pre></div><p><img src="/images/basic/clustering/X-means_files/X-means_7_0.png" alt="png" /></p>
+<h3 id="minimum_noiseless_description_length">
+  MINIMUM_NOISELESS_DESCRIPTION_LENGTH
+  
+  <a class="anchor" href="#minimum_noiseless_description_length">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>plot_by_xmeans(X, c_min<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, c_max<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, criterion<span style="color:#f92672">=</span>MINIMUM_NOISELESS_DESCRIPTION_LENGTH)
+</span></span></code></pre></div><p><img src="/images/basic/clustering/X-means_files/X-means_9_0.png" alt="png" /></p>
+<h3 id="influence-of-tolerance-parameter">
+  Influence of tolerance parameter
+  
+  <a class="anchor" href="#influence-of-tolerance-parameter">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>X, _ <span style="color:#f92672">=</span> make_blobs(
+</span></span><span style="display:flex;"><span>    n_samples<span style="color:#f92672">=</span><span style="color:#ae81ff">2000</span>,
+</span></span><span style="display:flex;"><span>    random_state<span style="color:#f92672">=</span>random_state,
+</span></span><span style="display:flex;"><span>    cluster_std<span style="color:#f92672">=</span><span style="color:#ae81ff">0.4</span>,
+</span></span><span style="display:flex;"><span>    centers<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i, ti <span style="color:#f92672">in</span> enumerate(np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0.0001</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">5</span>)):
+</span></span><span style="display:flex;"><span>    ti <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>round(ti, <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">10</span>, i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    plot_by_xmeans(
+</span></span><span style="display:flex;"><span>        X, c_min<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, c_max<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, criterion<span style="color:#f92672">=</span>BAYESIAN_INFORMATION_CRITERION, tolerance<span style="color:#f92672">=</span>ti
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;tol=</span><span style="color:#e6db74">{</span>ti<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><p><img src="/images/basic/clustering/X-means_files/X-means_11_0.png" alt="png" /></p>
+<h3 id="compare-k-means-and-x-means-for-various-data">
+  Compare k-means and x-means for various data
+  
+  <a class="anchor" href="#compare-k-means-and-x-means-for-various-data">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">5</span>):
+</span></span><span style="display:flex;"><span>    X, _ <span style="color:#f92672">=</span> make_blobs(
+</span></span><span style="display:flex;"><span>        n_samples<span style="color:#f92672">=</span>n_samples,
+</span></span><span style="display:flex;"><span>        random_state<span style="color:#f92672">=</span>random_state,
+</span></span><span style="display:flex;"><span>        cluster_std<span style="color:#f92672">=</span><span style="color:#ae81ff">0.7</span>,
+</span></span><span style="display:flex;"><span>        centers<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> <span style="color:#f92672">+</span> i <span style="color:#f92672">*</span> <span style="color:#ae81ff">5</span>,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    plot_by_kmeans(X)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>subplot(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>    plot_by_xmeans(X, c_min<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, c_max<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span>)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/clustering/X-means_files/X-means_13_0.png" alt="png" /></p>
+<p><img src="/images/basic/clustering/X-means_files/X-means_13_1.png" alt="png" /></p>
+<p><img src="/images/basic/clustering/X-means_files/X-means_13_2.png" alt="png" /></p>
+<p><img src="/images/basic/clustering/X-means_files/X-means_13_3.png" alt="png" /></p>
+<p><img src="/images/basic/clustering/X-means_files/X-means_13_4.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/en/basic/clustering/k-means2/" class="flex align-center book-icon">
+        <img src="/svg/backward.svg" class="book-icon" alt="Previous" title="k-means&#43;&#43;" />
+        <span>k-means&#43;&#43;</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/en/basic/dimensionality_reduction/" class="flex align-center book-icon">
+        <span>Dimensionality Reduction</span>
+        <img src="/svg/forward.svg" class="book-icon" alt="Next" title="Dimensionality Reduction" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#when-k-is-pre-specified-in-k-means">When k is pre-specified in k-means</a></li>
+    <li><a href="#run-without-specifying-the-number-of-clusters-in-x-mean">Run without specifying the number of clusters in x-mean</a>
+      <ul>
+        <li><a href="#bicbayesian-information-criterion">BIC(bayesian information criterion)</a></li>
+        <li><a href="#minimum_noiseless_description_length">MINIMUM_NOISELESS_DESCRIPTION_LENGTH</a></li>
+        <li><a href="#influence-of-tolerance-parameter">Influence of tolerance parameter</a></li>
+        <li><a href="#compare-k-means-and-x-means-for-various-data">Compare k-means and x-means for various data</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

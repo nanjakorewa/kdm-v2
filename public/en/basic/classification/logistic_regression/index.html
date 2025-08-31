@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+import matplotlib.pyplot as plt
+import numpy as np
+
+  Visualization of Logit Functions
+  
+  #
+  
+
+fig = plt.figure(figsize=(4, 8))
+p = np.linspace(0.01, 0.999, num=100)
+y = np.log(p / (1 - p))
+plt.plot(p, y)
+
+plt.xlabel(&#34;p&#34;)
+plt.ylabel(&#34;y&#34;)
+plt.axhline(y=0, color=&#34;k&#34;)
+plt.ylim(-3, 3)
+plt.grid()
+plt.show()
+
+
+  Logistic Regression
+  
+  #
+  
+
+In this section, I try to train Logistic regression on artificially generated data.
+
+
+sklearn.linear_model.LogisticRegression
+sklearn.datasets.make_classification
+
+
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.datasets import make_classification
+
+## Dataset
+X, Y = make_classification(
+    n_samples=300,
+    n_features=2,
+    n_redundant=0,
+    n_informative=1,
+    random_state=2,
+    n_clusters_per_class=1,
+)
+
+# Training LogisticRegression
+clf = LogisticRegression()
+clf.fit(X, Y)
+
+# Find the decision boundary
+b = clf.intercept_[0]
+w1, w2 = clf.coef_.T
+b_1 = -w1 / w2
+b_0 = -b / w2
+xmin, xmax = np.min(X[:, 0]), np.max(X[:, 0])
+ymin, ymax = np.min(X[:, 1]), np.max(X[:, 1])
+xd = np.array([xmin, xmax])
+yd = b_1 * xd &#43; b_0
+
+# Plot Graphs
+plt.figure(figsize=(10, 10))
+plt.plot(xd, yd, &#34;k&#34;, lw=1, ls=&#34;-&#34;)
+plt.scatter(*X[Y == 0].T, marker=&#34;o&#34;)
+plt.scatter(*X[Y == 1].T, marker=&#34;x&#34;)
+plt.xlim(xmin, xmax)
+plt.ylim(ymin, ymax)
+plt.show()
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/en/basic/classification/logistic_regression/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="Logistic Regression">
+  <meta property="og:description" content="import matplotlib.pyplot as plt import numpy as np Visualization of Logit Functions # fig = plt.figure(figsize=(4, 8)) p = np.linspace(0.01, 0.999, num=100) y = np.log(p / (1 - p)) plt.plot(p, y) plt.xlabel(&#34;p&#34;) plt.ylabel(&#34;y&#34;) plt.axhline(y=0, color=&#34;k&#34;) plt.ylim(-3, 3) plt.grid() plt.show() Logistic Regression # In this section, I try to train Logistic regression on artificially generated data.
+sklearn.linear_model.LogisticRegression sklearn.datasets.make_classification from sklearn.linear_model import LogisticRegression from sklearn.datasets import make_classification ## Dataset X, Y = make_classification( n_samples=300, n_features=2, n_redundant=0, n_informative=1, random_state=2, n_clusters_per_class=1, ) # Training LogisticRegression clf = LogisticRegression() clf.fit(X, Y) # Find the decision boundary b = clf.intercept_[0] w1, w2 = clf.coef_.T b_1 = -w1 / w2 b_0 = -b / w2 xmin, xmax = np.min(X[:, 0]), np.max(X[:, 0]) ymin, ymax = np.min(X[:, 1]), np.max(X[:, 1]) xd = np.array([xmin, xmax]) yd = b_1 * xd &#43; b_0 # Plot Graphs plt.figure(figsize=(10, 10)) plt.plot(xd, yd, &#34;k&#34;, lw=1, ls=&#34;-&#34;) plt.scatter(*X[Y == 0].T, marker=&#34;o&#34;) plt.scatter(*X[Y == 1].T, marker=&#34;x&#34;) plt.xlim(xmin, xmax) plt.ylim(ymin, ymax) plt.show()">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="basic">
+<title>Logistic Regression | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/en/basic/classification/logistic_regression/">
+  <link rel="alternate" hreflang="ja" href="http://localhost:1313/basic/classification/logistic_regression/" title="ロジスティック回帰">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/basic/classification/logistic_regression/" title="Regresión logística">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/basic/classification/logistic_regression/" title="Regresi Logistik">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/en.search.min.8a44fa1abc5451ced25c796dc6ff27eb2d840fda90401b31bc09e7864db39f2e.js" integrity="sha256-ikT6GrxUUc7SXHltxv8n6y2ED9qQQBsxvAnnhk2zny4=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-basic">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/en/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>English</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/basic/classification/logistic_regression/">
+          <span>日本語</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/basic/classification/logistic_regression/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/basic/classification/logistic_regression/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/" class="">Linear Regression</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/linear_regression/" class="">Least-squares method</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/ridge_and_lasso/" class="">Ridge and Lasso regression</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/regression/robust_regression/" class="">Outliers and Robustness</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/classification/" class="">Linear Classification</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/classification/logistic_regression/" class="active">Logistic Regression</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/classification/linear_discriminant_analysis/" class="">Linear Discriminant Analysis</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/" class="">Decision Tree</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/decision_tree_classifier/" class="">Decision Tree (Classification)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/decision_tree_regressor/" class="">Decision tree (regression)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/tree/parameter/" class="">Decision Tree Parameters</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/" class="">Ensemble</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/randomforest/" class="">Random Forests</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/stucking/" class="">Stacking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/adaboost_classification/" class="">Adaboost (classification)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/adaboost_regression/" class="">Adaboost(Regression)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/ensemble/gradient_boosting1/" class="">Gradient boosting</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/" class="">Clustering</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/" class="">Dimensionality Reduction</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/feature_selection/" class="">Feature Selection</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/timeseries/" class="">Time Series</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/timeseries/prophet/" class="">Using Prophet</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/anomaly/" class="">Anomaly detection</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/anomaly/adtk1/" class="">Anomaly Detection ①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/en/basic/anomaly/adtk2/" class="">Anomaly Detection②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>Logistic Regression</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#visualization-of-logit-functions">Visualization of Logit Functions</a></li>
+    <li><a href="#logistic-regression">Logistic Regression</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span></code></pre></div><h2 id="visualization-of-logit-functions">
+  Visualization of Logit Functions
+  
+  <a class="anchor" href="#visualization-of-logit-functions">#</a>
+  
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>fig <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">8</span>))
+</span></span><span style="display:flex;"><span>p <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0.01</span>, <span style="color:#ae81ff">0.999</span>, num<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)
+</span></span><span style="display:flex;"><span>y <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>log(p <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> p))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(p, y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;p&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74">&#34;y&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>axhline(y<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;k&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylim(<span style="color:#f92672">-</span><span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/classification/Logistic_Regression_files/Logistic_Regression_4_0.png" alt="png" /></p>
+<h2 id="logistic-regression">
+  Logistic Regression
+  
+  <a class="anchor" href="#logistic-regression">#</a>
+  
+</h2>
+<p>In this section, I try to train Logistic regression on artificially generated data.</p>
+
+<div class="notices document" ><ul>
+<li><a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html">sklearn.linear_model.LogisticRegression</a></li>
+<li><a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html">sklearn.datasets.make_classification</a></li>
+</ul>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.linear_model <span style="color:#f92672">import</span> LogisticRegression
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.datasets <span style="color:#f92672">import</span> make_classification
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## Dataset</span>
+</span></span><span style="display:flex;"><span>X, Y <span style="color:#f92672">=</span> make_classification(
+</span></span><span style="display:flex;"><span>    n_samples<span style="color:#f92672">=</span><span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>    n_features<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>    n_redundant<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>    n_informative<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>    n_clusters_per_class<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Training LogisticRegression</span>
+</span></span><span style="display:flex;"><span>clf <span style="color:#f92672">=</span> LogisticRegression()
+</span></span><span style="display:flex;"><span>clf<span style="color:#f92672">.</span>fit(X, Y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Find the decision boundary</span>
+</span></span><span style="display:flex;"><span>b <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>intercept_[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>w1, w2 <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>coef_<span style="color:#f92672">.</span>T
+</span></span><span style="display:flex;"><span>b_1 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>w1 <span style="color:#f92672">/</span> w2
+</span></span><span style="display:flex;"><span>b_0 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>b <span style="color:#f92672">/</span> w2
+</span></span><span style="display:flex;"><span>xmin, xmax <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>min(X[:, <span style="color:#ae81ff">0</span>]), np<span style="color:#f92672">.</span>max(X[:, <span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span>ymin, ymax <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>min(X[:, <span style="color:#ae81ff">1</span>]), np<span style="color:#f92672">.</span>max(X[:, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>xd <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([xmin, xmax])
+</span></span><span style="display:flex;"><span>yd <span style="color:#f92672">=</span> b_1 <span style="color:#f92672">*</span> xd <span style="color:#f92672">+</span> b_0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Plot Graphs</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(xd, yd, <span style="color:#e6db74">&#34;k&#34;</span>, lw<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, ls<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(<span style="color:#f92672">*</span>X[Y <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>T, marker<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;o&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>scatter(<span style="color:#f92672">*</span>X[Y <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>T, marker<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;x&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlim(xmin, xmax)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylim(ymin, ymax)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/basic/classification/Logistic_Regression_files/Logistic_Regression_6_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/en/basic/classification/" class="flex align-center book-icon">
+        <img src="/svg/backward.svg" class="book-icon" alt="Previous" title="Linear Classification" />
+        <span>Linear Classification</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/en/basic/classification/linear_discriminant_analysis/" class="flex align-center book-icon">
+        <span>Linear Discriminant Analysis</span>
+        <img src="/svg/forward.svg" class="book-icon" alt="Next" title="Linear Discriminant Analysis" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#visualization-of-logit-functions">Visualization of Logit Functions</a></li>
+    <li><a href="#logistic-regression">Logistic Regression</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

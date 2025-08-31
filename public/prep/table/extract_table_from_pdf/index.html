@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+  camelotを使う場合
+  
+  #
+  
+
+
+  必要なライブラリをインストール
+  
+  #
+  
+
+今回はCamelotというライブラリを使ってpdfからテーブルを抽出します。
+opencv-contrib-python、camelot、tabula-pyが必要なので適宜インストールします。
+poetry add opencv-contrib-python camelot tabula-py ghostscript
+Ghostscriptというソフトウェアも必要なのでインストールします。
+OSによってインストール方法が異なるので注意してください。
+インストール方法はこちらを参照してください。
+
+  ghostscriptがインストールされているか確認する
+  
+  #
+  
+
+from ctypes.util import find_library
+
+find_library(&#34;gs&#34;)  # gsが実行可能ならば /usr/local/lib/libgs.dylibなどの表示がされます
+&#39;/usr/local/lib/libgs.dylib&#39;
+
+
+  pdfからテーブルを抽出する
+  
+  #
+  
+
+例として総務省のページで公開されている「政策ごとの予算との対応について」のpdfからテーブルを抽出します。テーブルがパースできたことがわかります。
+※jupyterbookでエラーが出る場合があるためコメントアウトしています
+import camelot
+
+# pdfを読み込んでテーブルを抽出
+# pdf_name = &#34;000788423.pdf&#34;
+# tables = camelot.read_pdf(pdf_name)
+# print(&#34;パースできたテーブル数&#34;, tables.n)
+
+# 先頭５行のみ表示
+# tables[0].df.head()
+今度はFLEX LNGという会社の決算情報をパースしてみます。
+データはFLEXLNG｜Investor Homeで取得したファイルで実行しています。
+今後はテーブルのパースに失敗してしましました。
+# pdfを読み込んでテーブルを抽出
+pdf_name = &#34;flex-lng-earnings-release-q3-2021.pdf&#34;
+tables = camelot.read_pdf(pdf_name)
+print(&#34;パースできたテーブル数&#34;, tables.n)
+# 先頭５行のみ表示
+# tables[0].df.head()
+パースできたテーブル数 0
+
+
+  tabula-py を使う場合
+  
+  #
+  
+
+poetry add tabula-pyなどとしてtabulaをインストールしてください。
+tabulaはバックグラウンドでtabula-java
+を使用していますが、Javaのバージョンが古い場合こちらがエラーになる場合があるようです。">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/prep/table/extract_table_from_pdf/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="pdfから表を抽出">
+  <meta property="og:description" content="camelotを使う場合 # 必要なライブラリをインストール # 今回はCamelotというライブラリを使ってpdfからテーブルを抽出します。 opencv-contrib-python、camelot、tabula-pyが必要なので適宜インストールします。
+poetry add opencv-contrib-python camelot tabula-py ghostscript Ghostscriptというソフトウェアも必要なのでインストールします。 OSによってインストール方法が異なるので注意してください。 インストール方法はこちらを参照してください。
+ghostscriptがインストールされているか確認する # from ctypes.util import find_library find_library(&#34;gs&#34;) # gsが実行可能ならば /usr/local/lib/libgs.dylibなどの表示がされます &#39;/usr/local/lib/libgs.dylib&#39;pdfからテーブルを抽出する # 例として総務省のページで公開されている「政策ごとの予算との対応について」のpdfからテーブルを抽出します。テーブルがパースできたことがわかります。
+※jupyterbookでエラーが出る場合があるためコメントアウトしています
+import camelot # pdfを読み込んでテーブルを抽出 # pdf_name = &#34;000788423.pdf&#34; # tables = camelot.read_pdf(pdf_name) # print(&#34;パースできたテーブル数&#34;, tables.n) # 先頭５行のみ表示 # tables[0].df.head() 今度はFLEX LNGという会社の決算情報をパースしてみます。 データはFLEXLNG｜Investor Homeで取得したファイルで実行しています。 今後はテーブルのパースに失敗してしましました。
+# pdfを読み込んでテーブルを抽出 pdf_name = &#34;flex-lng-earnings-release-q3-2021.pdf&#34; tables = camelot.read_pdf(pdf_name) print(&#34;パースできたテーブル数&#34;, tables.n) # 先頭５行のみ表示 # tables[0].df.head() パースできたテーブル数 0tabula-py を使う場合 # poetry add tabula-pyなどとしてtabulaをインストールしてください。 tabulaはバックグラウンドでtabula-java を使用していますが、Javaのバージョンが古い場合こちらがエラーになる場合があるようです。">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="prep">
+<title>pdfから表を抽出 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/prep/table/extract_table_from_pdf/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-prep">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>pdfから表を抽出</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#camelotを使う場合">camelotを使う場合</a>
+      <ul>
+        <li><a href="#必要なライブラリをインストール">必要なライブラリをインストール</a></li>
+        <li><a href="#ghostscriptがインストールされているか確認する">ghostscriptがインストールされているか確認する</a></li>
+        <li><a href="#pdfからテーブルを抽出する">pdfからテーブルを抽出する</a></li>
+      </ul>
+    </li>
+    <li><a href="#tabula-py-を使う場合">tabula-py を使う場合</a>
+      <ul>
+        <li><a href="#パースしたテーブルを可視化する">パースしたテーブルを可視化する</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/iuBG4s-xbOo" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<h2 id="camelotを使う場合">
+  camelotを使う場合
+  
+  <a class="anchor" href="#camelot%e3%82%92%e4%bd%bf%e3%81%86%e5%a0%b4%e5%90%88">#</a>
+  
+</h2>
+<h3 id="必要なライブラリをインストール">
+  必要なライブラリをインストール
+  
+  <a class="anchor" href="#%e5%bf%85%e8%a6%81%e3%81%aa%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%82%92%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab">#</a>
+  
+</h3>
+<p>今回はCamelotというライブラリを使ってpdfからテーブルを抽出します。
+<code>opencv-contrib-python</code>、<code>camelot</code>、<code>tabula-py</code>が必要なので適宜インストールします。</p>
+<pre tabindex="0"><code>poetry add opencv-contrib-python camelot tabula-py ghostscript
+</code></pre><p>Ghostscriptというソフトウェアも必要なのでインストールします。
+OSによってインストール方法が異なるので注意してください。
+インストール方法は<a href="https://camelot-py.readthedocs.io/en/master/user/install-deps.html">こちら</a>を参照してください。</p>
+<h3 id="ghostscriptがインストールされているか確認する">
+  ghostscriptがインストールされているか確認する
+  
+  <a class="anchor" href="#ghostscript%e3%81%8c%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab%e3%81%95%e3%82%8c%e3%81%a6%e3%81%84%e3%82%8b%e3%81%8b%e7%a2%ba%e8%aa%8d%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> ctypes.util <span style="color:#f92672">import</span> find_library
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>find_library(<span style="color:#e6db74">&#34;gs&#34;</span>)  <span style="color:#75715e"># gsが実行可能ならば /usr/local/lib/libgs.dylibなどの表示がされます</span>
+</span></span></code></pre></div><pre><code>'/usr/local/lib/libgs.dylib'
+</code></pre>
+<h3 id="pdfからテーブルを抽出する">
+  pdfからテーブルを抽出する
+  
+  <a class="anchor" href="#pdf%e3%81%8b%e3%82%89%e3%83%86%e3%83%bc%e3%83%96%e3%83%ab%e3%82%92%e6%8a%bd%e5%87%ba%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<p>例として<a href="https://www.soumu.go.jp/menu_yosan/yosan.html#r4">総務省のページで公開されている「政策ごとの予算との対応について」のpdf</a>からテーブルを抽出します。テーブルがパースできたことがわかります。</p>
+<p>※jupyterbookでエラーが出る場合があるためコメントアウトしています</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> camelot
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># pdfを読み込んでテーブルを抽出</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># pdf_name = &#34;000788423.pdf&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># tables = camelot.read_pdf(pdf_name)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># print(&#34;パースできたテーブル数&#34;, tables.n)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 先頭５行のみ表示</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># tables[0].df.head()</span>
+</span></span></code></pre></div><p>今度はFLEX LNGという会社の決算情報をパースしてみます。
+データは<a href="https://www.flexlng.com/investor-home/">FLEXLNG｜Investor Home</a>で取得したファイルで実行しています。
+今後はテーブルのパースに失敗してしましました。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># pdfを読み込んでテーブルを抽出</span>
+</span></span><span style="display:flex;"><span>pdf_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;flex-lng-earnings-release-q3-2021.pdf&#34;</span>
+</span></span><span style="display:flex;"><span>tables <span style="color:#f92672">=</span> camelot<span style="color:#f92672">.</span>read_pdf(pdf_name)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;パースできたテーブル数&#34;</span>, tables<span style="color:#f92672">.</span>n)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 先頭５行のみ表示</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># tables[0].df.head()</span>
+</span></span></code></pre></div><pre><code>パースできたテーブル数 0
+</code></pre>
+<h2 id="tabula-py-を使う場合">
+  tabula-py を使う場合
+  
+  <a class="anchor" href="#tabula-py-%e3%82%92%e4%bd%bf%e3%81%86%e5%a0%b4%e5%90%88">#</a>
+  
+</h2>
+<p><code>poetry add tabula-py</code>などとしてtabulaをインストールしてください。
+tabulaはバックグラウンドで<a href="https://github.com/tabulapdf/tabula-java">tabula-java
+</a>を使用していますが、Javaのバージョンが古い場合こちらがエラーになる場合があるようです。</p>
+<p>参考文献：<a href="https://github.com/chezou/tabula-py/issues/206">subprocess.CalledProcessError While extracting table from PDF using tabula-py</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tabula <span style="color:#f92672">import</span> read_pdf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>tables <span style="color:#f92672">=</span> read_pdf(<span style="color:#e6db74">&#34;flex-lng-earnings-release-q3-2021.pdf&#34;</span>, pages<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;all&#34;</span>)
+</span></span><span style="display:flex;"><span>data <span style="color:#f92672">=</span> tables[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">.</span>head()
+</span></span></code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h3 id="パースしたテーブルを可視化する">
+  パースしたテーブルを可視化する
+  
+  <a class="anchor" href="#%e3%83%91%e3%83%bc%e3%82%b9%e3%81%97%e3%81%9f%e3%83%86%e3%83%bc%e3%83%96%e3%83%ab%e3%82%92%e5%8f%af%e8%a6%96%e5%8c%96%e3%81%99%e3%82%8b">#</a>
+  
+</h3>
+<p>tabulateでパースしたテーブルは文字列になっているので、そこから数値を読み取ります。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>d <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#34;ASSETS==&#39;Cash and cash equivalents&#39;&#34;</span>)<span style="color:#f92672">.</span>iloc[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">2</span>:]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># パースしたテーブルは文字列になっているので数値に変換する</span>
+</span></span><span style="display:flex;"><span>d <span style="color:#f92672">=</span> [int(v<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;,&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)) <span style="color:#66d9ef">for</span> v <span style="color:#f92672">in</span> d]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># プロット</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>bar([<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>], d)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xticks([<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>], [<span style="color:#e6db74">&#34;2021 Sep 30&#34;</span>, <span style="color:#e6db74">&#34;2021 June 30&#34;</span>, <span style="color:#e6db74">&#34;2020 Dec 31&#34;</span>])
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img src="/images/prep/table/extract_table_from_pdf_files/extract_table_from_pdf_9_0.png" alt="png" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#camelotを使う場合">camelotを使う場合</a>
+      <ul>
+        <li><a href="#必要なライブラリをインストール">必要なライブラリをインストール</a></li>
+        <li><a href="#ghostscriptがインストールされているか確認する">ghostscriptがインストールされているか確認する</a></li>
+        <li><a href="#pdfからテーブルを抽出する">pdfからテーブルを抽出する</a></li>
+      </ul>
+    </li>
+    <li><a href="#tabula-py-を使う場合">tabula-py を使う場合</a>
+      <ul>
+        <li><a href="#パースしたテーブルを可視化する">パースしたテーブルを可視化する</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

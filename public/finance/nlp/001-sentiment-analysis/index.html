@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+『SiEBERT - English-Language Sentiment Classification』のモデルを使って英文の感情分類をします。英文の各文章の感情をポジティブ・ネガティブで分類してみたいと思います。
+
+Hartmann, Jochen and Heitmann, Mark and Siebert, Christian and Schamp, Christina,
+&ldquo;More than a feeling: Accuracy and Application of Sentiment Analysis&rdquo;, International Journal of Research in Marketing(2022)
+
+
+ここではhuggingface上のsiebert/sentiment-roberta-large-englishのモデルを使用しています。Google Colab上でtransformersを使用する場合は事前にtransformersをインストールする必要があります。
+import numpy as np
+from transformers import pipeline
+from IPython.display import HTML
+
+sentiment_pipeline = pipeline(
+    &#34;sentiment-analysis&#34;, model=&#34;siebert/sentiment-roberta-large-english&#34;
+)
+
+  テキストの各文の感情を分析してみる
+  
+  #
+  
+
+テキスト全体を「.」で区切ることで、一文ごとに分けています。
+ここではPetrobras Webcast – 3rd Quarter Results 2022 November 5, 2022の文字起こしデータを使用しています。">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/finance/nlp/001-sentiment-analysis/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="テキストの感情分析">
+  <meta property="og:description" content="『SiEBERT - English-Language Sentiment Classification』のモデルを使って英文の感情分類をします。英文の各文章の感情をポジティブ・ネガティブで分類してみたいと思います。
+Hartmann, Jochen and Heitmann, Mark and Siebert, Christian and Schamp, Christina, “More than a feeling: Accuracy and Application of Sentiment Analysis”, International Journal of Research in Marketing(2022)
+ここではhuggingface上のsiebert/sentiment-roberta-large-englishのモデルを使用しています。Google Colab上でtransformersを使用する場合は事前にtransformersをインストールする必要があります。
+import numpy as np from transformers import pipeline from IPython.display import HTML sentiment_pipeline = pipeline( &#34;sentiment-analysis&#34;, model=&#34;siebert/sentiment-roberta-large-english&#34; ) テキストの各文の感情を分析してみる # テキスト全体を「.」で区切ることで、一文ごとに分けています。
+ここではPetrobras Webcast – 3rd Quarter Results 2022 November 5, 2022の文字起こしデータを使用しています。">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="finance">
+<title>テキストの感情分析 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/finance/nlp/001-sentiment-analysis/">
+  <link rel="alternate" hreflang="en" href="http://localhost:1313/en/finance/nlp/001-sentiment-analysis/" title="Sentiment analysis of text">
+  <link rel="alternate" hreflang="es" href="http://localhost:1313/es/finance/nlp/001-sentiment-analysis/" title="Análisis del sentimiento del texto">
+  <link rel="alternate" hreflang="id" href="http://localhost:1313/id/finance/nlp/001-sentiment-analysis/" title="Analisis sentimen teks">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-finance">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+  
+
+  
+
+  
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/finance/nlp/001-sentiment-analysis/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/finance/nlp/001-sentiment-analysis/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/finance/nlp/001-sentiment-analysis/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>テキストの感情分析</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#テキストの各文の感情を分析してみる">テキストの各文の感情を分析してみる</a></li>
+    <li><a href="#結果を可視化">結果を可視化</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/aEFJUihC81k" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<p>『<a href="https://www.sciencedirect.com/science/article/pii/S0167811622000477?via%3Dihub">SiEBERT - English-Language Sentiment Classification</a>』のモデルを使って英文の感情分類をします。英文の各文章の感情をポジティブ・ネガティブで分類してみたいと思います。</p>
+
+<div class="notices ref" ><p>Hartmann, Jochen and Heitmann, Mark and Siebert, Christian and Schamp, Christina,
+&ldquo;More than a feeling: Accuracy and Application of Sentiment Analysis&rdquo;, International Journal of Research in Marketing(2022)</p>
+</div>
+
+<p>ここではhuggingface上の<a href="https://huggingface.co/siebert/sentiment-roberta-large-english?text=I&#43;like&#43;you.&#43;I&#43;love&#43;you">siebert/sentiment-roberta-large-english</a>のモデルを使用しています。Google Colab上でtransformersを使用する場合は事前に<code>transformers</code>をインストールする必要があります。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> transformers <span style="color:#f92672">import</span> pipeline
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> IPython.display <span style="color:#f92672">import</span> HTML
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sentiment_pipeline <span style="color:#f92672">=</span> pipeline(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;sentiment-analysis&#34;</span>, model<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;siebert/sentiment-roberta-large-english&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><h2 id="テキストの各文の感情を分析してみる">
+  テキストの各文の感情を分析してみる
+  
+  <a class="anchor" href="#%e3%83%86%e3%82%ad%e3%82%b9%e3%83%88%e3%81%ae%e5%90%84%e6%96%87%e3%81%ae%e6%84%9f%e6%83%85%e3%82%92%e5%88%86%e6%9e%90%e3%81%97%e3%81%a6%e3%81%bf%e3%82%8b">#</a>
+  
+</h2>
+<p>テキスト全体を「.」で区切ることで、一文ごとに分けています。</p>
+<p>ここでは<a href="https://www.investidorpetrobras.com.br/en/results-and-announcements/results-center/">Petrobras Webcast – 3rd Quarter Results 2022 November 5, 2022</a>の文字起こしデータを使用しています。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>transcript <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;&#34;Hello!Hello!Hello!Hello!Hello!&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>ts_list <span style="color:#f92672">=</span> [ts <span style="color:#66d9ef">for</span> ts <span style="color:#f92672">in</span> transcript<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;.&#34;</span>) <span style="color:#66d9ef">if</span> len(ts) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">20</span>]
+</span></span><span style="display:flex;"><span>scores <span style="color:#f92672">=</span> sentiment_pipeline(ts_list)
+</span></span></code></pre></div><h2 id="結果を可視化">
+  結果を可視化
+  
+  <a class="anchor" href="#%e7%b5%90%e6%9e%9c%e3%82%92%e5%8f%af%e8%a6%96%e5%8c%96">#</a>
+  
+</h2>
+<p>ポジティブ・ネガティブのラベルと、そのスコアを用いて結果を可視化してみます。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> t, s <span style="color:#f92672">in</span> zip(ts_list, scores):
+</span></span><span style="display:flex;"><span>    score <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>round(float(s[<span style="color:#e6db74">&#34;score&#34;</span>]), <span style="color:#ae81ff">4</span>)  <span style="color:#75715e"># 感情スコア</span>
+</span></span><span style="display:flex;"><span>    font_weight <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;bold&#34;</span> <span style="color:#66d9ef">if</span> score <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0.995</span> <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;normal&#34;</span>  <span style="color:#75715e"># 表示する文字の太さ</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 感情ごとに色を分けて表示</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> s[<span style="color:#e6db74">&#34;label&#34;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;NEGATIVE&#34;</span>:
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> <span style="color:#ae81ff">255</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> int(<span style="color:#ae81ff">1000</span> <span style="color:#f92672">-</span> score <span style="color:#f92672">*</span> <span style="color:#ae81ff">1000</span>)
+</span></span><span style="display:flex;"><span>        display(
+</span></span><span style="display:flex;"><span>            HTML(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[score=</span><span style="color:#e6db74">{</span>score<span style="color:#e6db74">}</span><span style="color:#e6db74">] &lt;span style=&#39;color:rgb(</span><span style="color:#e6db74">{</span>r<span style="color:#e6db74">}</span><span style="color:#e6db74">,100,100);font-weight:</span><span style="color:#e6db74">{</span>font_weight<span style="color:#e6db74">}</span><span style="color:#e6db74">;&#39;&gt;</span><span style="color:#e6db74">{</span>t<span style="color:#e6db74">}</span><span style="color:#e6db74">&lt;/span&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> s[<span style="color:#e6db74">&#34;label&#34;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;POSITIVE&#34;</span>:
+</span></span><span style="display:flex;"><span>        g <span style="color:#f92672">=</span> <span style="color:#ae81ff">255</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> int(<span style="color:#ae81ff">1000</span> <span style="color:#f92672">-</span> score <span style="color:#f92672">*</span> <span style="color:#ae81ff">1000</span>)
+</span></span><span style="display:flex;"><span>        display(
+</span></span><span style="display:flex;"><span>            HTML(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[score=</span><span style="color:#e6db74">{</span>score<span style="color:#e6db74">}</span><span style="color:#e6db74">] &lt;span style=&#39;color:rgb(100,</span><span style="color:#e6db74">{</span>g<span style="color:#e6db74">}</span><span style="color:#e6db74">,100);font-weight:</span><span style="color:#e6db74">{</span>font_weight<span style="color:#e6db74">}</span><span style="color:#e6db74">;&#39;&gt;</span><span style="color:#e6db74">{</span>t<span style="color:#e6db74">}</span><span style="color:#e6db74">&lt;/span&gt;&#34;</span>
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>        )
+</span></span></code></pre></div><p>[score=0.9976] <!-- raw HTML omitted -->Hello!Hello!Hello!Hello!Hello!<!-- raw HTML omitted --></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#テキストの各文の感情を分析してみる">テキストの各文の感情を分析してみる</a></li>
+    <li><a href="#結果を可視化">結果を可視化</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

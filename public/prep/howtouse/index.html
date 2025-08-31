@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="データ前処理をしたあとで機械学習を使って意思決定をする際、モデルの出力はさまざまな要素によって変化します。たとえば、
+
+データそのもののバイアス
+標本の選択の仕方によるバイアス
+帰納バイアス (&quot;機械学習手法が汎化のために採用している仮定が，実世界の状況とはずれている場合[引用元])&quot;
+
+などが挙げられます。そのため、データ前処理をする時は必ずそれが後続の処理（前処理・機械学習モデル・後処理・意思決定）にどのような影響を与えるかを確認しましょう。たとえば、特定の県の人のデータだけフィルタリングしてモデルを作成すると、偏りのある予測をするモデルができるかもしれません。たとえ明示的に特定の県をフィルタリングするようなことがなくても、欠損の多いデータをフィルタリングした結果、実は特定の県のデータのみ欠損が多く、それが結果的に偏りにつながるかもしれません。前処理をする際は意図した通りの前処理ができているか、正しく運用できているかどうかを常にチェックする必要があります。
+
+  参考サイト
+  
+  #
+  
+
+
+[1] 人工知能学会倫理委員会 機械学習と公平性に関する声明
+[2] 機械学習と公平性に関する声明とシンポジウム
+[3] 私のブックマーク「機械学習のプライバシーとセキュリティ（Privacy and security issues in machine learning）」
+[4] ＡＩと著作権　学習用データセットの生成
+[5] EU 一般データ保護規則（GDPR）の概要（前編）
+[6] 著作権 | 文化庁
+[7] GDPR（General Data Protection Regulation：一般データ保護規則）
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/prep/howtouse/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="データ前処理する前に">
+  <meta property="og:description" content="データ前処理をしたあとで機械学習を使って意思決定をする際、モデルの出力はさまざまな要素によって変化します。たとえば、
+データそのもののバイアス 標本の選択の仕方によるバイアス 帰納バイアス (&#34;機械学習手法が汎化のために採用している仮定が，実世界の状況とはずれている場合[引用元])&#34; などが挙げられます。そのため、データ前処理をする時は必ずそれが後続の処理（前処理・機械学習モデル・後処理・意思決定）にどのような影響を与えるかを確認しましょう。たとえば、特定の県の人のデータだけフィルタリングしてモデルを作成すると、偏りのある予測をするモデルができるかもしれません。たとえ明示的に特定の県をフィルタリングするようなことがなくても、欠損の多いデータをフィルタリングした結果、実は特定の県のデータのみ欠損が多く、それが結果的に偏りにつながるかもしれません。前処理をする際は意図した通りの前処理ができているか、正しく運用できているかどうかを常にチェックする必要があります。
+参考サイト # [1] 人工知能学会倫理委員会 機械学習と公平性に関する声明 [2] 機械学習と公平性に関する声明とシンポジウム [3] 私のブックマーク「機械学習のプライバシーとセキュリティ（Privacy and security issues in machine learning）」 [4] ＡＩと著作権　学習用データセットの生成 [5] EU 一般データ保護規則（GDPR）の概要（前編） [6] 著作権 | 文化庁 [7] GDPR（General Data Protection Regulation：一般データ保護規則）">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="website">
+<title>データ前処理する前に | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/prep/howtouse/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/prep/howtouse/index.xml" title="K_DM Book" />
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-section book-type-prep">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>データ前処理する前に</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#参考サイト">参考サイト</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><p>データ前処理をしたあとで機械学習を使って意思決定をする際、モデルの出力はさまざまな要素によって変化します。たとえば、</p>
+<ul>
+<li>データそのもののバイアス</li>
+<li>標本の選択の仕方によるバイアス</li>
+<li>帰納バイアス (&quot;<em>機械学習手法が汎化のために採用している仮定が，実世界の状況とはずれている場合</em>[<a href="http://ai-elsi.org/wp-content/uploads/2020/01/20200109-fairness_sympo.pdf">引用元</a>])&quot;</li>
+</ul>
+<p>などが挙げられます。そのため、データ前処理をする時は必ずそれが後続の処理（前処理・機械学習モデル・後処理・意思決定）にどのような影響を与えるかを確認しましょう。たとえば、特定の県の人のデータだけフィルタリングしてモデルを作成すると、偏りのある予測をするモデルができるかもしれません。たとえ明示的に特定の県をフィルタリングするようなことがなくても、欠損の多いデータをフィルタリングした結果、実は特定の県のデータのみ欠損が多く、それが結果的に偏りにつながるかもしれません。前処理をする際は意図した通りの前処理ができているか、正しく運用できているかどうかを常にチェックする必要があります。</p>
+<h3 id="参考サイト">
+  参考サイト
+  
+  <a class="anchor" href="#%e5%8f%82%e8%80%83%e3%82%b5%e3%82%a4%e3%83%88">#</a>
+  
+</h3>
+<ul>
+<li>[1] <a href="http://ai-elsi.org/archives/888">人工知能学会倫理委員会 機械学習と公平性に関する声明</a></li>
+<li>[2] <a href="http://ai-elsi.org/archives/898">機械学習と公平性に関する声明とシンポジウム</a></li>
+<li>[3] <a href="https://www.ai-gakkai.or.jp/resource/my-bookmark/my-bookmark_vol32-no5/">私のブックマーク「機械学習のプライバシーとセキュリティ（Privacy and security issues in machine learning）」</a></li>
+<li>[4] <a href="http://www.uit-patent.or.jp/%EF%BD%81%EF%BD%89%E3%81%A8%E8%91%97%E4%BD%9C%E6%A8%A9-2/%EF%BD%81%EF%BD%89%E3%81%A8%E8%91%97%E4%BD%9C%E6%A8%A9/">ＡＩと著作権　学習用データセットの生成</a></li>
+<li>[5] <a href="https://www.intellilink.co.jp/article/column/security-gdpr01.html">EU 一般データ保護規則（GDPR）の概要（前編）</a></li>
+<li>[6] <a href="https://www.bunka.go.jp/seisaku/chosakuken/">著作権 | 文化庁</a></li>
+<li>[7] <a href="https://www.ppc.go.jp/enforcement/infoprovision/laws/GDPR/">GDPR（General Data Protection Regulation：一般データ保護規則）</a></li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#参考サイト">参考サイト</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

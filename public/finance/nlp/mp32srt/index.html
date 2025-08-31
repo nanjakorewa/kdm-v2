@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+  
+
+
+
+  仮想環境の作成
+  
+  #
+  
+
+Anacondaを使用している場合は、以下のコマンドを順番に実行することで py39-whisper という名前のpython3.9実行環境が作成されます。
+conda create -n py39-whisper python=3.9 anaconda
+conda activate py39-whisper
+pip install git&#43;https://github.com/openai/whisper.git
+conda install ffmpeg -c conda-forge
+conda install jupyter ipykernel pandas
+conda install transformers[sentencepiece]
+
+
+  whisperを使って音声認識を実行する
+  
+  #
+  
+
+
+音声データは『Flex LNG Q3 2022 Key Takeaways』の音声を使用しています。
+
+
+import warnings
+import whisper
+from transformers import pipeline
+
+
+model = whisper.load_model(&#34;base&#34;)
+result = model.transcribe(&#34;FlexLNG_Q3_2022_Key_Takeaways.mp3&#34;)
+print(result[&#34;text&#34;])
+Hi and welcome to FlexLng&#39;s TURD Quater Highlights. Revenue&#39;s 4D Quater came in at 91 million in line with previous guidance of approximately 90 million. Ernings was strong, net income and adjusted net income was 47.42 million, translating into Ernings per share and adjusted Ernings per share of 88.79 respectively. Freight market during the quarter boomed and this affected both short term and long term rates positively. During the quarter we had three ships...
+
+  日本語を英語に翻訳する
+  
+  #
+  
+
+翻訳の正しさは保証されておらず、また本コードも動作や出力に関しては一切の責任を負えません。">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/finance/nlp/mp32srt/">
+  <meta property="og:site_name" content="K_DM Book">
+  <meta property="og:title" content="動画からの音声認識">
+  <meta property="og:description" content="仮想環境の作成 # Anacondaを使用している場合は、以下のコマンドを順番に実行することで py39-whisper という名前のpython3.9実行環境が作成されます。
+conda create -n py39-whisper python=3.9 anacondaconda activate py39-whisperpip install git&#43;https://github.com/openai/whisper.gitconda install ffmpeg -c conda-forgeconda install jupyter ipykernel pandasconda install transformers[sentencepiece]whisperを使って音声認識を実行する # 音声データは『Flex LNG Q3 2022 Key Takeaways』の音声を使用しています。
+import warnings import whisper from transformers import pipeline model = whisper.load_model(&#34;base&#34;) result = model.transcribe(&#34;FlexLNG_Q3_2022_Key_Takeaways.mp3&#34;) print(result[&#34;text&#34;]) Hi and welcome to FlexLng&#39;s TURD Quater Highlights. Revenue&#39;s 4D Quater came in at 91 million in line with previous guidance of approximately 90 million. Ernings was strong, net income and adjusted net income was 47.42 million, translating into Ernings per share and adjusted Ernings per share of 88.79 respectively. Freight market during the quarter boomed and this affected both short term and long term rates positively. During the quarter we had three ships... 日本語を英語に翻訳する # 翻訳の正しさは保証されておらず、また本コードも動作や出力に関しては一切の責任を負えません。">
+  <meta property="og:locale" content="ja">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="finance">
+<title>動画からの音声認識 | K_DM Book</title>
+<link rel="icon" href="/favicon.png" >
+<link rel="manifest" href="/manifest.json">
+<link rel="canonical" href="http://localhost:1313/finance/nlp/mp32srt/">
+<link rel="stylesheet" href="/book.min.5c80a20e1f11b0e9dc4cae70ce44083860ffa999a7bf8ab5dab38664fde8a418.css" integrity="sha256-XICiDh8RsOncTK5wzkQIOGD/qZmnv4q12rOGZP3opBg=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/ja.search.min.58d3a47dfc146864a58893dc5fc3dea0c3290cbd2695f142a0697316f5b64e98.js" integrity="sha256-WNOkffwUaGSliJPcX8PeoMMpDL0mlfFCoGlzFvW2Tpg=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-finance">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>K_DM Book</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="検索" aria-label="検索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+    
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex">
+      <a role="button" class="flex flex-auto">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        <span>日本語</span>
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="/en/">
+          <span>English</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/es/">
+          <span>Español</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/id/">
+          <span>Indonesia</span>
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/" class="">線形回帰</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/linear_regression/" class="">最小二乗法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/ridge_and_lasso/" class="">リッジ回帰・ラッソ回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/robust_regression/" class="">外れ値と頑健性</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/regression/regressionanalysis/" class="">残差の分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/" class="">線形分類</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/logistic_regression/" class="">ロジスティック回帰</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/classification/linear_discriminant_analysis/" class="">判別分析</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/" class="">決定木</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_classifier/" class="">決定木(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/decision_tree_regressor/" class="">決定木(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/parameter/" class="">決定木のパラメータ</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/tree/rulefit/" class="">RuleFit</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/" class="">アンサンブル</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/randomforest/" class="">ランダムフォレスト</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/stucking/" class="">スタッキング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_classification/" class="">Adaboost(分類)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/adaboost_regression/" class="">Adaboost(回帰)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting1/" class="">勾配ブースティング</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/ensemble/gradient_boosting2/" class="">勾配ブースティングの可視化</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/" class="">クラスタリング</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means1/" class="">k-means</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/k-means2/" class="">k-means&#43;&#43;</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/clustering/x-means/" class="">X-means</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/" class="">次元削減</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/pca/" class="">PCA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/svd/" class="">SVD</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/lda/" class="">LDA</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/dimensionality_reduction/kernel-pca/" class="">Kernel-PCA</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/" class="">特徴選択</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/feature_selection/boruta/" class="">Boruta</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/" class="">時系列</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/timeseries/prophet/" class="">Prophetを使ってみる</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/" class="">異常検知</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk1/" class="">異常検知①</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/basic/anomaly/adtk2/" class="">異常検知②</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>動画からの音声認識</h3>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#仮想環境の作成">仮想環境の作成</a></li>
+    <li><a href="#whisperを使って音声認識を実行する">whisperを使って音声認識を実行する</a></li>
+    <li><a href="#日本語を英語に翻訳する">日本語を英語に翻訳する</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article">
+<div class="youtube-embed">
+  <iframe loading="lazy" class="youtube-video" src="https://www.youtube.com/embed/1-dsqPNcE2Y" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<!-- raw HTML omitted -->
+<h2 id="仮想環境の作成">
+  仮想環境の作成
+  
+  <a class="anchor" href="#%e4%bb%ae%e6%83%b3%e7%92%b0%e5%a2%83%e3%81%ae%e4%bd%9c%e6%88%90">#</a>
+  
+</h2>
+<p>Anacondaを使用している場合は、以下のコマンドを順番に実行することで <code>py39-whisper</code> という名前のpython3.9実行環境が作成されます。</p>
+<pre><code>conda create -n py39-whisper python=3.9 anaconda
+conda activate py39-whisper
+pip install git+https://github.com/openai/whisper.git
+conda install ffmpeg -c conda-forge
+conda install jupyter ipykernel pandas
+conda install transformers[sentencepiece]
+</code></pre>
+<h2 id="whisperを使って音声認識を実行する">
+  whisperを使って音声認識を実行する
+  
+  <a class="anchor" href="#whisper%e3%82%92%e4%bd%bf%e3%81%a3%e3%81%a6%e9%9f%b3%e5%a3%b0%e8%aa%8d%e8%ad%98%e3%82%92%e5%ae%9f%e8%a1%8c%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+
+<div class="notices info" ><p>音声データは『<a href="https://www.youtube.com/watch?v=tsU0jebpux0">Flex LNG Q3 2022 Key Takeaways</a>』の音声を使用しています。</p>
+</div>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> warnings
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> whisper
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> transformers <span style="color:#f92672">import</span> pipeline
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>model <span style="color:#f92672">=</span> whisper<span style="color:#f92672">.</span>load_model(<span style="color:#e6db74">&#34;base&#34;</span>)
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>transcribe(<span style="color:#e6db74">&#34;FlexLNG_Q3_2022_Key_Takeaways.mp3&#34;</span>)
+</span></span><span style="display:flex;"><span>print(result[<span style="color:#e6db74">&#34;text&#34;</span>])
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Hi and welcome to FlexLng&#39;s TURD Quater Highlights. Revenue&#39;s 4D Quater came in at 91 million in line with previous guidance of approximately 90 million. Ernings was strong, net income and adjusted net income was 47.42 million, translating into Ernings per share and adjusted Ernings per share of 88.79 respectively. Freight market during the quarter boomed and this affected both short term and long term rates positively. During the quarter we had three ships...
+</span></span></code></pre></div><h2 id="日本語を英語に翻訳する">
+  日本語を英語に翻訳する
+  
+  <a class="anchor" href="#%e6%97%a5%e6%9c%ac%e8%aa%9e%e3%82%92%e8%8b%b1%e8%aa%9e%e3%81%ab%e7%bf%bb%e8%a8%b3%e3%81%99%e3%82%8b">#</a>
+  
+</h2>
+<p>翻訳の正しさは保証されておらず、また本コードも動作や出力に関しては一切の責任を負えません。</p>
+<ul>
+<li><a href="https://github.com/openai/whisper">openai/whisper</a></li>
+<li>翻訳に使用するモデル
+<ul>
+<li><a href="https://staka.jp/wordpress/?p=413">ニューラル機械翻訳モデルFuguMT</a></li>
+<li><a href="https://huggingface.co/staka/fugumt-en-ja">staka/fugumt-en-ja - Hugging Face</a></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>MAX_LENGTH <span style="color:#f92672">=</span> <span style="color:#ae81ff">400</span>  <span style="color:#75715e"># モデルに入力することができる文字数の上限</span>
+</span></span><span style="display:flex;"><span>translator <span style="color:#f92672">=</span> pipeline(<span style="color:#e6db74">&#34;translation&#34;</span>, model<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;staka/fugumt-en-ja&#34;</span>)
+</span></span><span style="display:flex;"><span>translated_text <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> t <span style="color:#f92672">in</span> result[<span style="color:#e6db74">&#34;text&#34;</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;. &#34;</span>):
+</span></span><span style="display:flex;"><span>    translated_text<span style="color:#f92672">.</span>append(translator(t[:MAX_LENGTH])[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;translation_text&#34;</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(translated_text)
+</span></span></code></pre></div><pre tabindex="0"><code>[&#39;Flexingの第3四半期ハイライトへようこそ。&#39;,
+ &#39;Revenueの4D Quaterは9100万で、前回のガイダンスで約9000万だった。&#39;,
+ &#39;Erningsは好調で、純利益と調整済み純利益は47.42百万で、それぞれ1株当たりErningsに翻訳され、調整済みErningsは88.79だった。&#39;,
+ &#39;第4四半期の貨物市場は急成長し、短期と長期の両方にプラスの影響を与えました。&#39;,
+ &#39;四半期中は3隻の船が新船のチャーターを開始し&#39;,
+ &#39;6月にフレックスと価格とフレックスアンバーの両方の7年間のチャーターを発表し、これらの船は短期契約の代わりに7月にこれらの新しい長期チャーターを開始しました。&#39;,
+ &#39;また、第4四半期末には、シェニエとの契約により、最終第5船としてフレクサーオーラをチェニエに納入しました。&#39;,
+ &#39;CFOの四半期中は、バランスシート最適化プログラムフェーズ2の下で再融資に忙しかったため、追加の1億ドルの現金を調達する目標がありました。この6億3000万の資金を4隻の船舶に調達することで、すでに1億1000万の現金リリースを確保しています。&#39;,
+ &#39;また、新たに3隻の船舶をリファイナンスし、バランスシート最適化プログラムの目標を3億に引き上げることはできません。&#39;,
+ &#39;フェーズ1では1億3700万ドルを&#39;,
+ &#39;本日 110を発売すると発表しました&#39;,
+</code></pre></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+
+
+  
+  
+  
+
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+
+<aside class="book-toc">
+  <div class="book-toc-content">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#仮想環境の作成">仮想環境の作成</a></li>
+    <li><a href="#whisperを使って音声認識を実行する">whisperを使って音声認識を実行する</a></li>
+    <li><a href="#日本語を英語に翻訳する">日本語を英語に翻訳する</a></li>
+  </ul>
+</nav>
+
+
+
+  </div>
+</aside>
+
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
