@@ -2,6 +2,8 @@ baseURL = "https://k-dm.work/"            # ← 本番ドメインに合わせ�
 title   = "K_DM Book"
 enableGitInfo = true
 ignoreLogs = ['warning-goldmark-raw-html']
+defaultContentLanguage = 'ja'
+defaultContentLanguageInSubdir = false
 
 # ── 国際SEOの土台 ─────────────────────────────────────────────
 enableRobotsTXT = true                     # /robots.txt 自動生成
@@ -26,10 +28,6 @@ summaryLength   = 160                      # メタ説明の要約長
 
 [privacy.youtube]
   privacyEnhanced = true                    # youtube-nocookie を使用
-
-# 既定言語は日本語、ルート（/）で表示
-defaultContentLanguage = 'ja'
-defaultContentLanguageInSubdir = false
 
 [params]
   BookSection = 'basic'

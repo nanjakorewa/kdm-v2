@@ -315,3 +315,36 @@ div.notices.ref p     { border-top-color:#06b6d4; }
 }
 
 .yt--full { --embed-max: 1400px; }
+
+/* --- Share bar ------------------------------------------------------- */
+.share{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.5rem .5rem;
+  margin-top:2rem; padding:.6rem .75rem;
+  border:1px solid var(--border); border-radius: var(--radius); background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.share__label{ margin-right:.25rem; color:var(--muted); font-size:.95rem; }
+.share__btn{
+  appearance:none; display:inline-flex; align-items:center; gap:.35rem;
+  padding:.4rem .7rem; border:1px solid var(--border); border-radius: 999px;
+  background:#fff; color:var(--text); text-decoration:none; font-size:.95rem; line-height:1;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+}
+.share__btn:hover{ transform: translateY(-1px); }
+
+/* ブランド色（hover時のみ色を出して落ち着いた印象に） */
+.share__btn.x:hover        { background:#000;        color:#fff; border-color:#000; }
+.share__btn.facebook:hover { background:#1877F2;     color:#fff; border-color:#1877F2; }
+.share__btn.linkedin:hover { background:#0A66C2;     color:#fff; border-color:#0A66C2; }
+.share__btn.reddit:hover   { background:#FF4500;     color:#fff; border-color:#FF4500; }
+.share__btn.hatena:hover   { background:#00A4DE;     color:#fff; border-color:#00A4DE; }
+.share__btn.line:hover     { background:#06C755;     color:#fff; border-color:#06C755; }
+.share__btn.whatsapp:hover { background:#25D366;     color:#fff; border-color:#25D366; }
+.share__btn.telegram:hover { background:#229ED9;     color:#fff; border-color:#229ED9; }
+
+.share__btn.copy.copied{ background: color-mix(in oklab, var(--link) 10%, #fff); border-color: var(--link); }
+
+/* ダーク */
+[data-theme="dark"] .share{ background: var(--surface); }
+[data-theme="dark"] .share__btn{ background: transparent; }
+

@@ -5,30 +5,50 @@ weight: 1
 title_suffix: "の直感・数式・実装"
 ---
 
+{{< katex />}}
 {{% youtube "ewvjQMj8nA8" %}}
 
 <div class="pagetop-box">
-  <p><b>ランダムフォレスト</b>は、多数の決定木を<b>ブートストラップ</b>（標本の再標本化）と<b>特徴量サブサンプリング</b>で学習し、分類は多数決、回帰は平均で予測する <b>Bagging</b> 系のアンサンブルです。分散を下げ、頑健な予測を狙います。</p>
+  <p><b>ランダムフォレスト</b>は、多数の決定木を<b>ブートストラップ（再標本化）</b>と<b>特徴量サブサンプリング</b>を組み合わせて学習し、分類は多数決、回帰は平均で予測する <b>Bagging 系</b>のアンサンブルです。分散を下げ、頑健な予測を狙います。</p>
 </div>
 
 {{% notice document %}}
-- [RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
-- [train_test_split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
+- [RandomForestClassifier — scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)  
+- [train_test_split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)  
 - [roc_auc_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
 {{% /notice %}}
 
-## 仕組み（数式の直感）
+---
 
-- ブートストラップ標本 <code>\(\mathcal{D}_b\)</code> ごとに木 <code>\(h_b(x)\)</code> を学習（<code>b=1,\dots,B</code>）。
-- 予測は分類なら多数決、回帰なら平均：
-  - 分類: <code>\(\hat y = \operatorname*{arg\,max}_c \sum_{b=1}^B \mathbf{1}[h_b(x)=c]\)</code>
-  - 回帰: <code>\(\hat y = \frac{1}{B}\sum_{b=1}^B h_b(x)\)</code>
-
-分割指標の例（Gini 不純度）：<code>\(\mathrm{Gini}(S)=1-\sum_{c}p(c\mid S)^2\)</code>
+## 1. 直感：多数の「弱い木」を寄せ集めて安定化
+- 決定木は「過学習しやすい」モデル。  
+- ランダムフォレストは **データの一部**（ブートストラップ標本）と **特徴量の一部**を毎回選んで木を作る。  
+- 木ごとに「バラバラな視点」を持たせることで、全体をまとめると頑健で精度の高いモデルになる。  
 
 ---
 
-## 分類データで学習し ROC-AUC を確認
+## 2. 数式でみるランダムフォレスト
+
+ブートストラップ標本 \(\mathcal{D}_b\) ごとに木 \(h_b(x)\) を学習（\(b=1,\dots,B\)）。
+
+- 分類予測（多数決）：
+  $$
+  \hat y(x) = \operatorname*{arg\,max}_c \sum_{b=1}^B \mathbf{1}[h_b(x) = c]
+  $$
+
+- 回帰予測（平均）：
+  $$
+  \hat y(x) = \frac{1}{B}\sum_{b=1}^B h_b(x)
+  $$
+
+各木の分割には「ジニ不純度」などを用いる：
+$$
+\mathrm{Gini}(S) = 1 - \sum_{c} p(c\mid S)^2
+$$
+
+---
+
+## 3. 分類データで学習し ROC-AUC を確認
 
 ```python
 import numpy as np
@@ -53,19 +73,20 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 model = RandomForestClassifier(
-    n_estimators=50, max_depth=3, random_state=777, bootstrap=True, oob_score=True
+    n_estimators=50, max_depth=3, random_state=777,
+    bootstrap=True, oob_score=True
 )
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 rf_score = roc_auc_score(y_test, y_pred)
-print(f"テストデータでのROC-AUC = {rf_score}")
+print(f"テストデータでのROC-AUC = {rf_score:.3f}")
 ```
 
 ![png](/images/basic/ensemble/RandomForest_files/RandomForest_6_0.png)
 
 ---
 
-## 各決定木の性能を見てみる
+## 4. 各決定木の性能を比較してみる
 
 ```python
 import japanize_matplotlib
@@ -88,13 +109,14 @@ plt.show()
 
 ![png](/images/basic/ensemble/RandomForest_files/RandomForest_6_0.png)
 
+> 各木はバラバラの性能ですが、全体でまとめると安定して精度が高くなります。
+
 ---
 
-## 特徴量の重要度
+## 5. 特徴量の重要度
 
-### 不純度（impurity）に基づく重要度
-
-各ノード分割での不純度減少を特徴量ごとに足し上げ、全木で平均した量を用います。
+### 5.1 不純度（impurity）に基づく重要度
+各ノード分割での「不純度減少」を特徴量ごとに足し上げ、全木で平均した量。
 
 ```python
 plt.figure(figsize=(10, 4))
@@ -107,11 +129,7 @@ plt.show()
 
 ![png](/images/basic/ensemble/RandomForest_files/RandomForest_8_0.png)
 
-### Permutation importance（入れ替え重要度）
-
-{{% notice document %}}
-[permutation_importance](https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html)
-{{% /notice %}}
+### 5.2 Permutation importance（入れ替え重要度）
 
 ```python
 from sklearn.inspection import permutation_importance
@@ -131,7 +149,7 @@ plt.show()
 
 ---
 
-## 木の可視化（任意）
+## 6. 木の可視化（任意）
 
 ```python
 from sklearn.tree import export_graphviz
@@ -149,11 +167,9 @@ for i in range(3):
             proportion=True,
             filled=True,
         )
-
         call(["dot", "-Tpng", f"tree{i}.dot", "-o", f"tree{i}.png", "-Gdpi=500"])
         display(Image(filename=f"tree{i}.png"))
     except Exception:
-        # NOTE: ビルド環境で失敗しやすいため一時的に例外を握りつぶす
         pass
 ```
 
@@ -161,10 +177,19 @@ for i in range(3):
 
 ---
 
-## ハイパーパラメータの目安
+## 7. ハイパーパラメータの目安
+- **n_estimators** : 木の本数。多いほど安定だが計算増。  
+- **max_depth** : 各木の深さ。深すぎると過学習、浅すぎると精度不足。  
+- **max_features** : 分割で試す特徴数。小さめにすると木の相関が減り→多様性UP。  
+- **bootstrap**, **oob_score** : OOB（袋外データ）で汎化性能を評価可能。  
 
-- <b>n_estimators</b>: 木の本数。多いほど安定だが計算増。
-- <b>max_depth</b>: 各木の深さ。深すぎると過学習、浅すぎると精度不足。
-- <b>max_features</b>: 分割で試す特徴数。小さめにすると相関低下→多様性UP。
-- <b>bootstrap</b>, <b>oob_score</b>: OOB で検証すると追加の検証データ不要な場合も。
+---
 
+## 8. まとめ
+- ランダムフォレストは **「多数の弱い木の集合で強いモデルを作る」** 手法。  
+- Bagging に「特徴量のランダム化」を加えることで、木同士の相関を下げて性能を安定化。  
+- 予測は分類なら多数決、回帰なら平均。  
+- 特徴量重要度の計算も可能で、解釈性に活用できる。  
+- 実務では **n_estimators・max_depth・max_features** の調整が重要。  
+
+---

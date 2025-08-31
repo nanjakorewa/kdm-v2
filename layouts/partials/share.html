@@ -1,0 +1,72 @@
+﻿{{- $url   := .Permalink -}}
+{{- $title := .Title -}}
+{{- $via   := site.Params.twitterSite | default "" -}}
+{{- $viaParam := "" -}}{{ if $via }}{{ $viaParam = printf "&via=%s" (urlquery $via) }}{{ end }}
+{{- $isJa := eq .Lang "ja" -}}
+{{- $labelShare := cond $isJa "このページをシェア" "Share this page" -}}
+{{- $labelCopied := cond $isJa "リンクをコピーしました" "Link copied!" -}}
+
+<nav class="share" aria-label="{{ $labelShare }}">
+  <span class="share__label">{{ $labelShare }}</span>
+
+  <a class="share__btn x"
+     href="https://twitter.com/intent/tweet?url={{ $url | urlquery }}&text={{ $title | urlquery }}{{ $viaParam }}"
+     target="_blank" rel="noopener">X</a>
+
+  <a class="share__btn facebook"
+     href="https://www.facebook.com/sharer/sharer.php?u={{ $url | urlquery }}"
+     target="_blank" rel="noopener">Facebook</a>
+
+  <a class="share__btn linkedin"
+     href="https://www.linkedin.com/shareArticle?url={{ $url | urlquery }}&title={{ $title | urlquery }}"
+     target="_blank" rel="noopener">LinkedIn</a>
+
+  <a class="share__btn reddit"
+     href="https://www.reddit.com/submit?url={{ $url | urlquery }}&title={{ $title | urlquery }}"
+     target="_blank" rel="noopener">Reddit</a>
+
+  <a class="share__btn hatena"
+     href="https://b.hatena.ne.jp/add?mode=confirm&url={{ $url | urlquery }}&title={{ $title | urlquery }}"
+     target="_blank" rel="noopener">はてブ</a>
+
+  <a class="share__btn line"
+     href="https://social-plugins.line.me/lineit/share?url={{ $url | urlquery }}"
+     target="_blank" rel="noopener">LINE</a>
+
+  <a class="share__btn whatsapp"
+     href="https://api.whatsapp.com/send?text={{ $title | urlquery }}%20{{ $url | urlquery }}"
+     target="_blank" rel="noopener">WhatsApp</a>
+
+  <a class="share__btn telegram"
+     href="https://t.me/share/url?url={{ $url | urlquery }}&text={{ $title | urlquery }}"
+     target="_blank" rel="noopener">Telegram</a>
+
+  <button class="share__btn copy" type="button"
+          data-url="{{ $url }}"
+          aria-live="polite">{{ cond $isJa "リンクをコピー" "Copy link" }}</button>
+</nav>
+
+<script>
+(function(){
+  var b=document.currentScript&&document.currentScript.previousElementSibling;
+  // previousElementSibling = <nav>…（スクリプト直前のナビ）
+  if(!b) b=document.querySelector('.share'); if(!b) return;
+
+  var copyBtn=b.querySelector('.share__btn.copy'); if(!copyBtn) return;
+  copyBtn.addEventListener('click', async function(){
+    var u=this.getAttribute('data-url')||location.href;
+    try{
+      await navigator.clipboard.writeText(u);
+      var prev=this.textContent;
+      this.textContent='{{ $labelCopied }}';
+      this.classList.add('copied');
+      setTimeout(()=>{ this.textContent=prev; this.classList.remove('copied'); }, 1600);
+    }catch(e){
+      // フォールバック
+      var ta=document.createElement('textarea'); ta.value=u; document.body.appendChild(ta);
+      ta.select(); try{ document.execCommand('copy'); }catch(_){}
+      document.body.removeChild(ta);
+    }
+  }, {passive:true});
+})();
+</script>
