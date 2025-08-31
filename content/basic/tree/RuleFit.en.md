@@ -17,8 +17,8 @@ Friedman, Jerome H., and Bogdan E. Popescu. “Predictive learning via rule ense
 
 ## 1. Idea (with formulas)
 
-1) <b>Extract rules from trees</b>. Each path to a leaf defines an if–then rule, converted to a binary feature \(r_j(x)\in\{0,1\}).  
-2) <b>Add (scaled) linear terms</b> for continuous features \(z_k(x)\).  
+1) <b>Extract rules from trees</b>. Each path to a leaf defines an if–then rule, converted to a binary feature $r_j(x)\in\{0,1\}).  
+2) <b>Add (scaled) linear terms</b> for continuous features \(z_k(x)$.  
 3) <b>L1-regularized linear fit</b>:
 
 $$

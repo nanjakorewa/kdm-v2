@@ -13,7 +13,7 @@ title_suffix: "Multikelas di Python"
 
 ## 1. Fungsi softmax
 
-Diberikan \(z=(z_1,\dots,z_K)\):
+Diberikan $z=(z_1,\dots,z_K)$:
 
 $$
 \mathrm{softmax}(z_i) = \frac{\exp(z_i)}{\sum_{j=1}^{K} \exp(z_j)} \quad (i=1,\dots,K)
@@ -27,7 +27,7 @@ $$
 
 ## 2. Model
 
-Untuk \(x\), skor kelas \(k\):
+Untuk $x$, skor kelas $k$:
 
 $$
 z_k = w_k^\top x + b_k

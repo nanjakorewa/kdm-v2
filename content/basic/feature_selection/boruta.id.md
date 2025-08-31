@@ -178,7 +178,7 @@ Kita akan mencampurkan 10 fitur yang berguna di antara 100 fitur dan mencoba mel
 
 Berdasarkan spesifikasi dari [sklearn.datasets.make_classification](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html):
 
-> Tanpa pengacakan, \( X \) menyusun fitur secara horizontal dalam urutan berikut: fitur utama yang informatif (\( n\_informative \)), diikuti oleh kombinasi linier fitur informatif yang redundan (\( n\_redundant \)), lalu duplikasi yang diambil secara acak dari fitur informatif dan redundan (\( n\_repeated \)). Sisa fitur diisi dengan noise acak. Dengan demikian, tanpa pengacakan, semua fitur yang berguna terkandung dalam kolom \( X[:, :n\_informative + n\_redundant + n\_repeated] \).
+> Tanpa pengacakan, $X$ menyusun fitur secara horizontal dalam urutan berikut: fitur utama yang informatif ($n\_informative$), diikuti oleh kombinasi linier fitur informatif yang redundan ($n\_redundant$), lalu duplikasi yang diambil secara acak dari fitur informatif dan redundan ($n\_repeated$). Sisa fitur diisi dengan noise acak. Dengan demikian, tanpa pengacakan, semua fitur yang berguna terkandung dalam kolom $X[:, :n\_informative + n\_redundant + n\_repeated]$.
 
 Oleh karena itu, kita akan memeriksa apakah 10 kolom pertama yang merupakan fitur berguna tidak dihapus.
 

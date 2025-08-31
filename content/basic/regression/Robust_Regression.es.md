@@ -32,7 +32,7 @@ Al <b>elevar al cuadrado</b> los residuos, un solo punto extremo puede dominar l
 
 ## 2. Pérdida de Huber: compromiso entre cuadrada y absoluta
 
-La <b>pérdida de Huber</b> usa cuadrática para residuos pequeños y absoluta para grandes. Para <code>r = y - \hat y</code> y umbral <code>\(\delta > 0\)</code>:
+La <b>pérdida de Huber</b> usa cuadrática para residuos pequeños y absoluta para grandes. Para <code>r = y - \hat y</code> y umbral <code>$\delta > 0$</code>:
 
 $$
 \ell_\delta(r) = \begin{cases}
@@ -50,7 +50,7 @@ r, & |r| \le \delta \\
 $$
 por lo que el gradiente se <b>satura</b> ante residuos grandes (outliers).
 
-> Nota: en <code>HuberRegressor</code> de scikit-learn, el umbral es <code>epsilon</code> (corresponde a <code>\(\delta\)</code>).
+> Nota: en <code>HuberRegressor</code> de scikit-learn, el umbral es <code>epsilon</code> (corresponde a <code>$\delta$</code>).
 
 ---
 
@@ -168,7 +168,7 @@ Interpretación:
 
 ## 6. Parámetros: epsilon y alpha
 
-- <code>epsilon</code> (umbral <code>\(\delta\)</code>):
+- <code>epsilon</code> (umbral <code>$\delta$</code>):
   - Mayor → más cercano a OLS; menor → más cercano a pérdida absoluta.
   - Depende de la escala de residuos; estandarice o use escalado robusto.
 - <code>alpha</code> (penalización L2):

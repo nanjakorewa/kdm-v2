@@ -18,12 +18,12 @@ title_suffix: "Intuition, formulas, and practice"
 {{% /notice %}}
 
 ## How it works (formulas)
-- Train a tree \(h_b(x)\) on each bootstrap sample \(\mathcal{D}_b\), for \(b=1,\dots,B\).
+- Train a tree $h_b(x)$ on each bootstrap sample $\mathcal{D}_b$, for $b=1,\dots,B$.
 - Prediction:
-  - Classification: \(\hat y = \operatorname*{arg\,max}_c \sum_{b=1}^B \mathbf{1}[h_b(x)=c]\)
-  - Regression: \(\hat y = \tfrac{1}{B}\sum_{b=1}^B h_b(x)\)
+  - Classification: $\hat y = \operatorname*{arg\,max}_c \sum_{b=1}^B \mathbf{1}[h_b(x)=c]$
+  - Regression: $\hat y = \tfrac{1}{B}\sum_{b=1}^B h_b(x)$
 
-Split criterion example (Gini): \(\mathrm{Gini}(S)=1-\sum_c p(c\mid S)^2\)
+Split criterion example (Gini): $\mathrm{Gini}(S)=1-\sum_c p(c\mid S)^2$
 
 ---
 

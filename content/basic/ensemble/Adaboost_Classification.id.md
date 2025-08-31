@@ -16,14 +16,14 @@ title_suffix: "Intuisi, rumus, dan praktik"
 {{% /notice %}}
 
 ## Algoritme (dengan rumus)
-Untuk \(t=1,\dots,T\): latih \(h_t(x)\) dengan bobot \(w_i^{(t)}\). Galat berbobot
-\(\displaystyle \varepsilon_t = \frac{\sum_i w_i^{(t)} \, \mathbf{1}[y_i \ne h_t(x_i)]}{\sum_i w_i^{(t)}}\),
-koefisien \(\displaystyle \alpha_t = \tfrac{1}{2}\ln \frac{1-\varepsilon_t}{\varepsilon_t}\).
+Untuk $t=1,\dots,T$: latih $h_t(x)$ dengan bobot $w_i^{(t)}$. Galat berbobot
+$\displaystyle \varepsilon_t = \frac{\sum_i w_i^{(t)} \, \mathbf{1}[y_i \ne h_t(x_i)]}{\sum_i w_i^{(t)}}$,
+koefisien $\displaystyle \alpha_t = \tfrac{1}{2}\ln \frac{1-\varepsilon_t}{\varepsilon_t}$.
 
 Pembaruan bobot:
-\(\displaystyle w_i^{(t+1)} = w_i^{(t)} \exp( \alpha_t\, \mathbf{1}[y_i \ne h_t(x_i)] )\) (lalu normalisasi).
+$\displaystyle w_i^{(t+1)} = w_i^{(t)} \exp( \alpha_t\, \mathbf{1}[y_i \ne h_t(x_i)] )$ (lalu normalisasi).
 
-Klasifikator akhir: \(\displaystyle H(x) = \operatorname{sign}\big( \sum_{t=1}^T \alpha_t h_t(x) \big)\)
+Klasifikator akhir: $\displaystyle H(x) = \operatorname{sign}\big( \sum_{t=1}^T \alpha_t h_t(x) \big)$
 
 ---
 

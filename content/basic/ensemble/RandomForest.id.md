@@ -18,12 +18,12 @@ title_suffix: "Intuisi, rumus, dan praktik"
 {{% /notice %}}
 
 ## Cara kerja (rumus)
-- Pohon \(h_b(x)\) per sampel bootstrap \(\mathcal{D}_b\), untuk \(b=1,\dots,B\).
+- Pohon $h_b(x)$ per sampel bootstrap $\mathcal{D}_b$, untuk $b=1,\dots,B$.
 - Prediksi:
-  - Klasifikasi: \(\hat y = \operatorname*{arg\,max}_c \sum_{b=1}^B \mathbf{1}[h_b(x)=c]\)
-  - Regresi: \(\hat y = \tfrac{1}{B}\sum_{b=1}^B h_b(x)\)
+  - Klasifikasi: $\hat y = \operatorname*{arg\,max}_c \sum_{b=1}^B \mathbf{1}[h_b(x)=c]$
+  - Regresi: $\hat y = \tfrac{1}{B}\sum_{b=1}^B h_b(x)$
 
-Contoh (Gini): \(\mathrm{Gini}(S)=1-\sum_c p(c\mid S)^2\)
+Contoh (Gini): $\mathrm{Gini}(S)=1-\sum_c p(c\mid S)^2$
 
 ---
 

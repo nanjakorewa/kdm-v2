@@ -17,8 +17,8 @@ Friedman, Jerome H., dan Bogdan E. Popescu. “Predictive learning via rule ense
 
 ## 1. Gagasan (dengan rumus)
 
-1) <b>Ekstrak aturan</b> dari jalur ke daun, ubah ke fitur biner \(r_j(x)\in\{0,1\}).  
-2) <b>Tambahkan</b> istilah linear terstandar \(z_k(x)\).  
+1) <b>Ekstrak aturan</b> dari jalur ke daun, ubah ke fitur biner $r_j(x)\in\{0,1\}).  
+2) <b>Tambahkan</b> istilah linear terstandar \(z_k(x)$.  
 3) <b>Fit linear dengan L1</b>:
 
 $$

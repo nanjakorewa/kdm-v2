@@ -42,7 +42,7 @@ img
 
 
 
-## Eksekusi Singular Value Decomposition (SVD) pada matriks \( A \).
+## Eksekusi Singular Value Decomposition (SVD) pada matriks $A$.
 
 
 ```python
@@ -75,7 +75,7 @@ for rank in [1, 2, 3, 4, 5, 10, 20, 50]:
     plt.show()
 ```
 
-## Isi Matriks \( V \)
+## Isi Matriks $V$
 
 ```python
 total = np.zeros((163, 372))

@@ -37,7 +37,7 @@ from sklearn.ensemble import AdaBoostRegressor
 
 ## 2. 数式でみる AdaBoost.R2（回帰）
 
-サンプル \((x_i, y_i)\)（\(i=1,\dots,N\)）に重み \(w_i^{(m)}\) を持たせ、反復 \(m=1,\dots,M\) で弱学習器 \(h^{(m)}(x)\) を学習します。
+サンプル $(x_i, y_i)$（$i=1,\dots,N$）に重み $w_i^{(m)}$ を持たせ、反復 $m=1,\dots,M$ で弱学習器 $h^{(m)}(x)$ を学習します。
 
 ### 2.1 誤差の定義（相対誤差）
 AdaBoost.R2 では予測誤差を 0〜1 に正規化して使うのが特徴です（以下は代表的な定義の一例）：
@@ -48,7 +48,7 @@ e_i^{(m)} \;=\; \frac{\bigl|\,y_i - h^{(m)}(x_i)\,\bigr|}{E_{\max}^{(m)}}
 E_{\max}^{(m)} \;=\; \max_j \bigl|\,y_j - h^{(m)}(x_j)\,\bigr|
 $$
 
-（`loss="linear"` の場合。`square` なら \((e_i^{(m)})^2\)、`exponential` なら \(\exp(e_i^{(m)})-1\) を使うイメージ。）
+（`loss="linear"` の場合。`square` なら $(e_i^{(m)})^2$、`exponential` なら $\exp(e_i^{(m)})-1$ を使うイメージ。）
 
 ### 2.2 学習器の誤差率と重み
 重み付き誤差率：
@@ -64,7 +64,7 @@ $$
 \alpha^{(m)} \;=\; \log\frac{1}{\beta^{(m)}} \;=\; \log\frac{1-\varepsilon^{(m)}}{\varepsilon^{(m)}}
 $$
 
-> \(\varepsilon^{(m)}\) が小さい（= よく当たる）ほど \(\alpha^{(m)}\) は大きく、寄与が増えます。
+> $\varepsilon^{(m)}$ が小さい（= よく当たる）ほど $\alpha^{(m)}$ は大きく、寄与が増えます。
 
 ### 2.3 サンプル重みの更新
 $$
@@ -72,7 +72,7 @@ w_i^{(m+1)} \;\propto\; w_i^{(m)} \, \bigl(\beta^{(m)}\bigr)^{\,1 - e_i^{(m)}}
 \quad\text{（最後に正規化して } \sum_i w_i^{(m+1)}=1\text{）}
 $$
 
-誤差 \(e_i^{(m)}\) が大きいほど指数の \(1-e_i^{(m)}\) が小さくなり、\(\beta^{(m)} < 1\) なら重みは<b>相対的に増える</b>直感です。
+誤差 $e_i^{(m)}$ が大きいほど指数の $1-e_i^{(m)}$ が小さくなり、$\beta^{(m)} < 1$ なら重みは<b>相対的に増える</b>直感です。
 
 ### 2.4 最終予測
 連続値予測は弱学習器の重み付き結合で出します（scikit-learn 実装は <i>weighted median</i> 相当の集約を使うことがあります）：
@@ -124,17 +124,11 @@ plt.legend(); plt.grid(alpha=0.3); plt.show()
 {{% /notice %}}
 
 - `loss="linear"`（既定）：誤差に比例して重み増→ **バランス型**  
-  \[
-  L(y,\hat{y})=|y-\hat{y}|
-  \]
+  $$ L(y,\hat{y})=|y-\hat{y}| $$
 - `loss="square"`：二乗で強調→ **外れ値に敏感**（当てるのが難しい点に引っ張られやすい）  
-  \[
-  L(y,\hat{y})=(y-\hat{y})^2
-  \]
+  $$ L(y,\hat{y})=(y-\hat{y})^2 $$
 - `loss="exponential"`：指数でさらに強調→ **かなり敏感**（ノイズが多いと不安定になりがち）  
-  \[
-  L(y,\hat{y})=\exp(|y-\hat{y}|)-1
-  \]
+  $$ L(y,\hat{y})=\exp(|y-\hat{y}|)-1 $$
 
 > ノイズが多い実データでは、まずは `linear` を試し、必要に応じて変更するのが無難です。
 

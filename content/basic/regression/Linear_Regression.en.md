@@ -13,13 +13,13 @@ title_suffix: "Concepts and Implementation"
   </div>
 
 {{% notice tip %}}
-Math is rendered with KaTeX. <code>\(\hat y\)</code> denotes the model prediction and <code>\(\epsilon\)</code> denotes noise.
+Math is rendered with KaTeX. <code>$\hat y$</code> denotes the model prediction and <code>$\epsilon$</code> denotes noise.
 {{% /notice %}}
 
 ## Goal
-- Learn the line <code>\(\hat y = wx + b\)</code> that best fits the data.
+- Learn the line <code>$\hat y = wx + b$</code> that best fits the data.
 - “Best” means minimizing the sum of squared errors (SSE):
-  <code>\(\displaystyle L(w,b) = \sum_{i=1}^n (y_i - (w x_i + b))^2\)</code>
+  <code>$\displaystyle L(w,b) = \sum_{i=1}^n (y_i - (w x_i + b))^2$</code>
 
 ## Create a simple dataset
 We generate a noisy straight line and fix the random seed for reproducibility.
@@ -105,10 +105,10 @@ Scaling is not required to solve ordinary least squares, but it helps with multi
 {{% /notice %}}
 
 ## Closed-form solution (reference)
-For <code>\(\hat y = wx + b\)</code>, the minimizers are
+For <code>$\hat y = wx + b$</code>, the minimizers are
 
-- <code>\(\displaystyle w = \frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)}\)</code>
-- <code>\(\displaystyle b = \bar y - w\,\bar x\)</code>
+- <code>$\displaystyle w = \frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)}$</code>
+- <code>$\displaystyle b = \bar y - w\,\bar x$</code>
 
 Verify with NumPy:
 

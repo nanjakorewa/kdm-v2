@@ -16,14 +16,14 @@ title_suffix: "Intuición, fórmulas y práctica"
 {{% /notice %}}
 
 ## Algoritmo (con fórmulas)
-En \(t=1,\dots,T\): ajuste un débil \(h_t(x)\) con pesos \(w_i^{(t)}\). Error ponderado
-\(\displaystyle \varepsilon_t = \frac{\sum_i w_i^{(t)} \, \mathbf{1}[y_i \ne h_t(x_i)]}{\sum_i w_i^{(t)}}\),
-coeficiente \(\displaystyle \alpha_t = \tfrac{1}{2}\ln \frac{1-\varepsilon_t}{\varepsilon_t}\).
+En $t=1,\dots,T$: ajuste un débil $h_t(x)$ con pesos $w_i^{(t)}$. Error ponderado
+$\displaystyle \varepsilon_t = \frac{\sum_i w_i^{(t)} \, \mathbf{1}[y_i \ne h_t(x_i)]}{\sum_i w_i^{(t)}}$,
+coeficiente $\displaystyle \alpha_t = \tfrac{1}{2}\ln \frac{1-\varepsilon_t}{\varepsilon_t}$.
 
 Actualización de pesos:
-\(\displaystyle w_i^{(t+1)} = w_i^{(t)} \exp( \alpha_t\, \mathbf{1}[y_i \ne h_t(x_i)] )\) (luego normalizar).
+$\displaystyle w_i^{(t+1)} = w_i^{(t)} \exp( \alpha_t\, \mathbf{1}[y_i \ne h_t(x_i)] )$ (luego normalizar).
 
-Clasificador final: \(\displaystyle H(x) = \operatorname{sign}\big( \sum_{t=1}^T \alpha_t h_t(x) \big)\)
+Clasificador final: $\displaystyle H(x) = \operatorname{sign}\big( \sum_{t=1}^T \alpha_t h_t(x) \big)$
 
 ---
 
