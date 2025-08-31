@@ -1,18 +1,43 @@
 ---
 title: "Boruta"
-pre: "2.7.1 "
-weight: 1
+pre: "2.7.2 "
+weight: 2
 searchtitle: "Borutaを使い特徴選択を実行する"
 ---
 
-
-## Boruta
-Borutaを使って特徴量を選択してみます。このブロックのコードはBorutaの実行サンプルをそのまま持ってきたものです。
-
-`Kursa, Miron B., and Witold R. Rudnicki. "Feature selection with the Boruta package." Journal of statistical software 36 (2010): 1-13.`
-
+{{< katex />}}
 {{% youtube "xOkKnsqhUgw" %}}
 
+<div class="pagetop-box">
+  <p><b>Boruta（ボルタ）</b>は、特徴選択（Feature Selection）のアルゴリズムのひとつです。<br>
+  データに含まれる多数の特徴量の中から「本当に有用な特徴量」だけを選び出し、不要な特徴を削除してくれます。  
+  モデルの精度向上・解釈性の改善・計算効率化に役立つ重要な手法です。</p>
+</div>
+
+---
+
+## 1. なぜ特徴選択が必要か？
+- **高次元データの問題**  
+  特徴が多すぎると「ノイズ」が増え、過学習しやすくなる。  
+
+- **計算コスト**  
+  無駄な特徴を減らせば学習も予測も速くなる。  
+
+- **解釈性の向上**  
+  モデルの判断に本当に寄与している要素を特定できる。  
+
+---
+
+## 2. Borutaの仕組み（直感）
+1. すべての特徴を使ってランダムフォレストを学習する。  
+2. 各特徴の「重要度」を計算する。  
+3. データをランダムにシャッフルした「影の特徴（shadow features）」を作り、比較基準にする。  
+4. 本物の特徴の重要度が「影の特徴」より高ければ **有用**、低ければ **不要** と判断する。  
+5. これを繰り返して、安定的に有用な特徴を決定する。  
+
+---
+
+## 3. 実装例（CSVデータ）
 
 ```python
 import numpy as np
@@ -20,223 +45,86 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from boruta import BorutaPy
 
-
-# FIXME
-np.random.seed(777)
-np.int = int
-np.float = float
-np.bool = bool
-```
-
-
-```python
-# load X and y
+# データを読み込み
 X = pd.read_csv("examples/test_X.csv", index_col=0).values
-y = pd.read_csv("examples/test_y.csv", header=None, index_col=0).values
-y = y.ravel()
+y = pd.read_csv("examples/test_y.csv", header=None, index_col=0).values.ravel()
 
-# define random forest classifier, with utilising all cores and
-# sampling in proportion to y labels
+# ランダムフォレスト
 rf = RandomForestClassifier(n_jobs=-1, class_weight="balanced", max_depth=5)
 
-# define Boruta feature selection method
+# Boruta
 feat_selector = BorutaPy(rf, n_estimators="auto", verbose=2, random_state=1)
-
-# find all relevant features - 5 features should be selected
 feat_selector.fit(X, y)
 
-# check selected features - first 5 features are selected
-feat_selector.support_
+print("選ばれた特徴:", feat_selector.support_)
+print("特徴のランキング:", feat_selector.ranking_)
 
-# check ranking of features
-feat_selector.ranking_
-
-# call transform() on X to filter it down to selected features
+# 有用な特徴だけ残す
 X_filtered = feat_selector.transform(X)
 ```
 
-    Iteration: 	1 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    Rejected: 	0
-    Iteration: 	2 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    Rejected: 	0
-    Iteration: 	3 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    
-    BorutaPy finished running.
-    
-    Iteration: 	9 / 100
-    Confirmed: 	5
-    Tentative: 	0
-    Rejected: 	5
-    
+---
 
-## 人工データでの実験
+## 4. 人工データでの実験
 
+Borutaが「必要な特徴は残し、不要な特徴は削除できるか」を確認します。
+
+### すべて有用な特徴（削除しない）
 
 ```python
 from sklearn.datasets import make_classification
 from xgboost import XGBClassifier
 
-
-def fs_by_boruta(model, X, y):
-    feat_selector = BorutaPy(model, n_estimators="auto", verbose=2, random_state=1)
-    feat_selector.fit(X, y)
-    X_filtered = feat_selector.transform(X)
-
-    if X.shape[1] == X_filtered.shape[1]:
-        print("不用な特徴は見つかりませんでした")
-    else:
-        print("不用な特徴を削除しました")
-        print(f"{X.shape[1]} --> {X_filtered.shape[1]}")
-
-    return X_filtered
-```
-
-### すべて必要な特徴ならば削除しない
-
-
-```python
 X, y = make_classification(
-    n_samples=1000,
-    n_features=10,
-    n_informative=10,
-    n_redundant=0,
-    n_repeated=0,
-    n_classes=2,
-    random_state=0,
-    shuffle=False,
+    n_samples=1000, n_features=10,
+    n_informative=10, n_redundant=0, n_classes=2,
+    random_state=0, shuffle=False
 )
 model = XGBClassifier(max_depth=4)
-fs_by_boruta(model, X, y)
+
+feat_selector = BorutaPy(model, n_estimators="auto", verbose=2, random_state=1)
+feat_selector.fit(X, y)
+X_filtered = feat_selector.transform(X)
+
+print(f"{X.shape[1]} --> {X_filtered.shape[1]}")
 ```
 
-    Iteration: 	1 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    Rejected: 	0
-    Iteration: 	2 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    Rejected: 	0
-    Iteration: 	3 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    Rejected: 	0
-    Iteration: 	4 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    Rejected: 	0
-    Iteration: 	5 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    Rejected: 	0
-    Iteration: 	6 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    Rejected: 	0
-    Iteration: 	7 / 100
-    Confirmed: 	0
-    Tentative: 	10
-    Rejected: 	0
-    Iteration: 	8 / 100
-    Confirmed: 	10
-    Tentative: 	0
-    Rejected: 	0
-    
-    
-    BorutaPy finished running.
-    
-    Iteration: 	9 / 100
-    Confirmed: 	10
-    Tentative: 	0
-    Rejected: 	0
-    不用な特徴は見つかりませんでした
-    
+> 不要な特徴がなければ削除されず、そのまま残る。
 
+---
 
-
-
-    array([[ 0.38760058, -0.4398061 ,  1.0103586 , ..., -2.11674403,
-            -3.59368321, -0.43265007],
-           [-2.18745511, -2.45701675,  1.99758878, ...,  1.16128752,
-            -1.92766999,  3.18705784],
-           [ 3.98304273,  0.06250274, -1.31136045, ...,  1.45498409,
-            -4.17178063, -2.21695578],
-           ...,
-           [-0.44293666,  3.25707522, -0.50633794, ..., -0.72410483,
-            -1.5420989 ,  0.75991518],
-           [-1.12641706, -0.48636924,  0.92918889, ..., -1.01001779,
-            -2.69280573, -3.47050681],
-           [-2.3936814 ,  1.44048113,  1.95832126, ..., -5.15104933,
-            -1.02766442,  1.4853396 ]])
-
-
-
-### 不用な特徴は削除する
-100個のうち10個だけ有用な特徴を混ぜて、何個削除できるかを試します。
-
-[sklearn.datasets.make_classification](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html)の仕様は
-
-> Without shuffling, X horizontally stacks features in the following order: the primary n_informative features, followed by n_redundant linear combinations of the informative features, followed by n_repeated duplicates, drawn randomly with replacement from the informative and redundant features. The remaining features are filled with random noise. Thus, without shuffling, all useful features are contained in the columns X[:, :n_informative + n_redundant + n_repeated].
-
-となっているので、有用な特徴である先頭の10個の列が削除されていないかどうか確認してみます。
-
+### 不要な特徴が多い場合（削除する）
 
 ```python
 X, y = make_classification(
-    n_samples=2000,
-    n_features=100,
-    n_informative=10,
-    n_redundant=0,
-    n_repeated=0,
-    n_classes=2,
-    random_state=0,
-    shuffle=False,
+    n_samples=2000, n_features=100,
+    n_informative=10, n_redundant=0, n_classes=2,
+    random_state=0, shuffle=False
 )
 model = XGBClassifier(max_depth=5)
 
-X_b = fs_by_boruta(model, X, y)
+feat_selector = BorutaPy(model, n_estimators="auto", verbose=2, random_state=1)
+feat_selector.fit(X, y)
+X_filtered = feat_selector.transform(X)
+
+print(f"{X.shape[1]} --> {X_filtered.shape[1]}")
 ```
 
-    Iteration: 	1 / 100
-    Confirmed: 	0
-    Tentative: 	100
-    Rejected: 	0
-    Iteration: 	2 / 100
-...
-    
-    BorutaPy finished running.
-    
-    Iteration: 	100 / 100
-    Confirmed: 	10
-    Tentative: 	1
-    Rejected: 	88
-    不用な特徴を削除しました
-    100 --> 10
-    
+> 100個中10個だけ有用 → Borutaは不要な特徴を削除し、有用な10個を残す。
 
-#### フィルタリング後のデータに有用な特徴が残っていることを確認する
-期待どおりならば先頭10列は有用な特徴なのですべて残っているはずです。
+---
 
+## 5. 実務でのポイント
+- **ランダムフォレスト/XGBoost** などツリー系モデルと相性が良い。  
+- データに含まれる「ノイズ特徴」をしっかり落とせる。  
+- ただし計算コストはやや高い（特徴数が多い場合は注意）。  
+- 得られた「重要特徴」をもとにモデルの解釈や可視化が可能。  
 
-```python
-X[:, :10] == X_b[:, :10]
-```
+---
 
+## まとめ
+- Borutaは「影の特徴」と比較することで、有用な特徴を安定して選択できる手法。  
+- すべて必要なら削除せず、不要ならしっかり削除してくれる。  
+- 実務では前処理として使うことで、精度・効率・解釈性が改善する。  
 
-
-
-    array([[ True,  True,  True, ...,  True,  True,  True],
-           [ True,  True,  True, ...,  True,  True,  True],
-           [ True,  True,  True, ...,  True,  True,  True],
-           ...,
-           [ True,  True,  True, ...,  True,  True,  True],
-           [ True,  True,  True, ...,  True,  True,  True],
-           [ True,  True,  True, ...,  True,  True,  True]])
-
-
+---

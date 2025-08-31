@@ -1,7 +1,7 @@
 ---
 title: "Boruta"
-pre: "2.7.1 "
-weight: 1
+pre: "2.7.2 "
+weight: 2
 searchtitle: "Melakukan Seleksi Fitur dengan Boruta"
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "Boruta"
-pre: "2.7.1 "
-weight: 1
+pre: "2.7.2 "
+weight: 2
 searchtitle: "Ejecutar selección de características con Boruta"
 ---
 
