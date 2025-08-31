@@ -4,315 +4,119 @@ pre: "2.3.4 "
 weight: 4
 ---
 
+{{< katex />}}
+
 {{% notice ref %}}
-Friedman, Jerome H and Bogdan E Popescu. “Predictive learning via rule ensembles.” The Annals of Applied Statistics. JSTOR, 916–54. (2008).([pdf](https://jerryfriedman.su.domains/ftp/RuleFit.pdf))
+Friedman, Jerome H and Bogdan E Popescu. “Predictive learning via rule ensembles.” The Annals of Applied Statistics (2008).  
+([pdf](https://jerryfriedman.su.domains/ftp/RuleFit.pdf))
 {{% /notice %}}
 
-### 実験用のデータを取得する
-openmlで公開されている CC0 Public Domain のデータセット[house_sales
-](https://www.openml.org/d/42092) データセットを使用して回帰モデルを作成します。
+<div class="pagetop-box">
+  <p><b>RuleFit</b> は、木モデル（勾配ブースティング木やランダムフォレスト）から抽出した<b>ルール</b>と、元の特徴量の<b>線形項</b>を組み合わせて、最後に <b>L1正則化（Lasso）</b> で疎な（=解釈しやすい）線形モデルとして学習する手法です。</p>
+  <p>非線形性や相互作用（if-thenルール）を取り込みつつ、係数で解釈できるのが最大の魅力です。</p>
+</div>
+
+---
+
+## 1. RuleFit の考え方（直感と数式）
+
+1. **木からルールを抽出**：  
+   勾配ブースティング木（GBDT）やランダムフォレストの各終端葉までの経路は、  
+   例：<code>x1 ≤ 3.2 AND 5.0 &lt; x2 ≤ 7.5</code> のような **if-then ルール** になります。  
+   それぞれをバイナリ特徴（満たすと1/満たさないと0）に変換します：  
+   $$ r_j(x) \in \{0,1\} $$
+
+2. **線形項も合わせる**：  
+   元の連続特徴（必要なら標準化・Winsor化）を線形項として加えます：  
+   $$ z_k(x) $$
+
+3. **L1正則化回帰（または分類）**：  
+   これらをまとめて係数を推定します（回帰の例）：  
+   $$
+   \hat{y}(x)=\beta_0 + \sum_j \beta_j r_j(x) + \sum_k \gamma_k z_k(x)
+   $$  
+   L1正則化により、**重要なルールや線形項だけが残る**ため、<b>簡潔で解釈しやすいモデル</b>になります。
+
+> **利点**：非線形・相互作用を取り込みつつ、最終形は「スパースな線形モデル」なので説明が簡単。  
+> **注意**：生成できるルールは膨大。正則化（L1）とルール数・木の深さの制御が重要です。
+
+---
+
+## 2. 実験用のデータを取得する（OpenML: house_sales）
+
+openml公開の CC0 データセット **house_sales** を使います（キング郡の住宅データ）。
 
 {{% notice info %}}
-上記openmlページではデータの出典が不明ですが自分が調べた限りではデータの提供元は[ここ](https://gis-kingcounty.opendata.arcgis.com/datasets/zipcodes-for-king-county-and-surrounding-area-shorelines-zipcode-shore-area/explore?location=47.482924%2C-121.477600%2C8.00&showTable=true)のようです。
+OpenML 上の出典表記は曖昧ですが、調査時点では  
+[King County Open Data](https://gis-kingcounty.opendata.arcgis.com/datasets/zipcodes-for-king-county-and-surrounding-area-shorelines-zipcode-shore-area/explore?location=47.482924%2C-121.477600%2C8.00&showTable=true) が元データ提供元と推測されます。
 {{% /notice %}}
 
 {{% notice document %}}
-[sklearn.datasets.fetch_openml](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_openml.html)
+- [sklearn.datasets.fetch_openml](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_openml.html)
 {{% /notice %}}
 
 ```python
 import japanize_matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
-dataset = fetch_openml(data_id=42092)
-X = pd.DataFrame(dataset.data, columns=dataset.feature_names)
-X = X.select_dtypes("number")
-y = dataset.target
+dataset = fetch_openml(data_id=42092, as_frame=True)
+X = dataset.data.select_dtypes("number").copy()  # 数値列のみ採用（カテゴリは簡略化のため除外）
+y = dataset.target.astype(float)                 # 価格（price）
+
+# 学習/検証に分割（データリーク防止）
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 ```
-### データの中身を確認する
 
+---
 
-```python
-X.head(10)
-```
+## 3. RuleFit を実行する
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+{{% notice document %}}
+- 実装: [Python implementation of the rulefit algorithm (GitHub)](https://github.com/christophM/rulefit)  
+- 依存関係により <code>scikit-learn</code> の木モデル（既定は GBDT）が内部で使われます
+{{% /notice %}}
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>bedrooms</th>
-      <th>bathrooms</th>
-      <th>sqft_living</th>
-      <th>sqft_lot</th>
-      <th>floors</th>
-      <th>waterfront</th>
-      <th>view</th>
-      <th>condition</th>
-      <th>grade</th>
-      <th>sqft_above</th>
-      <th>sqft_basement</th>
-      <th>yr_built</th>
-      <th>yr_renovated</th>
-      <th>lat</th>
-      <th>long</th>
-      <th>sqft_living15</th>
-      <th>sqft_lot15</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>3.0</td>
-      <td>1.00</td>
-      <td>1180.0</td>
-      <td>5650.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>7.0</td>
-      <td>1180.0</td>
-      <td>0.0</td>
-      <td>1955.0</td>
-      <td>0.0</td>
-      <td>47.5112</td>
-      <td>-122.257</td>
-      <td>1340.0</td>
-      <td>5650.0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>3.0</td>
-      <td>2.25</td>
-      <td>2570.0</td>
-      <td>7242.0</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>7.0</td>
-      <td>2170.0</td>
-      <td>400.0</td>
-      <td>1951.0</td>
-      <td>1991.0</td>
-      <td>47.7210</td>
-      <td>-122.319</td>
-      <td>1690.0</td>
-      <td>7639.0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2.0</td>
-      <td>1.00</td>
-      <td>770.0</td>
-      <td>10000.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>6.0</td>
-      <td>770.0</td>
-      <td>0.0</td>
-      <td>1933.0</td>
-      <td>0.0</td>
-      <td>47.7379</td>
-      <td>-122.233</td>
-      <td>2720.0</td>
-      <td>8062.0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>4.0</td>
-      <td>3.00</td>
-      <td>1960.0</td>
-      <td>5000.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>5.0</td>
-      <td>7.0</td>
-      <td>1050.0</td>
-      <td>910.0</td>
-      <td>1965.0</td>
-      <td>0.0</td>
-      <td>47.5208</td>
-      <td>-122.393</td>
-      <td>1360.0</td>
-      <td>5000.0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>3.0</td>
-      <td>2.00</td>
-      <td>1680.0</td>
-      <td>8080.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>8.0</td>
-      <td>1680.0</td>
-      <td>0.0</td>
-      <td>1987.0</td>
-      <td>0.0</td>
-      <td>47.6168</td>
-      <td>-122.045</td>
-      <td>1800.0</td>
-      <td>7503.0</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>4.0</td>
-      <td>4.50</td>
-      <td>5420.0</td>
-      <td>101930.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>11.0</td>
-      <td>3890.0</td>
-      <td>1530.0</td>
-      <td>2001.0</td>
-      <td>0.0</td>
-      <td>47.6561</td>
-      <td>-122.005</td>
-      <td>4760.0</td>
-      <td>101930.0</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>3.0</td>
-      <td>2.25</td>
-      <td>1715.0</td>
-      <td>6819.0</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>7.0</td>
-      <td>1715.0</td>
-      <td>0.0</td>
-      <td>1995.0</td>
-      <td>0.0</td>
-      <td>47.3097</td>
-      <td>-122.327</td>
-      <td>2238.0</td>
-      <td>6819.0</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>3.0</td>
-      <td>1.50</td>
-      <td>1060.0</td>
-      <td>9711.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>7.0</td>
-      <td>1060.0</td>
-      <td>0.0</td>
-      <td>1963.0</td>
-      <td>0.0</td>
-      <td>47.4095</td>
-      <td>-122.315</td>
-      <td>1650.0</td>
-      <td>9711.0</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>3.0</td>
-      <td>1.00</td>
-      <td>1780.0</td>
-      <td>7470.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>7.0</td>
-      <td>1050.0</td>
-      <td>730.0</td>
-      <td>1960.0</td>
-      <td>0.0</td>
-      <td>47.5123</td>
-      <td>-122.337</td>
-      <td>1780.0</td>
-      <td>8113.0</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>3.0</td>
-      <td>2.50</td>
-      <td>1890.0</td>
-      <td>6560.0</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>7.0</td>
-      <td>1890.0</td>
-      <td>0.0</td>
-      <td>2003.0</td>
-      <td>0.0</td>
-      <td>47.3684</td>
-      <td>-122.031</td>
-      <td>2390.0</td>
-      <td>7570.0</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-### RuleFitを実行する
-[Python implementation of the rulefit algorithm - GitHub](https://github.com/christophM/rulefit)の実装を使用してRuleFitを動かしてみます。
-
-※実行する際は `import warnings;warnings.simplefilter('ignore')` は外してください
-
+> **インストール例**（ローカル環境）：  
+> `pip install git+https://github.com/christophM/rulefit.git`
 
 ```python
 from rulefit import RuleFit
 import warnings
+warnings.simplefilter("ignore")  # チュートリアルではWarningを抑制（本番では外す）
 
-warnings.simplefilter("ignore")  ## ConvergenceWarning
+# ルール数や木側のパラメータは過学習と可読性のトレードオフ
+rf = RuleFit(max_rules=200, tree_random_state=27)
+rf.fit(X_train.values, y_train.values, feature_names=list(X_train.columns))
 
-rf = RuleFit(max_rules=100)
-rf.fit(X.values, y, feature_names=list(X.columns))
+# 学習済みでの基本評価
+pred_tr = rf.predict(X_train.values)
+pred_te = rf.predict(X_test.values)
+
+def report(y_true, y_pred, name):
+    rmse = mean_squared_error(y_true, y_pred, squared=False)
+    mae  = mean_absolute_error(y_true, y_pred)
+    r2   = r2_score(y_true, y_pred)
+    print(f"{name:8s}  RMSE={rmse:,.0f}  MAE={mae:,.0f}  R2={r2:.3f}")
+
+report(y_train, pred_tr, "Train")
+report(y_test,  pred_te, "Test")
 ```
 
+> **Tip**：`max_rules`、木の深さ（`max_depth`）、木の本数（`n_estimators`）、学習率（`learning_rate`）などで**ルールの粒度**が変わります。  
+> ・粒度を細かくすると当てはまりは上がるが過学習・可読性低下  
+> ・粗くすると汎化しやすいが表現力低下  
+> → 交差検証でチューニングしましょう。
 
+---
 
-
-    RuleFit(max_rules=100,
-            tree_generator=GradientBoostingRegressor(learning_rate=0.01,
-                                                     max_depth=100,
-                                                     max_leaf_nodes=5,
-                                                     n_estimators=28,
-                                                     random_state=27,
-                                                     subsample=0.04543939429397564))
-
-
-
-### 作成されたルールを確認する
-
+## 4. 作成されたルールを確認する（重要度の高い順）
 
 ```python
 rules = rf.get_rules()
@@ -320,164 +124,77 @@ rules = rules[rules.coef != 0].sort_values(by="importance", ascending=False)
 rules.head(10)
 ```
 
+- **rule**：ルールそのもの（if-thenの条件列）または線形項（`type=linear`）  
+- **coef**：回帰係数（単位は目的変数と同じスケール。解釈に重要）  
+- **support**：ルールを満たすサンプルの割合（0〜1）。高すぎると汎用的、低すぎるとデータ依存  
+- **importance**：論文由来の指標（係数とサポートを組み合わせた重要度）
 
+> **読み方のコツ**  
+> - `type=linear` は元特徴の線形効果。係数の符号・大きさで解釈。  
+> - `type=rule` は相互作用や非線形を含むルール。<b>support × coef</b> のバランスで実用性を判断。  
+> - 「係数が大きい & supportが適度」なルールは、ビジネス説明に向くことが多いです。
 
+---
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+## 5. ルールの妥当性を可視化で検証する
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+### 5.1 単一特徴の線形効果をざっくり確認
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>rule</th>
-      <th>type</th>
-      <th>coef</th>
-      <th>support</th>
-      <th>importance</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>8</th>
-      <td>grade</td>
-      <td>linear</td>
-      <td>6.199314e+04</td>
-      <td>1.000000</td>
-      <td>66184.725645</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>sqft_living &gt; 9475.0</td>
-      <td>rule</td>
-      <td>1.927942e+06</td>
-      <td>0.001018</td>
-      <td>61491.753935</td>
-    </tr>
-    <tr>
-      <th>43</th>
-      <td>grade &gt; 8.5 &amp; sqft_living &gt; 3405.0 &amp; long &lt;= -...</td>
-      <td>rule</td>
-      <td>3.570118e+05</td>
-      <td>0.024440</td>
-      <td>55126.384264</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>sqft_living</td>
-      <td>linear</td>
-      <td>5.532732e+01</td>
-      <td>1.000000</td>
-      <td>46347.924165</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>yr_built</td>
-      <td>linear</td>
-      <td>-1.522004e+03</td>
-      <td>1.000000</td>
-      <td>44393.726859</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>sqft_living15</td>
-      <td>linear</td>
-      <td>5.344916e+01</td>
-      <td>1.000000</td>
-      <td>34501.058499</td>
-    </tr>
-    <tr>
-      <th>62</th>
-      <td>lat &lt;= 47.516000747680664 &amp; sqft_living &lt;= 3920.0</td>
-      <td>rule</td>
-      <td>-6.549757e+04</td>
-      <td>0.361507</td>
-      <td>31467.457947</td>
-    </tr>
-    <tr>
-      <th>103</th>
-      <td>sqft_basement &lt;= 3660.0 &amp; grade &gt; 9.5</td>
-      <td>rule</td>
-      <td>1.240216e+05</td>
-      <td>0.068228</td>
-      <td>31270.434139</td>
-    </tr>
-    <tr>
-      <th>48</th>
-      <td>sqft_living &lt;= 9475.0 &amp; grade &gt; 9.5 &amp; long &gt; -...</td>
-      <td>rule</td>
-      <td>-1.473030e+05</td>
-      <td>0.040733</td>
-      <td>29117.596559</td>
-    </tr>
-    <tr>
-      <th>67</th>
-      <td>sqft_living &lt;= 4695.0 &amp; waterfront &gt; 0.5 &amp; sqf...</td>
-      <td>rule</td>
-      <td>3.936285e+05</td>
-      <td>0.005092</td>
-      <td>28016.079499</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-### ルールが正しいか確認してみる
-
-`sqft_above	linear	8.632149e+01	1.000000	66243.550192` のルールに基づいて、`sqft_above` が増加すると y(`price`)が増える傾向にあるかどうか確認します。
-
-{{% notice document %}}
-[matplotlib.pyplot.boxplot — Matplotlib 3.5.1 documentation](https://matplotlib.org/3.5.1/api/_as_gen/matplotlib.pyplot.boxplot.html)
-{{% /notice %}}
-
+例：`sqft_above` の線形項がプラスなら、広いほど価格が上がるはず。
 
 ```python
-plt.figure(figsize=(6, 6))
-plt.scatter(X["sqft_above"], y, marker=".")
+plt.figure(figsize=(6, 5))
+plt.scatter(X_train["sqft_above"], y_train, s=10, alpha=0.5)
 plt.xlabel("sqft_above")
 plt.ylabel("price")
-```
-
-    
-![png](/images/basic/tree/RuleFit_files/RuleFit_12_1.png)
-    
-
-
-`sqft_living <= 3935.0 & lat <= 47.5314998626709	rule	-8.271074e+04	0.377800	40101.257833` のルールに該当するデータのみ抽出してみます。
-係数がマイナスになっているので、このルールに該当するデータのy(`price`)は低い傾向にあるはずです。
-log(y)を箱髭図で確認すると、確かにルールに該当しているデータのyはルールに該当しないデータのyと比較すると低くなっています。
-
-
-```python
-applicable_data = np.log(
-    y[X.query("sqft_living <= 3935.0 & lat <= 47.5314998626709").index]
-)
-not_applicable_data = np.log(
-    y[X.query("not(sqft_living <= 3935.0 & lat <= 47.5314998626709)").index]
-)
-
-plt.figure(figsize=(10, 6))
-plt.boxplot([applicable_data, not_applicable_data], labels=["ルールに該当", "ルールに該当しない"])
-plt.ylabel("log(price)")
-plt.grid()
+plt.title("sqft_above と価格（散布図）")
+plt.grid(alpha=0.3)
 plt.show()
 ```
 
+### 5.2 具体的なルールで分布比較（箱ひげ図）
 
-    
-![png](/images/basic/tree/RuleFit_files/RuleFit_14_0.png)
-    
+例：`sqft_living <= 3935.0 & lat <= 47.5315` のような「価格が下がりやすい」ルール。
 
+```python
+rule_mask = X["sqft_living"].le(3935.0) & X["lat"].le(47.5315)
+
+applicable_data = np.log(y[rule_mask])      # 対数にして分布の歪みを緩和
+not_applicable  = np.log(y[~rule_mask])
+
+plt.figure(figsize=(8, 5))
+plt.boxplot([applicable_data, not_applicable],
+            labels=["ルール該当", "ルール非該当"])
+plt.ylabel("log(price)")
+plt.title("ルール該当 vs 非該当 の価格分布（対数）")
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+> **解釈**：ルール該当群の分布が下がっていれば、係数の符号（マイナス）と整合的。
+
+---
+
+## 6. 実務でのコツ（前処理・チューニング・解釈）
+
+- **スケーリング／ウィンズor外れ値処理**：線形項の安定性と解釈性が向上。  
+- **カテゴリ変数**：One-Hot化の前にカテゴリを整理（希少カテゴリはまとめる等）。  
+- **ターゲット変換**：価格のように歪度が強い場合、`log(y)` で安定。  
+- **ルール数の制御**：`max_rules`／木の深さ・本数を控えめに → 可読性と汎化のバランス。  
+- **交差検証**：ハイパラは CV チューニング（`max_rules`, `tree_size`, `learning_rate`, `n_estimators` など）。  
+- **リーク対策**：train/test split したあとに学習（前処理も学習側で fit → 変換）。  
+- **説明レポート**：  
+  - 重要なルール Top N を日本語に直して添える（例：「面積 3400 以上 かつ 緯度が北側 → 価格が上がりやすい」）  
+  - **support × business sense** で現実妥当性をチェック。  
+  - 類似ルールが並ぶときは統合・簡素化を検討。
+
+---
+
+## 7. まとめ
+
+- RuleFit は **木由来のルール** と **線形項** を **L1 正則化**で統合した、<b>解釈性と非線形性のバランスが取れた手法</b>。  
+- ルールは if-then として説明しやすく、線形係数は量的な影響を示せる。  
+- ルール数や木の深さは過学習と可読性のトレードオフ。**CV でチューニング**しよう。  
+- 可視化（散布図・箱ひげ図等）でルールの妥当性を確認すると、納得感のあるモデル運用につながる。
+
+---
