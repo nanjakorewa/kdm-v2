@@ -1,0 +1,35 @@
+﻿{{- /* メタバー：パンくず + 更新日 + 読了時間 + 編集リンク（ページのみ） */ -}}
+{{- if .IsPage -}}
+  {{- $parents := .Ancestors -}}
+  <div class="meta-bar">
+    <nav class="breadcrumbs">
+      <a href="{{ site.Home.RelPermalink }}">Home</a>
+      {{- with $parents }}
+        {{- range .Reverse -}}
+          <span class="sep">/</span><a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{- end -}}
+      {{- end }}
+      <span class="sep">/</span><span class="current">{{ .Title }}</span>
+    </nav>
+
+    <div class="meta">
+      <span class="meta-item">最終更新:
+        <time datetime="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+          {{ .Lastmod.Format (site.Params.BookDateFormat | default "2006-01-02") }}
+        </time>
+      </span>
+      <span class="dot">・</span>
+      <span class="meta-item">{{ .ReadingTime }} 分で読めます</span>
+
+      {{- with .File -}}
+        {{- $edit := site.Params.BookEditLink -}}
+        {{- if $edit -}}
+          <span class="dot">・</span>
+          <a class="meta-item"
+             href='{{ if (in $edit "%s") }}{{ printf $edit .Path }}{{ else }}{{ printf "%s%s" $edit .Path }}{{ end }}'
+             target="_blank" rel="noopener">このページを編集</a>
+        {{- end -}}
+      {{- end -}}
+    </div>
+  </div>
+{{- end -}}

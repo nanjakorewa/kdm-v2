@@ -1,9 +1,33 @@
-baseURL = "http://localhost:1313/"
+baseURL = "https://k-dm.work/"            # ← 本番ドメインに合わせる
 title   = "K_DM Book"
 enableGitInfo = true
 ignoreLogs = ['warning-goldmark-raw-html']
 
-# 既定言語を日本語、既定言語はサブディレクトリにしない（/ で表示）
+# ── 国際SEOの土台 ─────────────────────────────────────────────
+enableRobotsTXT = true                     # /robots.txt 自動生成
+canonifyURLs    = true                     # 絶対URLを使用（OG等の整合性）
+summaryLength   = 160                      # メタ説明の要約長
+
+[pagination]
+  pagerSize = 20
+
+[outputs]
+  home    = ["HTML","RSS"]                 # ホーム/セクションに RSS を出力
+  section = ["HTML","RSS"]
+  page    = ["HTML"]
+
+[sitemap]
+  changefreq = "weekly"
+  priority   = 0.5
+  filename   = "sitemap.xml"
+
+[frontmatter]                               # Lastmod を SEO 向けに最適化
+  lastmod = ["lastmod", ":git", "date", "publishDate"]
+
+[privacy.youtube]
+  privacyEnhanced = true                    # youtube-nocookie を使用
+
+# 既定言語は日本語、ルート（/）で表示
 defaultContentLanguage = 'ja'
 defaultContentLanguageInSubdir = false
 
@@ -12,20 +36,29 @@ defaultContentLanguageInSubdir = false
   BookTheme   = 'auto'
   BookToC     = true
   BookSearch  = true
+  BookDateFormat = '2006-01-02'
+  # 既定OG画像（任意：/static/images/og-default.png を用意）
+  ogImage = '/images/og-default.png'
+  # 「このページを編集」リンク（任意：実リポジトリURLに変更）
+  BookEditLink = 'https://github.com/nanjakorewa/kdm-v2/edit/main/'
 
 [languages]
   [languages.ja]
-    languageName = '日本語'
-    weight = 1
+    languageName  = '日本語'
+    languageCode  = 'ja'
+    weight        = 1
   [languages.en]
-    languageName = 'English'
-    weight = 2
+    languageName  = 'English'
+    languageCode  = 'en'
+    weight        = 2
   [languages.es]
-    languageName = 'Español'
-    weight = 3
+    languageName  = 'Español'
+    languageCode  = 'es'
+    weight        = 3
   [languages.id]
-    languageName = 'Indonesia'
-    weight = 4
+    languageName  = 'Indonesia'
+    languageCode  = 'id'
+    weight        = 4
 
 [module]
   [[module.imports]]

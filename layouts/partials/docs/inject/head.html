@@ -1,0 +1,61 @@
+﻿{{- /* ====== SEO meta & structured data inject (site-wide) ====== */ -}}
+{{- $title := .Title -}}
+{{- $desc  := cond (ne .Description "") .Description (.Summary | plainify | htmlUnescape | truncate 160) -}}
+{{- $url   := .Permalink -}}
+{{- $img   := (or (index .Params.images 0) (site.Params.ogImage)) | absURL -}}
+{{- $site  := site.Title -}}
+{{- $lang  := .Lang -}}
+
+<meta name="description" content="{{ $desc }}">
+<!-- Open Graph -->
+<meta property="og:title" content="{{ $title }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ $url }}">
+{{ with $img }}<meta property="og:image" content="{{ . }}">{{ end }}
+<meta property="og:site_name" content="{{ $site }}">
+<meta property="og:locale" content="{{ $lang }}">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $title }}">
+<meta name="twitter:description" content="{{ $desc }}">
+{{ with $img }}<meta name="twitter:image" content="{{ . }}">{{ end }}
+
+<!-- JSON-LD: Article / WebPage -->
+{{- if .IsPage -}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ $title | jsonify }},
+  "description": {{ $desc | jsonify }},
+  "inLanguage": {{ $lang | jsonify }},
+  "mainEntityOfPage": {"@type":"WebPage","@id": {{ $url | jsonify }}},
+  "datePublished": {{ .Date.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
+  "dateModified": {{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
+  "author": {"@type":"Organization","name": {{ site.Title | jsonify }}}
+  {{ with $img }}, "image": [{{ . | jsonify }}]{{ end }}
+}
+</script>
+{{- else -}}
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebSite",
+  "name": {{ $site | jsonify }},
+  "url": {{ site.BaseURL | jsonify }},
+  "inLanguage": {{ $lang | jsonify }},
+  "potentialAction": {"@type":"SearchAction","target":"{{ site.BaseURL }}?q={search_term_string}","query-input":"required name=search_term_string"}
+}
+</script>
+{{- end -}}
+
+<!-- hreflang (テーマも出しますが、念のため絶対URLで補強) -->
+{{- range .AllTranslations -}}
+<link rel="alternate" hreflang="{{ .Lang }}" href="{{ .Permalink }}">
+{{- end -}}
+
+{{- if .IsHome -}}
+<link rel="alternate" hreflang="x-default" href="{{ site.Home.Permalink }}">
+{{- end -}}

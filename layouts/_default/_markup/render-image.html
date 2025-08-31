@@ -1,0 +1,30 @@
+﻿{{- $alt := .Text | plainify -}}
+{{- $title := .Title -}}
+{{- $src := .Destination -}}
+
+{{/* Page Bundle 内の相対画像を優先して最適化（無ければそのまま） */}}
+{{- $res := .Page.Resources.GetMatch (printf "**%s" $src) -}}
+{{- if and $res (eq $res.MediaType.Type "image") -}}
+  {{- $sizes := slice 360 720 960 1200 -}}
+  {{- $srcset := slice -}}
+  {{- range $sizes -}}
+    {{- $img := $res.Resize (printf "%dx webp" .) -}}
+    {{- $srcset = $srcset | append (printf "%s %dw" ($img.RelPermalink | absURL) .) -}}
+  {{- end -}}
+  {{- $main := $res.Resize "960x webp" -}}
+  <img
+    src="{{ $main.RelPermalink | absURL }}"
+    srcset="{{ delimit $srcset ", " }}"
+    sizes="(max-width: 800px) 100vw, 800px"
+    alt="{{ $alt }}"
+    {{ with $title }}title="{{ . }}"{{ end }}
+    width="{{ $main.Width }}" height="{{ $main.Height }}"
+    loading="lazy" decoding="async" fetchpriority="low">
+{{- else -}}
+  {{/* static/ 配下などの絶対パス画像 */}}
+  <img
+    src="{{ $src | absURL }}"
+    alt="{{ $alt }}"
+    {{ with $title }}title="{{ . }}"{{ end }}
+    loading="lazy" decoding="async">
+{{- end -}}

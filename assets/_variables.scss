@@ -1,26 +1,23 @@
-/* You can override SASS variables here. */
+// =====================================================================
+// Hugo Book: variables override (site-level)
+// - テーマのSCSSが参照する変数 + サイト側トークン
+// - ここは「ブランド/角丸/フォント/本文幅」などを一括管理
+// =====================================================================
 
-// @import "plugins/dark";
 $book-font: 'Inter', 'Noto Sans JP', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 $book-code-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Noto Sans JP', monospace;
 
-// ブランドカラー／テキスト／ボーダー
-$book-primary: #7c3aed;   // ブランド（紫系）
+// 信頼感のある落ち着いた配色（ブルー×グレー）
+$book-primary: #1d4ed8;   // ブランド（落ち着いた青）
 $book-text:    #1f2937;   // 本文
 $book-muted:   #6b7280;   // 補助テキスト
-$book-border:  #e5e7eb;   // 控えめな境界
+$book-border:  #e5e7eb;   // 境界色（薄め）
 
-// 角丸・レイアウト幅
-$book-radius: 14px;
-$body-max-width: 78ch;    // 本文の最大幅（読みやすさ優先）
+// 丸みを控えめに（6〜10pxお好みで）
+$book-radius:  8px;
 
-// リンク色（必要なら微調整）
-$link-color: #0ea5e9;
+// リンク色（LinkedIn系の信頼ブルー）
+$link-color:   #0a66c2;
 
-// ダークテーマ時（BookTheme='auto' を前提）
-// テーマ側の切替に加えて、独自要素の色補正用
-$dark-book-text:  #e5e7eb;
-$dark-book-muted: #a1a1aa;
-$dark-book-border:#1f2937;
-$dark-link-color: #38bdf8;
-$book-radius:        8px;
+// 読みやすい本文幅（文字数ベース）
+$body-max-width: 78ch;
