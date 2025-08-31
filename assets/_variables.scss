@@ -1,0 +1,26 @@
+/* You can override SASS variables here. */
+
+// @import "plugins/dark";
+$book-font: 'Inter', 'Noto Sans JP', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$book-code-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Noto Sans JP', monospace;
+
+// ブランドカラー／テキスト／ボーダー
+$book-primary: #7c3aed;   // ブランド（紫系）
+$book-text:    #1f2937;   // 本文
+$book-muted:   #6b7280;   // 補助テキスト
+$book-border:  #e5e7eb;   // 控えめな境界
+
+// 角丸・レイアウト幅
+$book-radius: 14px;
+$body-max-width: 78ch;    // 本文の最大幅（読みやすさ優先）
+
+// リンク色（必要なら微調整）
+$link-color: #0ea5e9;
+
+// ダークテーマ時（BookTheme='auto' を前提）
+// テーマ側の切替に加えて、独自要素の色補正用
+$dark-book-text:  #e5e7eb;
+$dark-book-muted: #a1a1aa;
+$dark-book-border:#1f2937;
+$dark-link-color: #38bdf8;
+$book-radius:        8px;

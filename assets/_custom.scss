@@ -1,0 +1,149 @@
+/* =====================================================================
+   Modern polish for Hugo Book (site-level overrides)
+   Drop this file contents into assets/_custom.scss (SCSS OK) or
+   static/css/book.modern.css (then include via partial).
+   Targets elements found in the provided HTML structure.
+   ===================================================================== */
+
+/* 1) Design tokens ------------------------------------------------------ */
+:root {
+  /* Light */
+  --bg: #ffffff;
+  --surface: #fcfcfd;
+  --elev: #f6f7f9;
+  --text: #1f2937;           /* slate-800 */
+  --muted: #6b7280;          /* slate-500 */
+  --link: #0ea5e9;           /* sky-500 */
+  --link-hover: #0284c7;     /* sky-600 */
+  --brand: #7c3aed;          /* violet-600 */
+  --border: #e5e7eb;         /* slate-200 */
+  --ring: #60a5fa;           /* blue-400 */
+
+  --radius-xs: 6px;
+  --radius: 8px;
+  --shadow-sm: 0 2px 10px rgba(0,0,0,.05);
+  --shadow-md: 0 8px 30px rgba(0,0,0,.08);
+
+  --fs-0: clamp(.98rem, .92rem + .3vw, 1.05rem);
+  --fs-1: clamp(1.1rem, 1.0rem + .6vw, 1.25rem);
+  --fs-2: clamp(1.35rem, 1.1rem + 1.1vw, 1.65rem);
+  --fs-3: clamp(1.8rem, 1.4rem + 1.8vw, 2.3rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0f14;
+    --surface: #0f141b;
+    --elev: #111826;
+    --text: #e5e7eb;
+    --muted: #a1a1aa;
+    --link: #38bdf8;
+    --link-hover: #7dd3fc;
+    --brand: #8b5cf6;
+    --border: #1f2937;
+    --ring: #38bdf8;
+  }
+}
+
+/* 2) Base --------------------------------------------------------------- */
+html { scroll-behavior: smooth; }
+body { font-size: var(--fs-0); line-height: 1.8; color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+::selection { background: color-mix(in oklab, var(--link) 28%, transparent); }
+
+/* Links */
+.book-article a { color: var(--link); text-decoration-thickness: .08em; text-underline-offset: .18em; }
+.book-article a:hover { color: var(--link-hover); }
+
+/* Headings */
+.book-article h1 { font-size: var(--fs-3); letter-spacing: -.01em; }
+.book-article h2 { font-size: var(--fs-2); margin-top: 2.2rem; }
+.book-article h3 { font-size: 1.2rem; margin-top: 1.6rem; }
+
+/* 3) Header ------------------------------------------------------------- */
+.book-header { position: sticky; top: 0; z-index: 30; backdrop-filter: saturate(140%) blur(8px); background: color-mix(in oklab, var(--surface) 82%, transparent); border-bottom: 1px solid var(--border); }
+.book-header h3 { margin: .6rem 0; }
+
+/* 4) Sidebar menu ------------------------------------------------------- */
+.book-menu { width: 280px; border-right: 1px solid var(--border); background: var(--surface); }
+.book-menu-content { padding-bottom: 2rem; }
+.book-brand a { color: inherit; }
+.book-menu a:hover { color: var(--link); }
+.book-menu .active > a, .book-menu .toc a.active { background: color-mix(in oklab, var(--brand) 10%, transparent); color: var(--brand); border-radius: 10px; }
+
+/* language switcher */
+.book-languages > li > label { border: 1px solid var(--border); border-radius: 9999px; padding: .35rem .6rem; }
+.book-languages ul { border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow-sm); background: var(--surface); }
+
+/* search */
+.book-search input { border: 1px solid var(--border); border-radius: 9999px; padding: .55rem .9rem; background: var(--surface); color: var(--text); }
+.book-search input:focus { outline: none; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent); }
+
+@media (max-width: 48rem) { .book-menu { width: 80vw; } }
+
+/* 5) Page container ----------------------------------------------------- */
+.book-page { max-width: 78ch; }
+.book-page img, .book-page .video-container, .youtube-embed { display: block; margin: 2rem auto; border-radius: var(--radius); box-shadow: var(--shadow-md); }
+
+/* 6) Callouts / custom blocks ------------------------------------------ */
+.pagetop-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; box-shadow: var(--shadow-sm); }
+.pagetop-box b { color: var(--text); }
+
+/* legacy notices from old theme */
+div.notices { margin: 1.6rem 0; }
+div.notices p { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-top-width: 4px; border-radius: var(--radius); padding: .9rem 1rem; box-shadow: var(--shadow-sm); }
+div.notices.info p    { border-top-color: #f59e0b; }
+div.notices.warning p { border-top-color: #ef4444; }
+div.notices.note p    { border-top-color: #38bdf8; }
+div.notices.tip p     { border-top-color: #22c55e; }
+div.notices.ref p     { border-top-color: #06b6d4; }
+
+/* 7) Code blocks & inline code ----------------------------------------- */
+/* Chroma wraps code as .highlight > pre > code */
+.highlight pre { background: #0b1220 !important; color: #e5e7eb; border-radius: var(--radius); padding: 1rem 1.1rem; box-shadow: var(--shadow-sm); position: relative; }
+.highlight pre code { background: transparent; }
+
+/* click-to-copy hint */
+.highlight pre:hover::after { content: "Click to copy"; position: absolute; right: .6rem; top: .5rem; font-size: .8rem; color: #cbd5e1; opacity: .85; }
+
+/* inline code */
+.book-article p > code, .book-article li > code, .book-article table code { background: color-mix(in oklab, var(--link) 12%, var(--bg)); color: var(--text); border: 1px solid color-mix(in oklab, var(--link) 18%, var(--border)); border-radius: 6px; padding: .12em .35em; }
+
+/* 8) Tables ------------------------------------------------------------- */
+.book-article table { width: 100%; border: 1px solid var(--border); border-collapse: separate; border-spacing: 0; background: var(--surface); box-shadow: var(--shadow-sm); border-radius: var(--radius); overflow: hidden; }
+.book-article th, .book-article td { padding: .7rem; border-bottom: 1px solid var(--border); }
+.book-article th { background: var(--elev); text-align: left; font-weight: 600; }
+.book-article tr:hover td { background: color-mix(in oklab, var(--elev) 55%, transparent); }
+
+/* 9) TOC panel ---------------------------------------------------------- */
+.book-toc { border-left: 1px solid var(--border); background: var(--surface); }
+.book-toc-content { padding-top: .75rem; }
+#TableOfContents a { color: inherit; }
+#TableOfContents a:hover { color: var(--link); }
+#TableOfContents li { margin: .25rem 0; }
+
+/* 10) Footer ------------------------------------------------------------ */
+.book-footer { background: transparent; border-top: 1px solid var(--border); }
+.book-footer .book-icon { filter: grayscale(.2); }
+
+/* 11) Accessibility ----------------------------------------------------- */
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+
+/* 12) Dark tweaks (BookTheme='auto' places [data-theme="dark"] on html) */
+[data-theme="dark"] .book-header { background: color-mix(in oklab, var(--surface) 70%, transparent); }
+[data-theme="dark"] .book-article table { background: #0f141b; }
+[data-theme="dark"] .book-article th { background: #111826; }
+[data-theme="dark"] .pagetop-box, [data-theme="dark"] .book-menu, [data-theme="dark"] .book-toc { background: var(--surface); }
+
+/* 13) Minor fixes ------------------------------------------------------- */
+/* Ensure images are never wider than container */
+.book-article img { max-width: 100%; height: auto; }
+/* Reduce big OG description leak into meta if any - (handled upstream usually) */
+
+/* 14) Subtle animations */
+.book-menu a, .book-article a, .book-search input { transition: background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease; }
+
+.book-article img,
+.youtube-embed,
+.highlight pre,
+.pagetop-box,
+.book-article table { border-radius: 6px; }

@@ -30,3 +30,15 @@ defaultContentLanguageInSubdir = false
 [module]
   [[module.imports]]
     path = 'github.com/alex-shpak/hugo-book'
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+    [markup.goldmark.parser]
+      autoHeadingID = true
+      [markup.goldmark.parser.attribute]
+        block = true
+        title = true
+  [markup.sass]
+    transpiler = "dartsass"
