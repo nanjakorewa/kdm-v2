@@ -73,3 +73,8 @@ summaryLength   = 160                      # メタ説明の要約長
         title = true
   [markup.sass]
     transpiler = "dartsass"
+
+[params.analytics]
+  googleMeasurementId = "G-Q9JKE9WPZS"
+  googleStreamId = "3371253548"
+  googleStreamName = "kd-m-work"

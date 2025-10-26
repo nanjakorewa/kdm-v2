@@ -6,6 +6,25 @@
 {{- $site  := site.Title -}}
 {{- $lang  := .Lang -}}
 {{- $author:= (or .Params.author site.Params.author) -}}
+{{- $gaMeasurementId := "" -}}
+{{- with site.Params.analytics }}
+  {{- with .googleMeasurementId }}
+    {{- $gaMeasurementId = . -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (eq $gaMeasurementId "") site.GoogleAnalytics -}}
+  {{- $gaMeasurementId = site.GoogleAnalytics -}}
+{{- end -}}
+{{- if and $gaMeasurementId hugo.IsProduction -}}
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaMeasurementId }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{ $gaMeasurementId }}');
+</script>
+{{- end -}}
 
 {{/* Robots（ドラフト/明示noindexは除外）。高度ロボッツも付与 */}}
 {{- $isNoindex := or .Draft .Params.noindex (eq .Params.robots "noindex") -}}
