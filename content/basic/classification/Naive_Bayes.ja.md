@@ -15,9 +15,9 @@ title_suffix: "条件付き確率を効率的に推定する"
 
 クラス \\(y\\) と特徴ベクトル \\(\mathbf{x} = (x_1, \dots, x_d)\\) に対し、
 
-\[
+$$
 P(y \mid \mathbf{x}) \propto P(y) \prod_{j=1}^d P(x_j \mid y)
-\]
+$$
 
 と近似します。分母 \\(P(\mathbf{x})\\) は全クラス共通なので、省略して比較できます。
 

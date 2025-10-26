@@ -24,11 +24,11 @@ SVM は「クラス間の境界（マージン）を最大化する」ことで�
 
 2 クラス問題で、それぞれのラベルを \\(y_i \\in \\{ -1, +1 \\}\\) とします。線形分離可能なケースでは以下を解きます。
 
-\\[
+\$$
 \\min_{\\boldsymbol{w}, b} \\; \\frac{1}{2} \\lVert \\boldsymbol{w} \\rVert_2^2
 \\quad \\text{s.t.} \\quad
 y_i (\\boldsymbol{w}^\\top \\mathbf{x}_i + b) \\ge 1 \\quad (i = 1, \\dots, n)
-\\]
+\$$
 
 マージン幅は \\(2 / \\lVert \\boldsymbol{w} \\rVert\\)。係数のノルムを小さくすることで、より広いマージンを得ます。
 
@@ -36,11 +36,11 @@ y_i (\\boldsymbol{w}^\\top \\mathbf{x}_i + b) \\ge 1 \\quad (i = 1, \\dots, n)
 
 実際は完全分離できないため、スラック変数 \\(\\xi_i \\ge 0\\) を導入し、ペナルティ \\(C\\) を付けます。
 
-\\[
+\$$
 \\min_{\\boldsymbol{w}, b, \\boldsymbol{\\xi}} \\; \\frac{1}{2} \\lVert \\boldsymbol{w} \\rVert_2^2 + C \\sum_{i=1}^{n} \\xi_i
 \\quad \\text{s.t.} \\quad
 y_i (\\boldsymbol{w}^\\top \\mathbf{x}_i + b) \\ge 1 - \\xi_i
-\\]
+\$$
 
 \\(C\\) が大きいほど誤分類を厳しく抑え、小さいほどマージン優先になります。
 
@@ -52,9 +52,9 @@ y_i (\\boldsymbol{w}^\\top \\mathbf{x}_i + b) \\ge 1 - \\xi_i
 
 SVM の最適化問題は内積 \\(\\phi(\\mathbf{x}_i)^\\top \\phi(\\mathbf{x}_j)\\) だけに依存するため、
 
-\\[
+\$$
 K(\\mathbf{x}_i, \\mathbf{x}_j) = \\phi(\\mathbf{x}_i)^\\top \\phi(\\mathbf{x}_j)
-\\]
+\$$
 
 を直接計算できるカーネル関数（RBF、Polynomial など）を使えば、次元を明示せずに非線形境界を学習できます。
 

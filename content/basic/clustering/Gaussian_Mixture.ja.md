@@ -15,9 +15,9 @@ title_suffix: "確率的クラスタリングとソフトな所属"
 
 確率密度は
 
-\[
+$$
 p(\mathbf{x}) = \sum_{k=1}^{K} \pi_k \; \mathcal{N}(\mathbf{x} \mid oldsymbol{\mu}_k, oldsymbol{\Sigma}_k)
-\]
+$$
 
 で表されます。\\(\pi_k\\) は混合係数で \\(\sum_k \pi_k = 1\\)。
 

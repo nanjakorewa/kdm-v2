@@ -19,10 +19,10 @@ title_suffix: "最もシンプルな線形分類器"
 
 ### 更新式
 
-\[
+$$
 \mathbf{w} \leftarrow \mathbf{w} + \eta \, y_i \, \mathbf{x}_i, \quad
 b \leftarrow b + \eta \, y_i
-\]
+$$
 
 ここで \\(\eta\\) は学習率、\\(y_i \in \{-1, +1\}\\)。分離可能データに対しては有限回の更新で収束することが知られています。
 
