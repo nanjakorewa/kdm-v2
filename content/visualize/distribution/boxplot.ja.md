@@ -5,11 +5,6 @@ weight: 5
 title_suffix: "四分位数と外れ値を一目で把握"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行時に
-`static/images/visualize/distribution/boxplot.svg` が生成されます。
-{{% /notice %}}
-
 箱ひげ図は中央値・四分位数・外れ値を 1 本で表せる定番チャートです。カテゴリごとに比較すると、分散の違いが見えます。
 
 ```python

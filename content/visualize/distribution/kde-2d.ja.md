@@ -5,11 +5,6 @@ weight: 6
 title_suffix: "散布図では見えにくい密度をなめらかに描く"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/distribution/kde2d.svg` が作成されます。
-{{% /notice %}}
-
 `seaborn.kdeplot` を使うと 2 変数の密度を等高線または塗りつぶしで描けます。散布図が密集しているときに有効です。
 
 ```python

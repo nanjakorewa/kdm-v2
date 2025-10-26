@@ -5,11 +5,6 @@ weight: 3
 title_suffix: "ランキングの入れ替わりを線で表す"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/advanced/bump.svg` が生成されます。
-{{% /notice %}}
-
 四半期ごとの売上順位を線でつないだバンプチャートです。順位を上下反転して描くのがポイントです。
 
 ```python

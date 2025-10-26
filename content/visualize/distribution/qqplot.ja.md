@@ -5,11 +5,6 @@ weight: 8
 title_suffix: "理論分布とのズレを確認する"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/distribution/qqplot.svg` が更新されます。
-{{% /notice %}}
-
 `scipy.stats.probplot` を用いて、データが正規分布に従うかどうかを視覚的に判断します。直線から大きく外れるほど正規性から逸脱しています。
 
 ```python

@@ -5,11 +5,6 @@ weight: 7
 title_suffix: "値がどこまでで何％たまるかを見る"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/distribution/ecdf.svg` が生成されます。
-{{% /notice %}}
-
 経験的累積分布関数（ECDF）は、ある値以下のサンプル割合を表現するシンプルなチャートです。閾値判断に役立ちます。
 
 ```python

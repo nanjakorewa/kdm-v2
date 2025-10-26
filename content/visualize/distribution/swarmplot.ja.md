@@ -5,11 +5,6 @@ weight: 9
 title_suffix: "カテゴリごとの分布と個票を同時に表示"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/distribution/swarmplot.svg` が生成されます。
-{{% /notice %}}
-
 Swarmplot は各データ点を重ならないようにずらして配置することで、個々の値を保ちながら分布の形を表現できます。
 
 ```python

@@ -5,11 +5,6 @@ weight: 1
 title_suffix: "散布図よりも高密度領域を見せやすい"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行時に
-`static/images/visualize/advanced/hexbin.svg` が生成されます。
-{{% /notice %}}
-
 散布図に点が重なりすぎる場合は、六角形のビンでカウントする Hexbin プロットが便利です。`matplotlib.hexbin` で簡単に描けます。
 
 ```python

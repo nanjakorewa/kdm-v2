@@ -5,11 +5,6 @@ weight: 10
 title_suffix: "ヒストグラムや KDE の補足として使う"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/distribution/rugplot.svg` が生成されます。
-{{% /notice %}}
-
 ヒストグラムや KDE に `rugplot` を重ねると、データの一つひとつがどこにあるかが分かりやすくなります。
 
 ```python
