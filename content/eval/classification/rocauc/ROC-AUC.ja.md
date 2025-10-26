@@ -1,7 +1,7 @@
 ---
 title: "ROC-AUC"
-pre: "4.3.1 "
-weight: 1
+pre: "4.3.3 "
+weight: 3
 title_suffix: "について仕組みを理解する"
 ---
 
