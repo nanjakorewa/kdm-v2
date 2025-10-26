@@ -5,11 +5,6 @@ weight: 1
 title_suffix: "特徴量同士の関係性を色で把握する"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/correlation/corr_heatmap.svg` を再生成します。
-{{% /notice %}}
-
 相関係数を色で表現すると、どの指標が一緒に動きやすいかを視覚的に把握できます。`pandas` で相関行列を作り、`seaborn.heatmap` で描画するのが簡単です。
 
 ```python

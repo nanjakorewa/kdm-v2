@@ -5,11 +5,6 @@ weight: 2
 title_suffix: "デバイス別アクセス比率を可視化する"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/line/area_chart.svg` が更新されます。
-{{% /notice %}}
-
 時間帯ごとのトラフィック量を、PC・スマホ・タブレットの3カテゴリで積み上げ面グラフにしました。
 面積がそのままアクセス量に対応するため、構成比の変化を直感的に把握できます。
 

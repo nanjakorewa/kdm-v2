@@ -15,8 +15,3 @@ bookCollapseSection: true
 {{% quote "Wikipedia 可視化" "https://ja.wikipedia.org/wiki/%E5%8F%AF%E8%A6%96%E5%8C%96" %}}
 可視化とは、人間が概念「情報」を記号や外界の物体（画像・グラフ・図表など）によって表現することを指します。
 {{% /quote %}}
-
-{{% notice info %}}
-本章で使用する SVG グラフは `python scripts/generate_visualize_assets.py`
-を実行すると `static/images/visualize/` 配下に再生成されます。
-{{% /notice %}}

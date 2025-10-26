@@ -5,11 +5,6 @@ weight: 2
 title_suffix: "ペアプロットで相関と分布を同時に確認"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/correlation/scatter_matrix.svg` を更新します。
-{{% /notice %}}
-
 `seaborn.pairplot` を使うと、特徴量の組み合わせごとの散布図と対角の分布をまとめて描画できます。クラス別に色分けすると、分類の分離度も同時に把握できます。
 
 ```python

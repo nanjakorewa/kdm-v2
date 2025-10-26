@@ -5,11 +5,6 @@ weight: 1
 title_suffix: "散布図よりも高密度領域を見せやすい"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/advanced/hexbin.svg` に六角形ヒートマップが書き出されます。
-{{% /notice %}}
-
 散布図に点が重なりすぎる場合は、マップ上に六角形のビンを敷き詰めた Hexbin プロットが便利です。
 `matplotlib` の `hexbin` を使えば、重なり具合に応じて色を変えた図を一行で描けます。
 
