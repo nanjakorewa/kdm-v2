@@ -6,20 +6,17 @@ title_suffix: "L1 と L2 正則化のいいとこ取り"
 ---
 
 {{< lead >}}
-リッジ回帰（L2）とラッソ回帰（L1）の長所を併せ持つ Elastic Net は、多数の相関した特徴量を扱うときに実力を発揮します。
+リッジ回帰（L2）とラッソ回帰（L1）の良いところを両取りしたのが Elastic Net です。多数の相関した特徴量があるときでも安定して係数を推定できます。
 {{< /lead >}}
 
 ---
 
 ## 1. Elastic Net の考え方
 
-リッジ回帰は係数を滑らかに縮小し、ラッソ回帰は不要な係数をゼロにします。Elastic Net は 2 つの正則化を組み合わせた目的関数を最小化します。
+リッジ回帰は係数を滑らかに縮小し、ラッソ回帰は不要な係数をゼロにします。Elastic Net は 2 つの正則化を組み合わせた目的関数を最小化することで、その中間的なふるまいを実現します。
 
-$$
-\min_{\boldsymbol\beta, b} \;
-\frac{1}{2n} \sum_{i=1}^{n} \big(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\big)^2
- + \alpha \left( (1 - \rho) \frac{1}{2} \| \boldsymbol\beta \|_2^2 + \rho \| \boldsymbol\beta \|_1 \right)
-$$
+![Elastic Net penalty geometry](/images/elastic-net-penalty.png)
+
 
 - \\(\alpha\\) : 正則化の強さ  
 - \\(\rho\\) (`l1_ratio`): L1 と L2 をどの割合で混ぜるか (\\(0 \leq \rho \leq 1\\))
