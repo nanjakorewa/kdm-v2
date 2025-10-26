@@ -16,12 +16,12 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 ## Intuition (formulas)
 
-Minimize a loss $L(y,F(x))$ by stagewise additive modeling:
+Minimize a loss \\(L(y,F(x))\\) by stagewise additive modeling:
 
-- Initialize $F_0(x)$.
-- For $m=1,\dots,M$: compute negative gradients (pseudo-residuals)
-  $r_{im} = -\left[\partial L(y_i, F(x_i))/\partial F\right]_{F=F_{m-1}}$, fit a tree $h_m$ to $r_{im}$, and update
-  $F_m(x) = F_{m-1}(x) + \nu\, \rho_m\, h_m(x)$ ($\nu$: learning rate).
+- Initialize \\(F_0(x)\\).
+- For \\(m=1,\dots,M\\): compute negative gradients (pseudo-residuals)
+  \\(r_{im} = -\left[\partial L(y_i, F(x_i))/\partial F\right]_{F=F_{m-1}}\\), fit a tree \\(h_m\\) to \\(r_{im}\\), and update
+  \\(F_m(x) = F_{m-1}(x) + \nu\, \rho_m\, h_m(x)\\) (\\(\nu\\): learning rate).
 
 ---
 

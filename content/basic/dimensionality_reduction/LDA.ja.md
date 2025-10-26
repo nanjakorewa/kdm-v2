@@ -23,7 +23,7 @@ title_suffix: "をpythonで実行してみる"
 
 ## 2. 数式でみる LDA
 
-クラス $C_1, C_2, \dots, C_k$ があるとき：
+クラス \\(C_1, C_2, \dots, C_k\\) があるとき：
 
 1. **クラス内散布行列**（within-class scatter）：
    $$
@@ -35,10 +35,10 @@ title_suffix: "をpythonで実行してみる"
    $$
    S_B = \sum_{j=1}^k n_j (\mu_j - \mu)(\mu_j - \mu)^\top
    $$
-   - クラス平均 $\mu_j$ と全体平均 $\mu$ の差。
+   - クラス平均 \\(\mu_j\\) と全体平均 \\(\mu\\) の差。
 
 3. **目的**：  
-   射影ベクトル $w$ を求め、次を最大化：
+   射影ベクトル \\(w\\) を求め、次を最大化：
    $$
    J(w) = \frac{w^\top S_B w}{w^\top S_W w}
    $$

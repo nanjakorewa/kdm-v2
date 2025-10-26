@@ -14,13 +14,13 @@ title_suffix: "Konsep dan Implementasi"
   </div>
 
 {{% notice tip %}}
-Rumus ditampilkan dengan KaTeX. <code>$\hat y$</code> adalah prediksi model dan <code>$\epsilon$</code> adalah noise.
+Rumus ditampilkan dengan KaTeX. <code>\\(\hat y\\)</code> adalah prediksi model dan <code>\\(\epsilon\\)</code> adalah noise.
 {{% /notice %}}
 
 ## Tujuan
-- Mempelajari garis <code>$\hat y = wx + b$</code> yang paling pas dengan data.
+- Mempelajari garis <code>\\(\hat y = wx + b\\)</code> yang paling pas dengan data.
 - “Paling pas” berarti meminimalkan jumlah kuadrat error (SSE):
-  <code>$\displaystyle L(w,b) = \sum_{i=1}^n (y_i - (w x_i + b))^2$</code>
+  <code>\\(\displaystyle L(w,b) = \sum_{i=1}^n (y_i - (w x_i + b))^2\\)</code>
 
 ## Buat dataset sederhana
 Kita buat garis lurus dengan noise dan tetapkan seed agar hasil dapat direproduksi.
@@ -106,10 +106,10 @@ Penskalaan tidak wajib untuk OLS, tetapi membantu pada kasus multivariat dan reg
 {{% /notice %}}
 
 ## Solusi bentuk tertutup (referensi)
-Untuk <code>$\hat y = wx + b$</code>:
+Untuk <code>\\(\hat y = wx + b\\)</code>:
 
-- <code>$\displaystyle w = \frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)}$</code>
-- <code>$\displaystyle b = \bar y - w\,\bar x$</code>
+- <code>\\(\displaystyle w = \frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)}\\)</code>
+- <code>\\(\displaystyle b = \bar y - w\,\bar x\\)</code>
 
 Verifikasi dengan NumPy:
 

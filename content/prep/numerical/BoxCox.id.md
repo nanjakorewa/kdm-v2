@@ -21,7 +21,7 @@ y = \begin{cases}
 \log x & \lambda = 0\end{cases}
 $
 
-Dari bentuk persamaan, $x$ harus selalu mengambil nilai non-negatif untuk menerapkan transformasi ini pada data numerik. Jika nilai negatif terkandung, seseorang dapat menambahkan konstanta atau menggunakan transformasi YeoJonson untuk membuat semuanya lebih besar dari 0.
+Dari bentuk persamaan, \\(x\\) harus selalu mengambil nilai non-negatif untuk menerapkan transformasi ini pada data numerik. Jika nilai negatif terkandung, seseorang dapat menambahkan konstanta atau menggunakan transformasi YeoJonson untuk membuat semuanya lebih besar dari 0.
 
 
 ```python

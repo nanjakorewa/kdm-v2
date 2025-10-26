@@ -17,15 +17,15 @@ title_suffix: "の仕組みの説明"
 
 ## 1. 直感と数式（なぜLDAで分かれるのか）
 
-2クラスの場合、LDAは射影ベクトル $\mathbf{w}$ を選んで、スカラー $z=\mathbf{w}^\top \mathbf{x}$ に写します。  
-次の比（Fisher の判別基準）を最大化する $\mathbf{w}$ を求めます：
+2クラスの場合、LDAは射影ベクトル \\(\mathbf{w}\\) を選んで、スカラー \\(z=\mathbf{w}^\top \mathbf{x}\\) に写します。  
+次の比（Fisher の判別基準）を最大化する \\(\mathbf{w}\\) を求めます：
 
 $$
 J(\mathbf{w}) \;=\; \frac{\text{クラス間分散}}{\text{クラス内分散}}
 \;=\; \frac{\mathbf{w}^\top \mathbf{S}_B \mathbf{w}}{\mathbf{w}^\top \mathbf{S}_W \mathbf{w}},
 $$
 
-ここで、$\mathbf{S}_W$ はクラス内散布行列、$\mathbf{S}_B$ はクラス間散布行列です。  
+ここで、\\(\mathbf{S}_W\\) はクラス内散布行列、\\(\mathbf{S}_B\\) はクラス間散布行列です。  
 直感的には **クラスの重心間距離を大きく**、**各クラス内のばらつきを小さく** する方向を選びます。
 
 > 多クラスの場合は、最大で <b>クラス数 − 1</b> 次元までに圧縮できます（例：3クラスなら2次元まで）。
@@ -64,7 +64,7 @@ plt.show()
 ## 3. LDA を学習して、決定境界と射影方向を確認
 
 scikit-learn の `LinearDiscriminantAnalysis` を使います。  
-学習後、**決定境界**は $\,\mathbf{w}^\top \mathbf{x} + b = 0\,$ の直線（2次元の場合）で表せます。
+学習後、**決定境界**は \\(\,\mathbf{w}^\top \mathbf{x} + b = 0\,\\) の直線（2次元の場合）で表せます。
 
 {{% notice document %}}
 [sklearn.discriminant_analysis.LinearDiscriminantAnalysis](https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html)
@@ -104,7 +104,7 @@ plt.grid(alpha=0.25)
 plt.show()
 ```
 
-> メモ：もとのコードでは「$w$ に垂直な直線」を描いていましたが、**決定境界は $w$ に直交** します。上記のように $w$ と 境界線を両方描くと、幾何の関係が直感的に掴めます。
+> メモ：もとのコードでは「\\(w\\) に垂直な直線」を描いていましたが、**決定境界は \\(w\\) に直交** します。上記のように \\(w\\) と 境界線を両方描くと、幾何の関係が直感的に掴めます。
 
 ---
 
@@ -183,7 +183,7 @@ plt.show()
 ## まとめ
 
 - LDA は「クラス間を最も分離する」方向を学習し、分類と次元削減の両方に使える  
-- 決定境界は 2D では直線（高次元では超平面）で、$w^\top x + b = 0$ で表現  
+- 決定境界は 2D では直線（高次元では超平面）で、\\(w^\top x + b = 0\\) で表現  
 - 多クラスでは最大で <b>クラス数−1</b> 次元に圧縮  
 - 仮定（ガウス性・共分散同一）と前処理（スケーリング）を意識して使うと効果的
 

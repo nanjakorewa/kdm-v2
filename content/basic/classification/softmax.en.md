@@ -13,7 +13,7 @@ title_suffix: "Multiclass in Python"
 
 ## 1. Softmax function
 
-Given scores (logits) $z=(z_1,\dots,z_K)$, the softmax converts them to a probability vector:
+Given scores (logits) \\(z=(z_1,\dots,z_K)\\), the softmax converts them to a probability vector:
 
 $$
 \mathrm{softmax}(z_i) = \frac{\exp(z_i)}{\sum_{j=1}^{K} \exp(z_j)} \quad (i=1,\dots,K)
@@ -27,7 +27,7 @@ $$
 
 ## 2. Model
 
-For input $x$, class-$k$ score is
+For input \\(x\\), class-\\(k\\) score is
 
 $$
 z_k = w_k^\top x + b_k

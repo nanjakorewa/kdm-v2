@@ -16,15 +16,15 @@ title_suffix: "Intuition, formulas, and practice"
 {{% /notice %}}
 
 ## Algorithm (with formulas)
-For rounds $t=1,\dots,T$, fit a weak learner $h_t(x)$ with weights $w_i^{(t)}$. Weighted error:
+For rounds \\(t=1,\dots,T\\), fit a weak learner \\(h_t(x)\\) with weights \\(w_i^{(t)}\\). Weighted error:
 
-$\displaystyle \varepsilon_t = \frac{\sum_i w_i^{(t)} \, \mathbf{1}[y_i \ne h_t(x_i)]}{\sum_i w_i^{(t)}}$,
- coefficient $\displaystyle \alpha_t = \tfrac{1}{2}\ln \frac{1-\varepsilon_t}{\varepsilon_t}$.
+\\(\displaystyle \varepsilon_t = \frac{\sum_i w_i^{(t)} \, \mathbf{1}[y_i \ne h_t(x_i)]}{\sum_i w_i^{(t)}}\\),
+ coefficient \\(\displaystyle \alpha_t = \tfrac{1}{2}\ln \frac{1-\varepsilon_t}{\varepsilon_t}\\).
 
 Update sample weights:
-$\displaystyle w_i^{(t+1)} = w_i^{(t)} \exp( \alpha_t\, \mathbf{1}[y_i \ne h_t(x_i)] )$ (then normalize).
+\\(\displaystyle w_i^{(t+1)} = w_i^{(t)} \exp( \alpha_t\, \mathbf{1}[y_i \ne h_t(x_i)] )\\) (then normalize).
 
-Final classifier: $\displaystyle H(x) = \operatorname{sign}\big( \sum_{t=1}^T \alpha_t h_t(x) \big)$
+Final classifier: \\(\displaystyle H(x) = \operatorname{sign}\big( \sum_{t=1}^T \alpha_t h_t(x) \big)\\)
 
 ---
 

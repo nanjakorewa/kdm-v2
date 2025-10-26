@@ -6,7 +6,7 @@ title_replace: "Melakukan Metode Hotelling's T² dengan Python"
 ---
 
 <div class="pagetop-box">
-    <p>Metode Hotelling $T^2$ mengasumsikan bahwa data mengikuti distribusi normal, dan memanfaatkan fakta bahwa tingkat keanehan setiap data mengikuti distribusi $\chi^2$ untuk mendeteksi nilai pencilan. Halaman ini akan menunjukkan cara memberi label pada nilai pencilan yang terdapat dalam data yang mengikuti distribusi normal dengan menggunakan Python.</p>
+    <p>Metode Hotelling \\(T^2\\) mengasumsikan bahwa data mengikuti distribusi normal, dan memanfaatkan fakta bahwa tingkat keanehan setiap data mengikuti distribusi \\(\chi^2\\) untuk mendeteksi nilai pencilan. Halaman ini akan menunjukkan cara memberi label pada nilai pencilan yang terdapat dalam data yang mengikuti distribusi normal dengan menggunakan Python.</p>
 </div>
 
 ## Data untuk Eksperimen

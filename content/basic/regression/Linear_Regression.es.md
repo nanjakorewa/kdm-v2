@@ -15,13 +15,13 @@ title_suffix: "Conceptos e implementación"
   </div>
 
 {{% notice tip %}}
-Las fórmulas se muestran con KaTeX. <code>$\hat y$</code> denota la predicción del modelo y <code>$\epsilon$</code> denota el ruido.
+Las fórmulas se muestran con KaTeX. <code>\\(\hat y\\)</code> denota la predicción del modelo y <code>\\(\epsilon\\)</code> denota el ruido.
 {{% /notice %}}
 
 ## Objetivo
-- Aprender la recta <code>$\hat y = wx + b$</code> que mejor se ajusta a los datos.
+- Aprender la recta <code>\\(\hat y = wx + b\\)</code> que mejor se ajusta a los datos.
 - “Mejor” significa minimizar la suma de errores cuadráticos (SSE):
-  <code>$\displaystyle L(w,b) = \sum_{i=1}^n (y_i - (w x_i + b))^2$</code>
+  <code>\\(\displaystyle L(w,b) = \sum_{i=1}^n (y_i - (w x_i + b))^2\\)</code>
 
 ## Crear un conjunto de datos sencillo
 Generamos una recta con ruido y fijamos la semilla para reproducibilidad.
@@ -107,10 +107,10 @@ No es obligatorio escalar para mínimos cuadrados, pero ayuda con problemas mult
 {{% /notice %}}
 
 ## Solución en forma cerrada (referencia)
-Para <code>$\hat y = wx + b$</code>:
+Para <code>\\(\hat y = wx + b\\)</code>:
 
-- <code>$\displaystyle w = \frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)}$</code>
-- <code>$\displaystyle b = \bar y - w\,\bar x$</code>
+- <code>\\(\displaystyle w = \frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)}\\)</code>
+- <code>\\(\displaystyle b = \bar y - w\,\bar x\\)</code>
 
 Verificar con NumPy:
 

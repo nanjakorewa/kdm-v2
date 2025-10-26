@@ -13,7 +13,7 @@ title_suffix: "Multiclase en Python"
 
 ## 1. Función softmax
 
-Dado $z=(z_1,\dots,z_K)$:
+Dado \\(z=(z_1,\dots,z_K)\\):
 
 $$
 \mathrm{softmax}(z_i) = \frac{\exp(z_i)}{\sum_{j=1}^{K} \exp(z_j)} \quad (i=1,\dots,K)
@@ -27,7 +27,7 @@ $$
 
 ## 2. Modelo
 
-Para $x$, el score de la clase $k$:
+Para \\(x\\), el score de la clase \\(k\\):
 
 $$
 z_k = w_k^\top x + b_k

@@ -16,8 +16,8 @@ $
 Tiene las siguientes propiedades
 
 - -1 a menos o igual que 1.
-- Si el coeficiente de correlación se acerca a 1, $x$ aumenta → $y$ también aumenta
-- El valor del coeficiente de correlación no cambia cuando $x, y$ se multiplican por un número bajo
+- Si el coeficiente de correlación se acerca a 1, \\(x\\) aumenta → \\(y\\) también aumenta
+- El valor del coeficiente de correlación no cambia cuando \\(x, y\\) se multiplican por un número bajo
 
 ## Calcular el coeficiente de correlación entre dos columnas numéricas
 

@@ -42,11 +42,11 @@ img
 
 
 
-## Eksekusi Singular Value Decomposition (SVD) pada matriks $A$.
+## Eksekusi Singular Value Decomposition (SVD) pada matriks \\(A\\).
 
 
 ```python
-## Matriks \( A \), yang berisi data karakter, akan didekomposisi menggunakan Singular Value Decomposition (SVD).
+## Matriks $ A $, yang berisi data karakter, akan didekomposisi menggunakan Singular Value Decomposition (SVD).
 X = np.asarray(img)
 U, Sigma, VT = linalg.svd(X, full_matrices=True)
 
@@ -75,7 +75,7 @@ for rank in [1, 2, 3, 4, 5, 10, 20, 50]:
     plt.show()
 ```
 
-## Isi Matriks $V$
+## Isi Matriks \\(V\\)
 
 ```python
 total = np.zeros((163, 372))
@@ -99,7 +99,7 @@ for rank in [1, 2, 3, 4, 5]:
     total += temp_image
 
     # Bandingkan gambar yang direkonstruksi menggunakan elemen hingga peringkat tertentu 
-    # dengan plot nilai di kolom peringkat tertentu pada matriks \( V \)
+    # dengan plot nilai di kolom peringkat tertentu pada matriks $ V $
     plt.figure(figsize=(5, 5))
     plt.suptitle(f"$u_{rank}$")
     plt.subplot(211)

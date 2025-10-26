@@ -38,7 +38,7 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
   $$
   Gini(t) = 1 - \sum_k p_{k}^2
   $$
-  （ノード $t$ におけるクラス $k$ の割合 $p_k$ を使う）
+  （ノード \\(t\\) におけるクラス \\(k\\) の割合 \\(p_k\\) を使う）
 
 - **エントロピー (Entropy)**  
   $$

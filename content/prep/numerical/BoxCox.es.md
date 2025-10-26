@@ -21,7 +21,7 @@ y = \begin{cases}
 \log x & \lambda = 0\end{cases}
 $
 
-Por la forma de la ecuación, $x$ debe tomar siempre valores no negativos para aplicar esta transformación a los datos numéricos. Si se contienen valores negativos, se podría añadir una constante para que todo sea mayor que 0. O bien, se puede utilizar la transformación de YeoJonson.
+Por la forma de la ecuación, \\(x\\) debe tomar siempre valores no negativos para aplicar esta transformación a los datos numéricos. Si se contienen valores negativos, se podría añadir una constante para que todo sea mayor que 0. O bien, se puede utilizar la transformación de YeoJonson.
 
 
 ```python

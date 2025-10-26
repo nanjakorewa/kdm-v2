@@ -18,12 +18,12 @@ title_suffix: "Intuición, fórmulas y práctica"
 {{% /notice %}}
 
 ## Cómo funciona (fórmulas)
-- Árbol $h_b(x)$ por muestra bootstrap $\mathcal{D}_b$, para $b=1,\dots,B$.
+- Árbol \\(h_b(x)\\) por muestra bootstrap \\(\mathcal{D}_b\\), para \\(b=1,\dots,B\\).
 - Predicción:
-  - Clasificación: $\hat y = \operatorname*{arg\,max}_c \sum_{b=1}^B \mathbf{1}[h_b(x)=c]$
-  - Regresión: $\hat y = \tfrac{1}{B}\sum_{b=1}^B h_b(x)$
+  - Clasificación: \\(\hat y = \operatorname*{arg\,max}_c \sum_{b=1}^B \mathbf{1}[h_b(x)=c]\\)
+  - Regresión: \\(\hat y = \tfrac{1}{B}\sum_{b=1}^B h_b(x)\\)
 
-Ejemplo (Gini): $\mathrm{Gini}(S)=1-\sum_c p(c\mid S)^2$
+Ejemplo (Gini): \\(\mathrm{Gini}(S)=1-\sum_c p(c\mid S)^2\\)
 
 ---
 

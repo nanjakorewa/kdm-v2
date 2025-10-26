@@ -32,7 +32,7 @@ Karena residual di<b>kuadrat</b>kan, satu titik ekstrem saja dapat mendominasi l
 
 ## 2. Loss Huber: kompromi antara kuadrat dan absolut
 
-<b>Loss Huber</b> memakai kuadrat untuk residual kecil dan absolut untuk residual besar. Untuk <code>r = y - \hat y</code> dan ambang <code>$\delta > 0$</code>:
+<b>Loss Huber</b> memakai kuadrat untuk residual kecil dan absolut untuk residual besar. Untuk <code>r = y - \hat y</code> dan ambang <code>\\(\delta > 0\\)</code>:
 
 $$
 \ell_\delta(r) = \begin{cases}
@@ -50,7 +50,7 @@ r, & |r| \le \delta \\
 $$
 sehingga gradien <b>terklip</b> untuk residual besar (outlier).
 
-> Catatan: di <code>HuberRegressor</code> scikit-learn, ambang disebut <code>epsilon</code> (sesuai <code>$\delta$</code> di atas).
+> Catatan: di <code>HuberRegressor</code> scikit-learn, ambang disebut <code>epsilon</code> (sesuai <code>\\(\delta\\)</code> di atas).
 
 ---
 
@@ -168,7 +168,7 @@ Interpretasi:
 
 ## 6. Parameter: epsilon dan alpha
 
-- <code>epsilon</code> (ambang <code>$\delta$</code>):
+- <code>epsilon</code> (ambang <code>\\(\delta\\)</code>):
   - Lebih besar → mendekati OLS; lebih kecil → mendekati loss absolut.
   - Bergantung skala residual; lakukan standardisasi atau robust scaling.
 - <code>alpha</code> (penalti L2):

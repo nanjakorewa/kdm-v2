@@ -16,8 +16,8 @@ $
 Ini memiliki sifat-sifat berikut
 
 - -1 sampai kurang dari 1
-- Jika koefisien korelasi mendekati 1, $x$ meningkat → $y$ juga meningkat
-- Nilai koefisien korelasi tidak berubah ketika $x, y$ dikalikan dengan angka yang rendah
+- Jika koefisien korelasi mendekati 1, \\(x\\) meningkat → \\(y\\) juga meningkat
+- Nilai koefisien korelasi tidak berubah ketika \\(x, y\\) dikalikan dengan angka yang rendah
 
 ## Hitung koefisien korelasi antara dua kolom numerik
 

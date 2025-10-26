@@ -41,7 +41,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 $$
 L = \sum_{i=1}^n \ell\big(y_i, F(x_i)\big)
 $$
-を最小化したい。ここで $F(x)$ が最終予測関数。
+を最小化したい。ここで \\(F(x)\\) が最終予測関数。
 
 ### アルゴリズム（回帰の場合）
 1. **初期モデル**
@@ -50,12 +50,12 @@ F_0(x) = \arg\min_c \sum_i \ell(y_i, c)
 $$
 （例：二乗誤差なら平均値）
 
-2. **反復 $m=1,\dots,M$**
+2. **反復 \\(m=1,\dots,M\\)**
    - 勾配（擬似残差）を計算：
      $$
      r_{im} = - \left[\frac{\partial \ell(y_i, F(x_i))}{\partial F(x_i)}\right]_{F=F_{m-1}}
      $$
-   - $r_{im}$ を目的変数として弱学習器 $h_m(x)$ を学習
+   - \\(r_{im}\\) を目的変数として弱学習器 \\(h_m(x)\\) を学習
    - 最適なステップ幅を計算：
      $$
      \rho_m = \arg\min_\rho \sum_i \ell\big(y_i, F_{m-1}(x_i) + \rho \, h_m(x_i)\big)
@@ -64,7 +64,7 @@ $$
      $$
      F_m(x) = F_{m-1}(x) + \nu \, \rho_m \, h_m(x)
      $$
-     ここで $\nu$ は **学習率 (learning rate)**
+     ここで \\(\nu\\) は **学習率 (learning rate)**
 
 最終モデル：
 $$

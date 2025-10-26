@@ -32,7 +32,7 @@ Because residuals are <b>squared</b>, even a single extreme point can dominate t
 
 ## 2. Huber loss: a compromise between squared and absolute
 
-The <b>Huber loss</b> uses squared loss for small residuals and absolute loss for large residuals. For residual <code>r = y - \hat y</code> and threshold <code>$\delta > 0$</code>:
+The <b>Huber loss</b> uses squared loss for small residuals and absolute loss for large residuals. For residual <code>r = y - \hat y</code> and threshold <code>\\(\delta > 0\\)</code>:
 
 $$
 \ell_\delta(r) = \begin{cases}
@@ -50,7 +50,7 @@ r, & |r| \le \delta \\
 $$
 so the gradient is <b>clipped</b> for large residuals (outliers).
 
-> Note: in scikit-learn’s <code>HuberRegressor</code>, the threshold is parameter <code>epsilon</code> (corresponds to <code>$\delta$</code> above).
+> Note: in scikit-learn’s <code>HuberRegressor</code>, the threshold is parameter <code>epsilon</code> (corresponds to <code>\\(\delta\\)</code> above).
 
 ---
 
@@ -168,7 +168,7 @@ Interpretation:
 
 ## 6. Parameters: epsilon and alpha
 
-- <code>epsilon</code> (threshold <code>$\delta$</code>):
+- <code>epsilon</code> (threshold <code>\\(\delta\\)</code>):
   - Larger → closer to OLS; smaller → closer to absolute loss.
   - Depends on residual scale; standardization or robust scaling helps.
 - <code>alpha</code> (L2 penalty):

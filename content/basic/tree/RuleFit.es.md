@@ -18,7 +18,7 @@ Friedman, Jerome H., y Bogdan E. Popescu. “Predictive learning via rule ensemb
 ## 1. Idea (con fórmulas)
 
 1) <b>Extraer reglas</b> de árboles; cada camino a una hoja define $r_j(x)\in\{0,1\}).  
-2) <b>Añadir términos lineales</b> escalados \(z_k(x)$.  
+2) <b>Añadir términos lineales</b> escalados \\(z_k(x)$.  
 3) <b>Ajuste lineal con L1</b>:
 
 $$

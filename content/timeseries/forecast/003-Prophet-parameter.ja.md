@@ -116,9 +116,9 @@ growth="linear"でどのようなトレンドを表現できるか確認して�
 {{% /notice %}}
 
 
-$A$の各行の次元数は変化点の数です。また、各次元の値は
-$ a_j(t) \left\{ \begin{array}{ll} 1, & \text{if}　\ t \ge s_j \\ 0, & \text{otherwise} \end{array} \right. $
-となっています。時刻$t$の$a$の$j$次元目は、$t$が$j$番目の変化点よりあとの時刻ならば$1$になる、ということです。
+\\(A\\)の各行の次元数は変化点の数です。また、各次元の値は
+\\( a_j(t) \left\{ \begin{array}{ll} 1, & \text{if}　\ t \ge s_j \\ 0, & \text{otherwise} \end{array} \right. \\)
+となっています。時刻\\(t\\)の\\(a\\)の\\(j\\)次元目は、\\(t\\)が\\(j\\)番目の変化点よりあとの時刻ならば\\(1\\)になる、ということです。
 
 
 ```python

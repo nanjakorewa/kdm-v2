@@ -16,8 +16,8 @@ $
 It has the following properties
 
 - - 1 to less than 1
-- If correlation coefficient is close to 1, $x$ increases → $y$ also increases
-- The value of correlation coefficient does not change when $x, y$ are multiplied by a low number
+- If correlation coefficient is close to 1, \\(x\\) increases → \\(y\\) also increases
+- The value of correlation coefficient does not change when \\(x, y\\) are multiplied by a low number
 
 ## Calculate the correlation coefficient between two numerical columns
 

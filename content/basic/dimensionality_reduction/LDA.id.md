@@ -24,9 +24,9 @@ X, y = make_blobs(
 fig = plt.figure(figsize=(8, 8))
 ax = fig.add_subplot(projection="3d")
 ax.scatter(X[:, 0], X[:, 1], X[:, 2], marker="o", c=y)
-ax.set_xlabel("$x_1$")
-ax.set_ylabel("$x_2$")
-ax.set_zlabel("$x_3$")
+ax.set_xlabel("\\(x_1\\)")
+ax.set_ylabel("\\(x_2\\)")
+ax.set_zlabel("\\(x_3\\)")
 ```
 
 
