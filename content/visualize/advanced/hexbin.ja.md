@@ -1,12 +1,16 @@
 ---
 title: "Hexbin プロットで密度を捉える"
-pre: "6.5.1 "
+pre: "6.7.1 "
 weight: 1
 title_suffix: "散布図よりも高密度領域を見せやすい"
 ---
 
-散布図に点が重なりすぎる場合は、マップ上に六角形のビンを敷き詰めた Hexbin プロットが便利です。
-`matplotlib` の `hexbin` を使えば、重なり具合に応じて色を変えた図を一行で描けます。
+{{% notice tip %}}
+`python scripts/generate_visualize_assets.py` 実行時に
+`static/images/visualize/advanced/hexbin.svg` が生成されます。
+{{% /notice %}}
+
+散布図に点が重なりすぎる場合は、六角形のビンでカウントする Hexbin プロットが便利です。`matplotlib.hexbin` で簡単に描けます。
 
 ```python
 import numpy as np
@@ -40,4 +44,4 @@ fig.savefig("static/images/visualize/advanced/hexbin.svg")
 
 - 色が濃い六角形ほどデータが密集している領域。値の偏りを把握しやすい。
 - `mincnt` を指定すると、一定数以上データが入ったセルだけを描画できる。
-- カラーバーを付ければ、ヒートマップとして件数を定量的に説明できる。
+- カラーバーを付ければ件数を定量的に説明でき、ヒートマップとしても機能する。

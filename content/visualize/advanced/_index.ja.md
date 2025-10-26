@@ -1,14 +1,14 @@
 ---
 title: 応用プロット
-weight: 5
+weight: 7
 chapter: true
 not_use_colab: true
 not_use_twitter: true
-pre: "<b>6.5 </b>"
+pre: "<b>6.7 </b>"
 ---
 
-### Chapter 5
+### Chapter 7
 
 # 応用プロット
 
-密度の偏りや複雑な分布を表現するための一歩進んだ可視化手法を紹介します。
+密度の偏りや複雑なランキング推移など、ひと工夫した可視化チャートを紹介します。

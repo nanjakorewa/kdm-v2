@@ -1,12 +1,16 @@
 ---
 title: "複数ラインの推移比較"
-pre: "6.3.1 "
+pre: "6.4.1 "
 weight: 1
 title_suffix: "2つの系列を同じ軸で比較する"
 ---
 
-週ごとの売上推移を、東西2拠点で比較する折れ線グラフです。`matplotlib` の素直な
-API だけで見やすいグラフが作れます。
+{{% notice tip %}}
+`python scripts/generate_visualize_assets.py` を実行すると
+`static/images/visualize/line/lineplot_multi.svg` にグラフが出力されます。
+{{% /notice %}}
+
+週ごとの売上推移を東西 2 拠点で比較する折れ線グラフです。`matplotlib` の素直な API だけで見やすい図が作れます。
 
 ```python
 import matplotlib.pyplot as plt
@@ -33,6 +37,6 @@ fig.savefig("static/images/visualize/line/lineplot_multi.svg")
 
 ### 読み方のポイント
 
-- 2系列を同じスケールで描くことで、上下動のタイミングの違いが一目で分かる。
+- 2 系列を同じスケールで描くことで、上下動のタイミングの違いが一目で分かる。
 - 指標の単位を必ず縦軸に明記し、凡例はプロットと同じ色で揃える。
 - 重要な区間に縦の補助線や注釈を加えるとさらに把握しやすくなる。
