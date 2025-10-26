@@ -276,7 +276,7 @@ NaNや不要な記号を取り除き、文字列を数値に変換します。
 import numpy as np
 
 # 「(」「)」「,」の文字列を削除する
-cs_table = cs_table.replace([",", "\)", "\("], "", regex=True)
+cs_table = cs_table.replace([",", "\\)", "\\("], "", regex=True)
 cs_table = cs_table.replace([""], np.nan)  # 空白セルはnan扱いにする
 cs_table.head(10)
 ```
