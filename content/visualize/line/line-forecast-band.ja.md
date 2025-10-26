@@ -5,11 +5,6 @@ weight: 7
 title_suffix: "平均予測と上下限を同時に見せる"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/line/forecast_band.svg` が生成されます。
-{{% /notice %}}
-
 機械学習モデルの予測値と、その上下限を `fill_between` で帯状に描画すると、不確実性も合わせて伝えられます。
 
 ```python

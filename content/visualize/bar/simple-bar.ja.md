@@ -5,11 +5,6 @@ weight: 1
 title_suffix: "カテゴリ別の値を比較する"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/bar/simple_bar.svg` が生成されます。
-{{% /notice %}}
-
 カテゴリごとの売上額を比較する単純な棒グラフです。値が少ない場合はラベルを直接付けると読みやすくなります。
 
 ```python

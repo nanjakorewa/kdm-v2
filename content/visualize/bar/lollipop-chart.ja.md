@@ -5,11 +5,6 @@ weight: 7
 title_suffix: "棒グラフより軽量な表現"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/bar/lollipop.svg` を再生成します。
-{{% /notice %}}
-
 棒の代わりに線と点で表現するロリポップチャートは、項目が多いときでも軽やかに比較できます。
 
 ```python

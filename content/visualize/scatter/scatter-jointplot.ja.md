@@ -5,11 +5,6 @@ weight: 4
 title_suffix: "散布図＋周辺分布の組み合わせ"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/scatter/jointplot.svg` が生成されます。
-{{% /notice %}}
-
 `seaborn.jointplot` は中央に散布図、上下左右にヒストグラムを描画してくれる便利な関数です。
 
 ```python

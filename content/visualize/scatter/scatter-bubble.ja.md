@@ -5,11 +5,6 @@ weight: 2
 title_suffix: "サイズで重要度や数量を追加する"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行時に
-`static/images/visualize/scatter/bubble.svg` が生成されます。
-{{% /notice %}}
-
 売上（x 軸）、利益率（y 軸）、顧客数（バブルサイズ）の 3 変数を同時に表示する例です。
 
 ```python

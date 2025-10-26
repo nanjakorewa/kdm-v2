@@ -5,11 +5,6 @@ weight: 2
 title_suffix: "ラベルが長い場合に有効"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行時に
-`static/images/visualize/bar/horizontal_bar.svg` が作成されます。
-{{% /notice %}}
-
 アンケート結果のようにラベルが長いときは横向きの棒グラフが適しています。
 
 ```python

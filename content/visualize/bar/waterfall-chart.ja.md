@@ -5,11 +5,6 @@ weight: 6
 title_suffix: "増減の積み上げを段階的に示す"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/bar/waterfall.svg` が生成されます。
-{{% /notice %}}
-
 売上の増減要因を順番に足し合わせ、最終値に至るまでの寄与を可視化します。
 
 ```python

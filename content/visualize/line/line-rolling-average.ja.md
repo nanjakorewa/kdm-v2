@@ -5,11 +5,6 @@ weight: 3
 title_suffix: "短期変動とトレンドを同時に表示"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/line/rolling_average.svg` が生成されます。
-{{% /notice %}}
-
 日次データに移動平均を重ねるとノイズを抑えつつトレンドを把握できます。`pandas.Series.rolling` を使うと簡単に計算できます。
 
 ```python

@@ -5,11 +5,6 @@ weight: 2
 title_suffix: "複数指標を一度にレポートする"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/advanced/radar.svg` が生成されます。
-{{% /notice %}}
-
 プロダクト A/B の KPI をレーダーチャートで比較する例です。`matplotlib` の極座標を使用します。
 
 ```python

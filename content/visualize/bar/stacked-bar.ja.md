@@ -5,11 +5,6 @@ weight: 4
 title_suffix: "チャネル別の内訳を１本にまとめる"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` で
-`static/images/visualize/bar/stacked_bar.svg` が生成されます。
-{{% /notice %}}
-
 月別総売上をチャネル別に積み上げると、全体量と構成比を同時に見ることができます。
 
 ```python

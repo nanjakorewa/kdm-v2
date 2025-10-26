@@ -5,11 +5,6 @@ weight: 8
 title_suffix: "ダッシュボードや表内で活躍するミニチャート"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/line/sparkline.svg` が更新されます。
-{{% /notice %}}
-
 スパークラインは目盛りや軸を取り除いた小さな折れ線グラフで、一覧表などに組み込むとトレンドを素早く確認できます。
 
 ```python

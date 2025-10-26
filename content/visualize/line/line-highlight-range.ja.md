@@ -5,11 +5,6 @@ weight: 6
 title_suffix: "繁忙期やイベント期間を背景で強調"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/line/highlight_range.svg` が更新されます。
-{{% /notice %}}
-
 通常の折れ線に `ax.axvspan` を組み合わせると、特定期間を背景色で強調できます。大型キャンペーン期間などに便利です。
 
 ```python

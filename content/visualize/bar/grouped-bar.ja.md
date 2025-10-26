@@ -5,11 +5,6 @@ weight: 3
 title_suffix: "複数カテゴリを並列で比較する"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/bar/grouped_bar.svg` を再生成します。
-{{% /notice %}}
-
 月別の売上をチャネル別に並べ、増減を比較する例です。幅を調整してグループ間に余白を持たせます。
 
 ```python

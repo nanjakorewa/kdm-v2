@@ -5,11 +5,6 @@ weight: 3
 title_suffix: "線形関係をざっくりモデル化"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/scatter/lm.svg` が更新されます。
-{{% /notice %}}
-
 `seaborn.lmplot` を使うと、散布図と回帰直線を同時に描画できます。信頼区間も自動で付与されます。
 
 ```python

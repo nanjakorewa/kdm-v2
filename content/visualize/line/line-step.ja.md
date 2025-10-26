@@ -5,11 +5,6 @@ weight: 5
 title_suffix: "料金改定など段階的な変化に向く"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行時に
-`static/images/visualize/line/step_line.svg` が生成されます。
-{{% /notice %}}
-
 価格改定のように段階的に値が変わる場合はステップチャートが便利です。`plt.step` を使うと階段状の線を描けます。
 
 ```python

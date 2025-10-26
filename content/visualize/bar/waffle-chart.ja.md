@@ -5,11 +5,6 @@ weight: 8
 title_suffix: "100 マスでシェアを直感的に見せる"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` で
-`static/images/visualize/bar/waffle.svg` が生成されます。
-{{% /notice %}}
-
 100 個のタイルにカテゴリのシェアを割り当てるワッフルチャートは、比率をざっくり伝えるのに便利です。
 
 ```python

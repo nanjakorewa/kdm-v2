@@ -5,11 +5,6 @@ weight: 4
 title_suffix: "開始と終了の差を1本で強調"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行時に
-`static/images/visualize/advanced/dumbbell.svg` が生成されます。
-{{% /notice %}}
-
 ダンベルチャートは開始値と終了値を 1 本の線で結び、差分を視覚的に示します。
 
 ```python

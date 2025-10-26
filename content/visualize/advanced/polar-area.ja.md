@@ -5,11 +5,6 @@ weight: 5
 title_suffix: "季節性や周期データの可視化に使う"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/advanced/polar_area.svg` が生成されます。
-{{% /notice %}}
-
 月別の問い合わせ件数を極座標上で表現したチャートです。季節性の傾向を 360 度の円で確認できます。
 
 ```python

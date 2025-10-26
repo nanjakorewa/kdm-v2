@@ -5,11 +5,6 @@ weight: 1
 title_suffix: "相関の有無をざっくり確認する"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行時に
-`static/images/visualize/scatter/basic.svg` が生成されます。
-{{% /notice %}}
-
 身長と体重の関係をランダムデータで描いた基本的な散布図です。`seaborn.scatterplot` を使うとスタイルを統一できます。
 
 ```python

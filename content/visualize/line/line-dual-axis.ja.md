@@ -5,11 +5,6 @@ weight: 4
 title_suffix: "売上と転換率など単位が異なるデータ向け"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/line/dual_axis.svg` が出力されます。
-{{% /notice %}}
-
 片方の軸で売上高、もう片方でコンバージョン率を表示する例です。`Axes.twinx()` を使って右軸を追加します。
 
 ```python

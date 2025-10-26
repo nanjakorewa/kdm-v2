@@ -5,11 +5,6 @@ weight: 5
 title_suffix: "プラスとマイナスを一目で把握"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行時に
-`static/images/visualize/bar/diverging_bar.svg` が更新されます。
-{{% /notice %}}
-
 前年との増減を横向きの棒で表現すると、プラス・マイナスの傾向がすぐに読み取れます。
 
 ```python

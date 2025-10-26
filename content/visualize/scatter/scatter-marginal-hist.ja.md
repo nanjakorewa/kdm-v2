@@ -5,11 +5,6 @@ weight: 5
 title_suffix: "JointGridで柔軟にカスタマイズ"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/scatter/marginal_hist.svg` が再生成されます。
-{{% /notice %}}
-
 `seaborn.JointGrid` を使うと、散布図と上部・右側のヒストグラムを自由に組み合わせられます。
 
 ```python

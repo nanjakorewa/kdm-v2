@@ -5,11 +5,6 @@ weight: 6
 title_suffix: "平均値ラインや注釈で洞察を補足"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` 実行で
-`static/images/visualize/scatter/category_annotation.svg` が更新されます。
-{{% /notice %}}
-
 クラスタごとに色分けし、平均値ラインと注釈を加えた散布図です。注目してほしい領域をテキストで示すと伝わりやすくなります。
 
 ```python

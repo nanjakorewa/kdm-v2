@@ -5,11 +5,6 @@ weight: 1
 title_suffix: "2つの系列を同じ軸で比較する"
 ---
 
-{{% notice tip %}}
-`python scripts/generate_visualize_assets.py` を実行すると
-`static/images/visualize/line/lineplot_multi.svg` にグラフが出力されます。
-{{% /notice %}}
-
 週ごとの売上推移を東西 2 拠点で比較する折れ線グラフです。`matplotlib` の素直な API だけで見やすい図が作れます。
 
 ```python
