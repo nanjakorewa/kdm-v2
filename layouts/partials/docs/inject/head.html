@@ -12,6 +12,31 @@
     {{- $gaMeasurementId = . -}}
   {{- end -}}
 {{- end -}}
+
+<script>
+  (function () {
+    if (typeof window === "undefined") {
+      return;
+    }
+    var path = window.location && window.location.pathname ? window.location.pathname : "";
+    if (!path) {
+      return;
+    }
+    var search = window.location.search || "";
+    var hash = window.location.hash || "";
+    if (path === "/ja" || path === "/ja/") {
+      window.location.replace("/" + search + hash);
+      return;
+    }
+    if (path.indexOf("/ja/") === 0) {
+      var target = path.slice(3);
+      if (target.charAt(0) !== "/") {
+        target = "/" + target;
+      }
+      window.location.replace(target + search + hash);
+    }
+  })();
+</script>
 {{- if and (eq $gaMeasurementId "") site.GoogleAnalytics -}}
   {{- $gaMeasurementId = site.GoogleAnalytics -}}
 {{- end -}}
