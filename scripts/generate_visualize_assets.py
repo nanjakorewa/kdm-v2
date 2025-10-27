@@ -82,13 +82,13 @@ def main(_: argparse.Namespace) -> None:
         md_path = repo_root / relative
         code_blocks = extract_python_blocks(md_path.read_text(encoding="utf-8"))
         
-        try:
-            for idx, block in enumerate(code_blocks, start=1):
-                jam.japanize()
+        for idx, block in enumerate(code_blocks, start=1):
+            jam.japanize()
+            try:
                 run_snippet(block, md_path)
                 print(f"Executed block {idx} from {relative}")
-        except:
-            pass
+            except:
+                continue
 
 
 if __name__ == "__main__":

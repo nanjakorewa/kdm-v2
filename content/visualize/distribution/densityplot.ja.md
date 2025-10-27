@@ -2,10 +2,10 @@
 title: "密度プロット"
 pre: "6.2.2 "
 weight: 2
-title_replace: "pythonで密度プロットをプロットする"
+title_replace: "pythonで密度プロットを作成する"
 ---
 
-数値データがどのように分布しているかを可視化します。
+数値データがどのように分布しているかを滑らかな曲線で可視化します。
 
 {{% notice document %}}
 [seaborn.kdeplot](https://seaborn.pydata.org/generated/seaborn.kdeplot.html)
@@ -15,19 +15,26 @@ title_replace: "pythonで密度プロットをプロットする"
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
+fig, ax = plt.subplots(figsize=(6, 4))
 df = sns.load_dataset("iris")
-sns.set(rc={"figure.figsize": (12, 8)})
-sns.kdeplot(df["sepal_length"])
-sns.kdeplot(df["sepal_width"])
-sns.kdeplot(df["petal_length"])
-sns.kdeplot(df["petal_width"])
-plt.legend(labels=["sepal_length", "sepal_width", "petal_length", "petal_width"])
+
+for column, color in zip(["sepal_length", "sepal_width", "petal_length", "petal_width"], ["#2563eb", "#0ea5e9", "#22c55e", "#f97316"]):
+    sns.kdeplot(data=df, x=column, ax=ax, color=color, label=column)
+
+ax.set_xlabel("測定値")
+ax.set_ylabel("密度")
+ax.set_title("Iris データの密度プロット")
+ax.legend()
+ax.grid(alpha=0.2)
+
+fig.tight_layout()
+fig.savefig("static/images/visualize/distribution/densityplot.svg")
 ```
 
+![density plot](/images/visualize/distribution/densityplot.svg)
 
+### 読み方のポイント
 
-    
-![png](/images/visualize/distribution/densityplot_files/densityplot_1_1.png)
-    
-
+- 曲線が高い部分はデータが集中している。裾の形状で分布の幅が分かる。
+- 複数系列を重ねる場合は色と凡例で識別し、透明度を下げて重なりを見やすくすると効果的。
+- 平滑化帯域 `bw_adjust` を調整すると曲線の滑らかさをコントロールできる。
