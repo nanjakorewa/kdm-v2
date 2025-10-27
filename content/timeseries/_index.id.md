@@ -1,14 +1,13 @@
 ---
-title: Deret waktu
-weight: 5
-pre: "<b>5. </b>"
+title: Rangkaian Waktu
+weight: 8
 chapter: true
 not_use_colab: true
 not_use_twitter: true
+bookCollapseSection: true
+pre: "<b>2.8 </b>"
 ---
 
-### Bagian 5
+### Bab 8
 
-# Deret waktu
-
-Rangkaian waktu adalah serangkaian nilai yang diperoleh dengan terus mengamati perubahan dalam suatu fenomena dari waktu ke waktu.
+# Rangkaian Waktu

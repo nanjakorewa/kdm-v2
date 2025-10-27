@@ -1,14 +1,13 @@
 ---
-title: TimeSeries
-weight: 5
-pre: "<b>5. </b>"
+title: Time Series
+weight: 8
 chapter: true
 not_use_colab: true
 not_use_twitter: true
+bookCollapseSection: true
+pre: "<b>2.8</b>"
 ---
 
-### Section 5
+### Chapter 8
 
 # Time Series
-
-A time series is a set of values obtained by continuously observing changes in a phenomenon over time.

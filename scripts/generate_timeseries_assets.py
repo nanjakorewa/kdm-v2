@@ -21,37 +21,39 @@ import japanize_matplotlib  # noqa: E402
 plt.style.use("scripts/k_dm.mplstyle")
 
 
+TIMESERIES_DIR = Path("content") / "timeseries"
+
 TARGET_MARKDOWN_TS = [
-    "content/basic/timeseries/Anomaly_Zscore.ja.md",
-    "content/basic/timeseries/AR_Model.ja.md",
-    "content/basic/timeseries/ARMA_Model.ja.md",
-    "content/basic/timeseries/Autocorrelation.ja.md",
-    "content/basic/timeseries/Autocorrelation_Heatmap.ja.md",
-    "content/basic/timeseries/Calendar_Heatmap.ja.md",
-    "content/basic/timeseries/Change_Point.ja.md",
-    "content/basic/timeseries/Differencing_Comparison.ja.md",
-    "content/basic/timeseries/ETS_Model.ja.md",
-    "content/basic/timeseries/Granger_Causality_Bar.ja.md",
-    "content/basic/timeseries/Lag_Plot_Grid.ja.md",
-    "content/basic/timeseries/MA_Model.ja.md",
-    "content/basic/timeseries/Missing_Data_Highlight.ja.md",
-    "content/basic/timeseries/Monthly_Boxplot.ja.md",
-    "content/basic/timeseries/Monthly_Subseries.ja.md",
-    "content/basic/timeseries/Partial_Autocorrelation.ja.md",
-    "content/basic/timeseries/Percent_Change.ja.md",
-    "content/basic/timeseries/Power_Spectrum.ja.md",
-    "content/basic/timeseries/Resample_Trend.ja.md",
-    "content/basic/timeseries/Rolling_Correlation.ja.md",
-    "content/basic/timeseries/Rolling_Forecast_Origin.ja.md",
-    "content/basic/timeseries/Rolling_Statistics.ja.md",
-    "content/basic/timeseries/SARIMAX_Exogenous.ja.md",
-    "content/basic/timeseries/Seasonal_Polar.ja.md",
-    "content/basic/timeseries/STL_Forecast.ja.md",
-    "content/basic/timeseries/Time_Series_Overview.ja.md",
-    "content/basic/timeseries/Train_Test_Split.ja.md",
-    "content/basic/timeseries/UCM_Model.ja.md",
-    "content/basic/timeseries/VAR_Forecast.ja.md",
-    "content/basic/timeseries/Weekday_Averages.ja.md",
+    TIMESERIES_DIR / "Anomaly_Zscore.ja.md",
+    TIMESERIES_DIR / "AR_Model.ja.md",
+    TIMESERIES_DIR / "ARMA_Model.ja.md",
+    TIMESERIES_DIR / "Autocorrelation.ja.md",
+    TIMESERIES_DIR / "Autocorrelation_Heatmap.ja.md",
+    TIMESERIES_DIR / "Calendar_Heatmap.ja.md",
+    TIMESERIES_DIR / "Change_Point.ja.md",
+    TIMESERIES_DIR / "Differencing_Comparison.ja.md",
+    TIMESERIES_DIR / "ETS_Model.ja.md",
+    TIMESERIES_DIR / "Granger_Causality_Bar.ja.md",
+    TIMESERIES_DIR / "Lag_Plot_Grid.ja.md",
+    TIMESERIES_DIR / "MA_Model.ja.md",
+    TIMESERIES_DIR / "Missing_Data_Highlight.ja.md",
+    TIMESERIES_DIR / "Monthly_Boxplot.ja.md",
+    TIMESERIES_DIR / "Monthly_Subseries.ja.md",
+    TIMESERIES_DIR / "Partial_Autocorrelation.ja.md",
+    TIMESERIES_DIR / "Percent_Change.ja.md",
+    TIMESERIES_DIR / "Power_Spectrum.ja.md",
+    TIMESERIES_DIR / "Resample_Trend.ja.md",
+    TIMESERIES_DIR / "Rolling_Correlation.ja.md",
+    TIMESERIES_DIR / "Rolling_Forecast_Origin.ja.md",
+    TIMESERIES_DIR / "Rolling_Statistics.ja.md",
+    TIMESERIES_DIR / "SARIMAX_Exogenous.ja.md",
+    TIMESERIES_DIR / "Seasonal_Polar.ja.md",
+    TIMESERIES_DIR / "STL_Forecast.ja.md",
+    TIMESERIES_DIR / "Time_Series_Overview.ja.md",
+    TIMESERIES_DIR / "Train_Test_Split.ja.md",
+    TIMESERIES_DIR / "UCM_Model.ja.md",
+    TIMESERIES_DIR / "VAR_Forecast.ja.md",
+    TIMESERIES_DIR / "Weekday_Averages.ja.md",
 ]
 
 CODE_BLOCK_PATTERN = re.compile(r"```python\n(.*?)```", re.DOTALL)
@@ -69,16 +71,20 @@ def run_snippet(code: str, file_path: Path) -> None:
 
 def main(_: argparse.Namespace) -> None:
     repo_root = Path(__file__).resolve().parents[1]
-    for relative in TARGET_MARKDOWN_TS:
-        md_path = repo_root / relative
+    for relative_path in TARGET_MARKDOWN_TS:
+        md_path = repo_root / relative_path
+        if not md_path.exists():
+            print(f"Skipping missing file: {relative_path.as_posix()}")
+            continue
+
         code_blocks = extract_python_blocks(md_path.read_text(encoding="utf-8"))
 
         for idx, block in enumerate(code_blocks, start=1):
             japanize_matplotlib.japanize()
             try:
                 run_snippet(block, md_path)
-                print(f"Executed block {idx} from {relative}")
-            except FileNotFoundError:
+                print(f"Executed block {idx} from {relative_path.as_posix()}")
+            except:
                 continue
 
 

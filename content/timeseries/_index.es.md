@@ -1,14 +1,13 @@
 ---
-title: Series temporales
-weight: 5
-pre: "<b>5. </b>"
+title: Series Temporales
+weight: 8
 chapter: true
 not_use_colab: true
 not_use_twitter: true
+bookCollapseSection: true
+pre: "<b>2.8 </b>"
 ---
 
-### Sección 5
+### Capítulo 8
 
-# Series temporales
-
-Una serie temporal es un conjunto de valores obtenidos mediante la observación continua de los cambios de un fenómeno a lo largo del tiempo.
+# Series Temporales
