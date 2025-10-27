@@ -10,4 +10,4 @@ pre: "<b>5.8 </b>"
 ### Section 8
 # Multivariante y Causalidad
 
-Analiza la influencia entre series con VAR y causalidad de Granger antes de desplegar pron?sticos conjuntos.
+Analiza la influencia entre series con VAR y causalidad de Granger antes de desplegar pronósticos conjuntos.

@@ -1,5 +1,5 @@
 ---
-title: "Automatizaci?n y Herramientas"
+title: "Automatización y Herramientas"
 weight: 9
 chapter: true
 not_use_colab: true
@@ -8,6 +8,6 @@ pre: "<b>5.9 </b>"
 ---
 
 ### Section 9
-# Automatizaci?n y Herramientas
+# Automatización y Herramientas
 
-Integra todo con Prophet y automatiza flujos de pron?stico reproducibles.
+Integra todo con Prophet y automatiza flujos de pronóstico reproducibles.
