@@ -25,6 +25,7 @@ plt.style.use("scripts/k_dm.mplstyle")
 
 TARGET_MARKDOWN = [
     "content/visualize/advanced/bump-chart.ja.md",
+    "content/visualize/advanced/calendar-heatmap.ja.md",
     "content/visualize/advanced/dumbbell-chart.ja.md",
     "content/visualize/advanced/hexbin.ja.md",
     "content/visualize/advanced/polar-area.ja.md",
