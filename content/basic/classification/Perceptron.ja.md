@@ -1,34 +1,38 @@
 ---
 title: "パーセプトロン"
-pre: "2.2.4 "
-weight: 4
+pre: "2.2.3 "
+weight: 3
 title_suffix: "最もシンプルな線形分類器"
 ---
 
-{{< lead >}}
-パーセプトロンは 1950 年代に登場した一次元の線形分類器で、現在のディープラーニングの原点となったモデルです。単純ながらも勾配降下や活性化関数の直感を得るのに最適です。
-{{< /lead >}}
+{{% summary %}}
+- パーセプトロンは線形に分離可能なデータに対して有限回の更新で収束する最古参の分類アルゴリズム。
+- 予測は重みベクトルと入力の内積にバイアスを加え、符号でクラスを判定するシンプルな仕組み。
+- 誤分類したサンプルにだけ重みを加算する更新則で、勾配降下の直感を養える。
+- 線形で分けられないデータにはそのままでは対応できず、特徴量拡張やカーネルトリックが必要になる。
+{{% /summary %}}
 
----
+## 直感
+パーセプトロンは「誤分類したら決定境界をサンプル側に少し動かす」という考え方です。重みベクトル \\(\mathbf{w}\\) が決定境界の法線ベクトルを、バイアス \\(b\\) がオフセットを表します。学習率 \\(\eta\\) をかけて重みを微調整することで、少しずつ境界が正しい位置に移動します。
 
-## 1. 基本アイデア
-
-- 特徴量ベクトル \\(\mathbf{x} \in \mathbb{R}^d\\) に対し、重み \\(\mathbf{w}\\) とバイアス \\(b\\) を学習
-- 予測は \\(\hat{y} = \mathrm{sign}(\mathbf{w}^	op \mathbf{x} + b)\\)
-- 正しく分類できなかったサンプルに対して、\\(\mathbf{w}\\) をシンプルに更新
-
-### 更新式
+## 具体的な数式
+予測は
 
 $$
-\mathbf{w} \leftarrow \mathbf{w} + \eta \, y_i \, \mathbf{x}_i, \quad
-b \leftarrow b + \eta \, y_i
+\hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b)
 $$
 
-ここで \\(\eta\\) は学習率、\\(y_i \in \{-1, +1\}\\)。分離可能データに対しては有限回の更新で収束することが知られています。
+で行います。誤分類したサンプル \\((\mathbf{x}_i, y_i)\\) に対しては
 
----
+$$
+\mathbf{w} \leftarrow \mathbf{w} + \eta\, y_i\, \mathbf{x}_i,\qquad
+b \leftarrow b + \eta\, y_i
+$$
 
-## 2. Python 実装例
+と更新します。データが線形に分離可能であれば、この更新を繰り返すだけで有限回で収束することが示されています。
+
+## Pythonを用いた実験や説明
+以下は人工データにパーセプトロンを適用し、学習の進み具合と決定境界を可視化する例です。誤分類が 0 になった時点で学習が終了します。
 
 ```python
 import numpy as np
@@ -57,7 +61,7 @@ for epoch in range(n_epochs):
     if errors == 0:
         break
 
-print("学習終了: w=", w, " b=", b)
+print("学習終了 w=", w, " b=", b)
 print("各エポックの誤分類数:", history)
 
 # 決定境界を描画
@@ -75,21 +79,8 @@ plt.show()
 
 ![perceptron block 1](/images/basic/classification/perceptron_block01.svg)
 
----
-
-## 3. 特徴と注意点
-
-- **線形分離可能性**: パーセプトロンは線形分離できるデータに対してのみ理論的収束保証
-- **学習率**: 大きすぎると振動、小さすぎると収束が遅い
-- **活性化関数**: ステップ関数を使用するため確率出力は得られない
-- **マルチクラス**: one-vs-rest で拡張できるが、より洗練されたロジスティック回帰や SVM が一般的
-
----
-
-## 4. まとめ
-
-- パーセプトロンは「誤分類したら重みを少し動かす」だけの最小限アルゴリズム
-- 線形分離できないデータにはそのままでは対応できないが、カーネルトリックや多層化へ発展
-- 学習過程を観察すると、線形分類器の感覚を直感的に理解できます
-
----
+## 参考文献
+{{% references %}}
+<li>Rosenblatt, F. (1958). The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain. <i>Psychological Review</i>, 65(6), 386–408.</li>
+<li>Goodfellow, I., Bengio, Y., &amp; Courville, A. (2016). <i>Deep Learning</i>. MIT Press.</li>
+{{% /references %}}

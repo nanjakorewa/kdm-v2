@@ -1,66 +1,40 @@
 ---
 title: "サポートベクターマシン（SVM）"
-pre: "2.2.3 "
-weight: 3
+pre: "2.2.5 "
+weight: 5
 title_suffix: "マージン最大化で汎化性能を高める"
 ---
 
-{{< lead >}}
-SVM は「クラス間の境界（マージン）を最大化する」ことで汎化性能を重視する分類アルゴリズムです。線形境界から非線形カーネルまで拡張でき、特徴量が多い状況でも強力に機能します。
-{{< /lead >}}
+{{% summary %}}
+- SVM はクラス間のマージンを最大化する決定境界を学習し、汎化性能を重視した分類器を構成する。
+- ソフトマージンにより誤分類を許容しつつ、ペナルティ係数 \\(C\\) でバランスを制御できる。
+- カーネルトリックを用いることで、高次元に写像しなくても非線形な決定境界を扱える。
+- 標準化とハイパーパラメータ探索（\\(C\\), \\(\gamma\\)）が性能向上の鍵。
+{{% /summary %}}
 
----
+## 直感
+SVM はクラスを分ける境界の中でも、サンプルから最も離れた（マージンが最大の）境界を選びます。境界に接するサンプルはサポートベクターと呼ばれ、彼らだけが最終的な境界を決めます。こうすることで、多少のノイズに強い堅牢な決定境界が得られます。
 
-## 1. どんなときに使う？
+## 具体的な数式
+線形分離可能な場合は次の最適化問題を解きます。
 
-- 少数のサンプルでも、境界をしっかり定義したいとき  
-- 特徴量が多く、線形回帰系のモデルが過学習しやすいとき  
-- カーネルトリックで非線形な決定境界を描きたいとき  
-- 外れ値よりも「境界付近の重要な点（サポートベクター）」を重視したいとき
+$$
+\min_{\mathbf{w}, b} \ \frac{1}{2} \lVert \mathbf{w} \rVert_2^2
+\quad \text{s.t.} \quad y_i(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1
+$$
 
----
+実データでは完全には分離できないことが多いため、スラック変数 \\(\xi_i \ge 0\\) を導入したソフトマージン SVM を用います。
 
-## 2. 線形 SVM の数理
+$$
+\min_{\mathbf{w}, b, \boldsymbol{\xi}}
+\ \frac{1}{2} \lVert \mathbf{w} \rVert_2^2 + C \sum_{i=1}^{n} \xi_i
+\quad \text{s.t.} \quad y_i(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1 - \xi_i
+$$
 
-2 クラス問題で、それぞれのラベルを \\(y_i \\in \\{ -1, +1 \\}\\) とします。線形分離可能なケースでは以下を解きます。
+カーネルトリックでは内積 \\(\mathbf{x}_i^\top \mathbf{x}_j\\) をカーネル \\(K(\mathbf{x}_i, \mathbf{x}_j)\\) に置き換えることで、非線形境界を表現できます。
 
-\$$
-\\min_{\\boldsymbol{w}, b} \\; \\frac{1}{2} \\lVert \\boldsymbol{w} \\rVert_2^2
-\\quad \\text{s.t.} \\quad
-y_i (\\boldsymbol{w}^\\top \\mathbf{x}_i + b) \\ge 1 \\quad (i = 1, \\dots, n)
-\$$
-
-マージン幅は \\(2 / \\lVert \\boldsymbol{w} \\rVert\\)。係数のノルムを小さくすることで、より広いマージンを得ます。
-
-### ソフトマージン
-
-実際は完全分離できないため、スラック変数 \\(\\xi_i \\ge 0\\) を導入し、ペナルティ \\(C\\) を付けます。
-
-\$$
-\\min_{\\boldsymbol{w}, b, \\boldsymbol{\\xi}} \\; \\frac{1}{2} \\lVert \\boldsymbol{w} \\rVert_2^2 + C \\sum_{i=1}^{n} \\xi_i
-\\quad \\text{s.t.} \\quad
-y_i (\\boldsymbol{w}^\\top \\mathbf{x}_i + b) \\ge 1 - \\xi_i
-\$$
-
-\\(C\\) が大きいほど誤分類を厳しく抑え、小さいほどマージン優先になります。
-
----
-
-## 3. カーネルトリックの直感
-
-非線形分離を扱うために、特徴量写像 \\(\\phi(\\mathbf{x})\\) で高次元に持ち上げればよいですが、明示的にベクトルを計算するとコストが高くなります。
-
-SVM の最適化問題は内積 \\(\\phi(\\mathbf{x}_i)^\\top \\phi(\\mathbf{x}_j)\\) だけに依存するため、
-
-\$$
-K(\\mathbf{x}_i, \\mathbf{x}_j) = \\phi(\\mathbf{x}_i)^\\top \\phi(\\mathbf{x}_j)
-\$$
-
-を直接計算できるカーネル関数（RBF、Polynomial など）を使えば、次元を明示せずに非線形境界を学習できます。
-
----
-
-## 4. Python で SVM を実装する
+## Pythonを用いた実験や説明
+以下は `make_moons` で生成した非線形データに SVM を適用し、線形カーネルと RBF カーネルを比較する例です。RBF カーネルの方が複雑な境界を表現できることがわかります。
 
 ```python
 import numpy as np
@@ -72,7 +46,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report
 
-# 非線形に分離可能なテストデータ
+# 非線形に分離可能なサンプルを生成
 X, y = make_moons(n_samples=400, noise=0.25, random_state=42)
 
 # 線形カーネル
@@ -110,21 +84,8 @@ plt.show()
 
 ![svm block 1](/images/basic/classification/svm_block01.svg)
 
----
-
-## 5. ハイパーパラメータ設計
-
-- \\(C\\): 誤分類を許容する度合い。大きいほどハードマージンに近づき、過学習リスクが上がる  
-- \\(\\gamma\\)（RBF 等のカーネル）: 影響範囲の広さ。大きいと境界が細かく曲がり、小さいと滑らかになる  
-- カーネル種類: `linear`, `poly`, `rbf`, `sigmoid` など。まずは `rbf` か `linear` で十分  
-- グリッドサーチや `RandomizedSearchCV` で \\(C\\), \\(\\gamma\\) を同時にクロスバリデーション
-
----
-
-## 6. まとめ
-
-- SVM は「マージン最大化」という明確な原理で汎化性能を確保する分類器  
-- カーネルトリックにより、非線形問題も高次元に写像せず処理できる  
-- ハイパーパラメータ \\(C\\) と \\(\\gamma\\) のバランスが性能を大きく左右するため、標準化とクロスバリデーションは必須です
-
----
+## 参考文献
+{{% references %}}
+<li>Vapnik, V. (1998). <i>Statistical Learning Theory</i>. Wiley.</li>
+<li>Smola, A. J., &amp; Schölkopf, B. (2004). A Tutorial on Support Vector Regression. <i>Statistics and Computing</i>, 14(3), 199–222.</li>
+{{% /references %}}
