@@ -16,7 +16,7 @@ title_suffix: "予測の不確実性まで推論する"
 通常の最小二乗法では「最も確からしい係数」を 1 組だけ求めますが、ベイズ線形回帰では係数の不確実性も含めて推論します。観測データが少ない場合やノイズが大きい場合でも、ベイズ的な更新によって事前の知識とデータから得られる情報をバランス良く統合できます。
 
 ## 具体的な数式
-係数ベクトル \(\boldsymbol\beta\) に対し、0 平均・分散 \(\tau^{-1}\) のガウス分布を事前分布として置き、ノイズ分散 \(\alpha^{-1}\) のガウス尤度を仮定すると、事後分布は
+係数ベクトル \\(\boldsymbol\beta\\) に対し、0 平均・分散 \\(\tau^{-1}\\) のガウス分布を事前分布として置き、ノイズ分散 \\(\alpha^{-1}\\) のガウス尤度を仮定すると、事後分布は
 
 $$
 p(\boldsymbol\beta \mid \mathbf{X}, \mathbf{y}) = \mathcal{N}(\boldsymbol\beta \mid \boldsymbol\mu, \mathbf{\Sigma})
@@ -29,7 +29,7 @@ $$
 \boldsymbol\mu = \alpha \mathbf{\Sigma} \mathbf{X}^\top \mathbf{y}
 $$
 
-です。予測分布もガウス分布になり、平均と分散を解析的に計算できます。`scikit-learn` の `BayesianRidge` は \(\alpha, \tau\) もデータから推定してくれます。
+です。予測分布もガウス分布になり、平均と分散を解析的に計算できます。`scikit-learn` の `BayesianRidge` は \\(\alpha, \tau\\) もデータから推定してくれます。
 
 ## Pythonを用いた実験や説明
 外れ値を含むデータで、通常の線形回帰とベイズ線形回帰を比較する例です。

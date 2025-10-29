@@ -10,7 +10,7 @@ title_suffix: "句点・感嘆符・括弧を考慮したルールベース分�
 ```python
 import re
 
-SENTENCE_END = re.compile(r"([。！？!?]+)(?=[^\)」』】》”』』】》」]|\Z)")
+SENTENCE_END = re.compile(r"([。！？!?]+)(?=[^\\)」』】》”』』】》」]|\Z)")
 
 def split_sentences(text: str) -> list[str]:
     parts = []

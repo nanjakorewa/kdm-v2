@@ -11,7 +11,7 @@ title_suffix: "顧客名寄せに向けたクリーニング"
 import re
 
 HONORIFICS = ["様", "さま", "さん", "ちゃん", "殿", "どの", "氏"]
-PAREN_PATTERN = re.compile(r"（.*?）|\(.*?\)|\[.*?\]")
+PAREN_PATTERN = re.compile(r"（.*?）|\\(.*?\\)|\[.*?\]")
 
 def clean_name(name: str) -> str:
     name = PAREN_PATTERN.sub("", name)

@@ -16,12 +16,12 @@ title_suffix: "疎な係数を貪欲に選ぶ線形回帰"
 大量の特徴量の中から本当に効いているものだけを選びたいとき、OMP は残差を最も減らす特徴量を一つずつ追加していきます。辞書式学習やスパースコーディングの基本アルゴリズムとしても知られ、疎な係数ベクトルを得たい場面で重宝します。
 
 ## 具体的な数式
-初期残差を \(\mathbf{r}^{(0)} = \mathbf{y}\) とし、各ステップ \(t\) で以下を行います。
+初期残差を \\(\mathbf{r}^{(0)} = \mathbf{y}\\) とし、各ステップ \\(t\\) で以下を行います。
 
-1. \( \mathbf{x}_j\) と残差の内積が最大の特徴量 \(j\) を選択。
-2. 選択済み特徴量集合 \(\mathcal{A}_t\) に \(j\) を追加。
-3. \(\mathcal{A}_t\) の特徴量だけを使って最小二乗解 \(\hat{\boldsymbol\beta}_{\mathcal{A}_t}\) を求める。
-4. 新しい残差 \(\mathbf{r}^{(t)} = \mathbf{y} - \mathbf{X}_{\mathcal{A}_t} \hat{\boldsymbol\beta}_{\mathcal{A}_t}\) を計算。
+1. \\( \mathbf{x}_j\\) と残差の内積が最大の特徴量 \\(j\\) を選択。
+2. 選択済み特徴量集合 \\(\mathcal{A}_t\\) に \\(j\\) を追加。
+3. \\(\mathcal{A}_t\\) の特徴量だけを使って最小二乗解 \\(\hat{\boldsymbol\beta}_{\mathcal{A}_t}\\) を求める。
+4. 新しい残差 \\(\mathbf{r}^{(t)} = \mathbf{y} - \mathbf{X}_{\mathcal{A}_t} \hat{\boldsymbol\beta}_{\mathcal{A}_t}\\) を計算。
 
 これを指定したステップ数か残差が小さくなるまで繰り返します。
 
