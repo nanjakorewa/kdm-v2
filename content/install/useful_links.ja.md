@@ -1,6 +1,6 @@
 ---
 title: 役立つ資料集
-weight: 2
+weight: 100
 pre: "<b>1.1 </b>"
 not_use_colab: true
 not_use_twitter: true

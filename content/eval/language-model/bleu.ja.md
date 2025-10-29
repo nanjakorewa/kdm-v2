@@ -1,18 +1,18 @@
-﻿---
-title: BLEU metric
-pre: "4.6.1"
+---
+title: BLEU 指標
+pre: "4.6.1 "
 weight: 1
 ---
 
-BLEU (Bilingual Evaluation Understudy) is an n-gram based metric widely used for machine translation and summarisation. It counts overlapping n-grams between a candidate and references, then applies a brevity penalty so overly short outputs are discouraged.
+BLEU（Bilingual Evaluation Understudy）は、候補文と参照文の n-gram 一致率を基に翻訳・要約の品質を評価する自動指標です。単語列の一致数を precision として集計し、出力が短すぎるときは短縮ペナルティ（brevity penalty）を掛けます。
 
-## Calculation steps
+## 計算手順
 
-1. Compute precision for each n-gram length (typically 1–4).
-2. Take the log-average of the precisions (usually equal weights).
-3. Multiply by a brevity penalty when the candidate is shorter than references.
+1. 1〜4-gram など所定の n について、候補文と参照文の一致数（modified precision）を計算する。
+2. 各 precision の対数平均を取り、幾何平均を求める（通常は等重み）。
+3. 候補文が参照文より短い場合は brevity penalty を掛け合わせる。
 
-`python
+```python
 import math
 from collections import Counter
 
@@ -41,9 +41,13 @@ def bleu(candidate, references, max_n=4):
     closest_ref = min(ref_lens, key=lambda r: (abs(r - len(candidate)), r))
     brevity_penalty = 1.0 if len(candidate) > closest_ref else math.exp(1 - closest_ref / len(candidate))
     return brevity_penalty * geo_mean
-`
+```
 
-## Strengths and caveats
+## 長所
+- 実装がシンプルで高速。過去研究との比較指標としていまだに利用される。
+- 参照文を複数用意すれば、言い換えへの耐性をある程度確保できる。
 
-- **Strengths**: simple and fast; still a de-facto benchmark metric.
-- **Caveats**: insensitive to synonyms or paraphrases; long-form generation quality correlates poorly with BLEU.
+## 注意点
+- 同義語や語順の違いに敏感で、意味が同じでもスコアが低くなることがある。
+- 要約など長文タスクでは人手評価との相関が弱くなる場合がある。
+- 日本語のように形態素境界が曖昧な言語では、事前に形態素解析などでトークン化しておくと安定する。
