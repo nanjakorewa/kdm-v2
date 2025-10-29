@@ -2,35 +2,30 @@
 title: "PLS 回帰（Partial Least Squares）"
 pre: "2.1.9 "
 weight: 9
-title_suffix: "目的変数を意識した潜在因子で回帰する"
+title_suffix: "目標を意識した潜在因子で回帰する"
 ---
 
-{{< lead >}}
-主成分回帰が「説明変数の分散」を最大化するのに対して、PLS は「説明変数と目的変数の共分散」を最大化する潜在因子を学習します。目的変数に効く方向を見逃しにくいのが特徴です。
-{{< /lead >}}
+{{% summary %}}
+- PLS 回帰は説明変数と目的変数の共分散を最大化する潜在因子を抽出し、その上で回帰を行う教師あり次元圧縮法。
+- PCA と異なり目的変数の情報を反映した軸を学習するため、予測性能を保ちやすい。
+- 潜在因子の数を調整することで、多重共線性や高次元データでも安定したモデルを構築できる。
+- ローディングを可視化すると、どの特徴量の組み合わせが目的変数と強く関係しているかを説明しやすい。
+{{% /summary %}}
 
----
+## 直感
+主成分回帰は説明変数の分散の大きさだけを基準に軸を決めるため、目的変数に効く方向が削られてしまうことがあります。PLS 回帰では説明変数と目的変数の両方を見ながら潜在因子を構成し、予測に効く情報をできるだけ残した状態で次元を圧縮します。
 
-## 1. PLS の直感
+## 具体的な数式
+説明変数行列 \(\mathbf{X}\) と目的変数（列ベクトル）\(\mathbf{y}\) に対し、潜在スコア \(\mathbf{t} = \mathbf{X} \mathbf{w}\) と \(\mathbf{u} = \mathbf{y} c\) を交互に更新しながら、共分散 \(\mathbf{t}^\top \mathbf{u}\) が最大となる \(\mathbf{w}, c\) を求めます。この操作を繰り返し、得られた潜在因子上で線形回帰を行います。潜在因子数を \(k\) とすると、最終的な回帰モデルは
 
-- 目的：説明変数 \\(X\\) と目的変数 \\(Y\\) の両方に情報を持つ潜在ベクトル（スコア）を抽出  
-- 各潜在ベクトルについて、\\(X\\) 側・\\(Y\\) 側の荷重（loading）を推定し、逐次的に残差を更新  
-- 少数の潜在因子だけで回帰するため、高次元・多重共線性データでも安定
+$$
+\hat{y} = \mathbf{t} \boldsymbol{b} + b_0
+$$
 
----
+の形になります。
 
-## 2. PCA との違い
-
-| 観点 | PCA | PLS |
-|------|-----|-----|
-| 最適化目標 | \\(X\\) の分散 | \\(X\\) と \\(Y\\) の共分散 |
-| 教師あり/なし | 教師なし | 教師あり |
-| 目的変数を意識？ | しない | する |
-| 向いている場面 | ノイズ除去、可視化 | 回帰性能重視、因果探索 |
-
----
-
-## 3. Python 実装（`PLSRegression`）
+## Pythonを用いた実験や説明
+運動データセットで潜在因子数ごとの性能を比較する例です。
 
 ```python
 import numpy as np
@@ -44,7 +39,7 @@ import matplotlib.pyplot as plt
 import japanize_matplotlib
 
 data = load_linnerud()
-X = data["data"]          # トレーニングメニュー（身長や体重など）
+X = data["data"]          # トレーニングメニュー�E�身長めE��重など�E�E
 y = data["target"][:, 0]  # ここではチンニング回数だけを予測
 
 components = range(1, min(X.shape[1], 6) + 1)
@@ -74,34 +69,20 @@ plt.figure(figsize=(8, 4))
 plt.plot(components, [-s for s in scores], marker="o")
 plt.axvline(best_k, color="red", linestyle="--")
 plt.xlabel("潜在因子数")
-plt.ylabel("CV MSE (小さいほど良い)")
+plt.ylabel("CV MSE (小さぁE��ど良ぁE")
 plt.tight_layout()
 plt.show()
 ```
 
 ![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01.svg)
 
----
+### 実行結果の読み方
+- 潜在因子数を増やすにつれて CV MSE が下がり、ある点で最良値に達した後は悪化し始める。
+- `x_loadings_` と `y_loadings_` を見ると、どの特徴量が潜在因子に寄与しているかがわかる。
+- スケーリングを行うことで、単位の異なる説明変数でもバランスの取れた潜在因子が得られる。
 
-## 4. 実務でのポイント
-
-- `n_components` は PCA 同様に CV で決める。多すぎるとノイズが戻ってしまう  
-- 多目的変数（多出力）の場合でも、PLS は同時に扱える（`y` を多列で渡す）  
-- Loading 行列を可視化すると「どの特徴の組み合わせが効いているか」を説明しやすい  
-- スケーリングは必須。単位の差が共分散最大化に影響するため
-
----
-
-## 5. PCR vs PLS の使い分け
-
-- **PCR**: 目的変数がかなりノイズに埋もれている、まずはデータ構造を把握したいとき  
-- **PLS**: 目的変数の予測精度を優先し、説明変数との関係を直接モデリングしたいとき  
-- 実務では両方試し、CV で良い方を採用するのが無難
-
----
-
-## 6. まとめ
-
-- PLS 回帰は「目的変数を意識した圧縮＋回帰」で、多重共線性と高次元に強い  
-- `PLSRegression` を `Pipeline` に組み込めば、スケーリングや CV も簡単  
-- Loading を解釈することで、データに潜む共変動構造を把握できる
+## 参考文献
+{{% references %}}
+<li>Wold, H. (1975). Soft Modelling by Latent Variables: The Non-Linear Iterative Partial Least Squares (NIPALS) Approach. In <i>Perspectives in Probability and Statistics</i>. Academic Press.</li>
+<li>Geladi, P., &amp; Kowalski, B. R. (1986). Partial Least-Squares Regression: A Tutorial. <i>Analytica Chimica Acta</i>, 185, 1–17.</li>
+{{% /references %}}

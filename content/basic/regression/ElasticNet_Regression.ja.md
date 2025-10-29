@@ -2,34 +2,30 @@
 title: "Elastic Net 回帰"
 pre: "2.1.5 "
 weight: 5
-title_suffix: "L1 と L2 正則化のいいとこ取り"
+title_suffix: "L1とL2正則化の長所を融合する"
 ---
 
-{{< lead >}}
-リッジ回帰（L2）とラッソ回帰（L1）の良いところを両取りしたのが Elastic Net です。多数の相関した特徴量があるときでも安定して係数を推定できます。
-{{< /lead >}}
+{{% summary %}}
+- Elastic Net は L1（ラッソ）と L2（リッジ）の正則化を混合し、疎性と安定性の両立を図る回帰手法。
+- 相関の強い特徴量が多い場合でも、グループとして係数を残しながら重要度を調整できる。
+- ハイパーパラメータ \(\alpha\) と `l1_ratio` を交差検証で選ぶことで、過学習とバイアスのバランスが取りやすい。
+- 学習前の標準化や十分な反復回数の確保により、数値最適化の安定性を高められる。
+{{% /summary %}}
 
----
+## 直感
+ラッソ回帰は特徴量を大胆に選択できる一方で、相関の強い特徴量群からは一つだけが選ばれて他は切り捨てられてしまうことがあります。リッジ回帰は係数を滑らかに縮めるため安定しますが、係数がゼロにはなりません。Elastic Net はこの二つのペナルティを組み合わせることで、グループ化された特徴量をまとめて残しつつ、不要な係数は 0 に近づける柔軟な挙動を実現します。
 
-## 1. Elastic Net の考え方
+## 具体的な数式
+Elastic Net の目的関数は
 
-リッジ回帰は係数を滑らかに縮小し、ラッソ回帰は不要な係数をゼロにします。Elastic Net は 2 つの正則化を組み合わせた目的関数を最小化することで、その中間的なふるまいを実現します。
+$$
+\min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left( y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b) \right)^2 + \alpha \left( \rho \lVert \boldsymbol\beta \rVert_1 + (1 - \rho) \lVert \boldsymbol\beta \rVert_2^2 \right)
+$$
 
-![Elastic Net penalty geometry](/images/elastic-net-penalty.png)
+で、\(\alpha > 0\) が正則化の強さ、\(\rho \in [0,1]\) (`l1_ratio`) が L1 と L2 の混合比率です。ラッソとリッジの中間を広く探索できるのが特徴です。
 
-
-- \\(\alpha\\) : 正則化の強さ  
-- \\(\rho\\) (`l1_ratio`): L1 と L2 をどの割合で混ぜるか (\\(0 \leq \rho \leq 1\\))
-
-### 特徴
-
-- 相関が強い特徴量が複数あっても、一つだけに絞り込まずグループとして残しやすい  
-- ラッソの「係数ゼロ化」効果と、リッジの「数値安定性」の両方を得られる  
-- ハイパーパラメータが 2 つ（\\(\alpha\\) と \\(\rho\\)）あるため、交差検証での探索が重要
-
----
-
-## 2. Python 実装例（`ElasticNetCV`）
+## Pythonを用いた実験や説明
+以下は `ElasticNetCV` を使って \(\alpha\) と `l1_ratio` を同時にチューニングし、係数や性能を確認する例です。
 
 ```python
 import numpy as np
@@ -39,7 +35,7 @@ from sklearn.linear_model import ElasticNet, ElasticNetCV
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 
-# 相関の強い重複特徴量を含むサンプルデータを生成
+# 相関の強ぁE��褁E��徴量を含むサンプルチE�Eタを生戁E
 X, y, coef = make_regression(
     n_samples=500,
     n_features=30,
@@ -49,7 +45,7 @@ X, y, coef = make_regression(
     random_state=123,
 )
 
-# 特徴量を複製して相関を意図的に強める
+# 特徴量を褁E��して相関を意図皁E��強める
 X = np.hstack([X, X[:, :5] + np.random.normal(scale=0.1, size=(X.shape[0], 5))])
 feature_names = [f"x{i}" for i in range(X.shape[1])]
 
@@ -70,7 +66,7 @@ enet_cv.fit(X_train, y_train)
 print("最適 alpha:", enet_cv.alpha_)
 print("最適 l1_ratio:", enet_cv.l1_ratio_)
 
-# 最適ハイパーパラメータで学習し、性能を評価
+# 最適ハイパ�Eパラメータで学習し、性能を評価
 enet = ElasticNet(alpha=enet_cv.alpha_, l1_ratio=enet_cv.l1_ratio_, max_iter=5000)
 enet.fit(X_train, y_train)
 
@@ -81,7 +77,7 @@ print("Train R^2:", r2_score(y_train, train_pred))
 print("Test R^2:", r2_score(y_test, test_pred))
 print("Test RMSE:", mean_squared_error(y_test, test_pred, squared=False))
 
-# 係数の大きい順に並べ替えて確認
+# 係数の大きい頁E��並べ替えて確誁E
 coef_df = pd.DataFrame({
     "feature": feature_names,
     "coef": enet.coef_,
@@ -89,24 +85,13 @@ coef_df = pd.DataFrame({
 print(coef_df.head(10))
 ```
 
-> 実際に図を作るときは、`enet_cv.path_`（`ElasticNetCV` の属性）を使うと \\(\alpha\\) による係数の変化を線グラフで描けます。
+### 結果の読み方
+- `ElasticNetCV` を使うと、L1 と L2 のバランスを含めた複数の値を自動で評価できる。
+- 相関の強い特徴量が複数残る場合でも、係数が似た大きさに調整されやすく、解釈がしやすい。
+- 収束が遅いときはデータを標準化したり `max_iter` を増やしたりすると改善する。
 
----
-
-## 3. ハイパーパラメータ設計のヒント
-
-- `l1_ratio` は 0.5 付近（L1 と L2 を半分ずつ）から試し、交差検証で広めに探索する  
-- 特徴量数がサンプル数より多い場合は、`l1_ratio` を高めに設定し疎構造を優先  
-- 数値解法の収束を安定させるため `StandardScaler` などで特徴量を標準化する  
-- 交差検証時に `max_iter` を十分大きく設定し、収束警告が出ないか確認する
-
----
-
-## 4. まとめ
-
-- Elastic Net は L1 と L2 正則化を組み合わせた汎用性の高い線形回帰  
-- 相関の強い特徴量が多い場合にラッソよりも安定した選択ができる  
-- `ElasticNetCV` を使うと \\(\alpha\\) と `l1_ratio` を一括でチューニングできる  
-- 標準化と交差検証をセットで行い、再現性のある性能を追求しましょう
-
----
+## 参考文献
+{{% references %}}
+<li>Zou, H., &amp; Hastie, T. (2005). Regularization and Variable Selection via the Elastic Net. <i>Journal of the Royal Statistical Society: Series B</i>, 67(2), 301–320.</li>
+<li>Friedman, J., Hastie, T., &amp; Tibshirani, R. (2010). Regularization Paths for Generalized Linear Models via Coordinate Descent. <i>Journal of Statistical Software</i>, 33(1), 1–22.</li>
+{{% /references %}}

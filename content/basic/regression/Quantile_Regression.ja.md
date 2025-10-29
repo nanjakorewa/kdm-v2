@@ -2,44 +2,34 @@
 title: "分位点回帰（Quantile Regression）"
 pre: "2.1.7 "
 weight: 7
-title_suffix: "条件付き分布の幅まで推定する"
+title_suffix: "条件付き分布の輪郭を推定する"
 ---
 
-{{< lead >}}
-平均だけでなく「中央値」や「上位 90% 点」など、目的変数の分布全体を知りたいときは分位点回帰が便利です。特定の分位を直接最適化することで、外れ値に強く、上下バンドの推定にも役立ちます。
-{{< /lead >}}
+{{% summary %}}
+- 分位点回帰は平均ではなく中央値や上位 10% 点など、任意の分位点を直接推定する回帰モデル。
+- ピンボール損失を最小化することで、外れ値に頑健かつ非対称なノイズにも対応できる。
+- 分位点ごとに独立したモデルを学習するため、上下バンドを組み合わせれば予測区間として利用できる。
+- 標準化や正則化パラメータを活用すると、収束の安定性や汎化性能を確保しやすい。
+{{% /summary %}}
 
----
+## 直感
+最小二乗法が平均的な挙動を捉えるのに対して、分位点回帰は「どのくらいの頻度でこの値を超えるか」を直接モデル化します。需要予測の悲観・中央値・楽観シナリオや、リスク管理で VaR（Value at Risk）を推定したい場面など、平均だけでは意思決定に十分でないケースで威力を発揮します。
 
-## 1. 分位点回帰のアイデア
-
-- 最小二乗法は誤差を二乗して平均を推定 → **平均値に敏感**  
-- 分位点回帰は **ピンボール損失（チェック関数）** を最小化し、指定した分位 \\(\tau\\) の条件付き分布を推定  
-- 例えば \\(\tau = 0.5\\) なら中央値、\\(\tau = 0.9\\) なら上位 10% 付近の値を予測
-
-ピンボール損失:
+## 具体的な数式
+残差を \(r = y - \hat{y}\)、分位点を \(\tau \in (0,1)\) とすると、ピンボール損失は
 
 $$
 L_\tau(r) =
 \begin{cases}
-\tau \, r & (r \ge 0)\\\\
+\tau \, r & (r \ge 0) \\
 (\tau - 1) r & (r < 0)
 \end{cases}
 $$
 
-ここで \\(r = y - \hat{y}\\)。中央値を学習したいときは正負対称の絶対値損失になり、外れ値に頑健です。
+で定義されます。この損失を最小化すると、\(\tau\) 分位点に対応する線形予測子が得られます。例えば \(\tau=0.5\) を指定すれば中央値回帰になり、絶対値損失によるロバスト回帰と同じ振る舞いになります。
 
----
-
-## 2. どんな場面で使う？
-
-- 需要・売上の **予測レンジ**（悲観/中央値/楽観）を示したいとき  
-- リスク評価で「何％の確率でこの水準を超えるか」を見積もりたいとき  
-- ノイズ分布が非対称だったり、平均よりも中央値が意思決定に直結する場合
-
----
-
-## 3. Python 実装（`QuantileRegressor`）
+## Pythonを用いた実験や説明
+`QuantileRegressor` を使って 0.1・0.5・0.9 分位点を推定し、線形回帰と比較する例です。
 
 ```python
 import numpy as np
@@ -81,10 +71,10 @@ plt.figure(figsize=(10, 5))
 plt.scatter(X, y, s=15, alpha=0.4, label="観測値")
 colors = {0.1: "#1f77b4", 0.5: "#2ca02c", 0.9: "#d62728"}
 for tau, pred in preds.items():
-    plt.plot(grid, pred, color=colors[tau], linewidth=2, label=f"分位 τ={tau}")
-plt.plot(grid, ols_pred, color="#9467bd", linestyle="--", label="平均（OLS）")
-plt.xlabel("入力 X")
-plt.ylabel("出力 y")
+    plt.plot(grid, pred, color=colors[tau], linewidth=2, label=f"刁E��EρE{tau}")
+plt.plot(grid, ols_pred, color="#9467bd", linestyle="--", label="平坁E��ELS�E�E)
+plt.xlabel("入劁EX")
+plt.ylabel("出劁Ey")
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -92,21 +82,13 @@ plt.show()
 
 ![quantile-regression block 1](/images/basic/regression/quantile-regression_block01.svg)
 
-> 実際のプロットでは、各分位の線を重ねると「予測区間」が視覚的に伝わります。
+### 実行結果の読み方
+- それぞれの分位点ごとに異なる直線が得られ、データの上下方向のばらつきを表現できる。
+- 平均を表す最小二乗法と比べ、片側に長いノイズにも柔軟に対応している。
+- 分位点を複数組み合わせると予測区間が得られ、意思決定に必要な幅情報を提示できる。
 
----
-
-## 4. ハイパーパラメータの注意
-
-- `alpha` は L1 正則化の強さ。ゼロに近づけると精度は上がるが収束しにくい  
-- `solver="highs"` は高速で安定。大規模データでは `interior-point` なども検討  
-- 特徴量は標準化しておくと数値安定性が上がる  
-- 分位ごとに独立したモデルを学習するので、必要な \\(\tau\\) を複数列挙して学習する
-
----
-
-## 5. まとめ
-
-- 分位点回帰は条件付き分布の幅や歪みを推定でき、リスク管理に有効  
-- `QuantileRegressor` を使えば scikit-learn だけで実装可能  
-- 複数の分位を学習して予測レンジを提示するのが実務での定番パターン
+## 参考文献
+{{% references %}}
+<li>Koenker, R., &amp; Bassett, G. (1978). Regression Quantiles. <i>Econometrica</i>, 46(1), 33–50.</li>
+<li>Koenker, R. (2005). <i>Quantile Regression</i>. Cambridge University Press.</li>
+{{% /references %}}

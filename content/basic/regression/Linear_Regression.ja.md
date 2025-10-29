@@ -1,81 +1,43 @@
 ---
-title: "線形回帰（最小二乗法）"
-pre: "2.1.2 "
-weight: 2
-title_suffix: "理論と実装"
+title: "線形回帰と最小二乗法"
+pre: "2.1.1 "
+weight: 1
+title_suffix: "基礎から理解する"
 ---
 
-{{< youtube id="KKuAxQbuJpk" title="最小二乗法のイントロ" caption="5分で分かる最小二乗法" >}}
+{{% summary %}}
+- 線形回帰は入力と出力の線形関係をモデル化する最も基本的な回帰モデルであり、予測と解釈の両方に使える。
+- 最小二乗法は残差二乗和を最小化することで係数を推定し、解析的な解が得られるため仕組みが理解しやすい。
+- 傾き係数は「入力が 1 増えたとき出力がどれだけ変化するか」、切片は入力が 0 のときの期待値として解釈できる。
+- ノイズや外れ値が大きい場合には標準化やロバスト手法も検討し、前処理と評価指標を組み合わせて活用する。
+{{% /summary %}}
 
+## 直感
+観測されたデータ \((x_i, y_i)\) が散布図上でほぼ直線状に並ぶとき、未知の入力に対しても直線を延長すればよいのではないか、という素朴な発想から生まれたのが線形回帰です。最小二乗法はプロットした点の近くに一本の直線を引き、その直線からのズレが全体として最も小さくなるように傾きと切片を選びます。
 
-
-
-<div class="pagetop-box">
-<p>
-<b>線形回帰（Linear Regression）</b>は、最小二乗法を用いてデータに直線を当てはめる基本的な手法です。  
-観測されたデータ \\((x_i, y_i)\\) の関係を「できるだけよく説明する直線」を求めることを目的としています。  
-</p>
-</div>
-
----
-
-## 1. 線形回帰の数式モデル
-
-### 単回帰モデル
-入力 \\(x\\) と出力 \\(y\\) の関係を直線で表すと、次のようになります。
+## 具体的な数式
+一次の線形モデルは
 
 $$
 y = w x + b
 $$
 
-- \\(w\\): 傾き（係数）  
-- \\(b\\): 切片（バイアス項）  
-
-これにより「\\(x\\) が1増えると \\(y\\) が \\(w\\) 増える」という解釈ができます。
-
----
-
-## 2. 損失関数（残差平方和）
-
-直線がどれだけデータにフィットしているかを測るために、**残差**（観測値と予測値の差）を考えます。
+で表されます。観測値と予測値の差（残差）\(\epsilon_i = y_i - (w x_i + b)\) の二乗和を目的関数
 
 $$
-\epsilon_i = y_i - (w x_i + b)
+L(w, b) = \sum_{i=1}^{n} \big(y_i - (w x_i + b)\big)^2
 $$
 
-この残差を二乗して全データで合計したものを **損失関数**（残差平方和）とします。
+として最小化すると、解析的に次の解が得られます。
 
 $$
-L(w, b) = \sum_{i=1}^n \big(y_i - (w x_i + b)\big)^2
+w = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}, \qquad b = \bar{y} - w \bar{x}
 $$
 
-最小二乗法とは、この \\(L(w, b)\\) を最小化する \\(w, b\\) を求める方法です。
+ここで \(\bar{x}, \bar{y}\) はそれぞれの平均です。複数の入力を使う重回帰でも、ベクトルと行列を用いて同様に最小二乗解を導くことができます。
 
----
-
-## 3. 解析解（解の導出）
-
-損失関数を \\(w, b\\) で偏微分しゼロと置くと、次の解析解が得られます。
-
-$$
-w = \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2}, \quad
-b = \bar{y} - w \bar{x}
-$$
-
-ここで、
-
-- \\(\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i\\) （\\(x\\) の平均）  
-- \\(\bar{y} = \frac{1}{n}\sum_{i=1}^n y_i\\) （\\(y\\) の平均）  
-
-です。
-
-つまり、**回帰直線は平均値 \\((\bar{x}, \bar{y})\\) を通る**ことがわかります。
-
----
-
-## 4. Pythonによる実装例
-
-scikit-learn を使うと、線形回帰を簡単に実装できます。
+## Pythonを用いた実験や説明
+次のコードは `scikit-learn` を使って単回帰モデルを学習し、推定された直線と観測値を描画します。コード本体は既存のものをそのまま利用しています。
 
 ```python
 import numpy as np
@@ -85,20 +47,20 @@ from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-# データ作成
+# �f�[�^�쐬
 n_samples = 100
 X = np.linspace(-5, 5, n_samples)[:, np.newaxis]
 epsolon = np.random.normal(scale=2, size=n_samples)
-y = 2 * X.ravel() + 1 + epsolon  # 真の関係: y = 2x + 1 + ノイズ
+y = 2 * X.ravel() + 1 + epsolon  # �^�̊֌W y = 2x + 1 + �m�C�Y
 
-# モデル学習
+# ���f���w�K
 lin_r = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
 y_pred = lin_r.predict(X)
 
-# 可視化
+# ����
 plt.figure(figsize=(10, 5))
-plt.scatter(X, y, marker="x", label="観測データ", c="orange")
-plt.plot(X, y_pred, label="回帰直線（最小二乗法）")
+plt.scatter(X, y, marker="x", label="�ϑ��f�[�^", c="orange")
+plt.plot(X, y_pred, label="��A�����i�ŏ����@�j")
 plt.xlabel("$x$")
 plt.ylabel("$y$")
 plt.legend()
@@ -107,25 +69,13 @@ plt.show()
 
 ![linear-regression block 1](/images/basic/regression/linear-regression_block01.svg)
 
----
+### 実行結果の読み方
+- **傾き \(w\)**: 入力が 1 増えたときに出力がどれだけ増減するかを表し、真の傾きに近い値が推定されます。
+- **切片 \(b\)**: 入力が 0 のときの平均的な出力であり、直線の位置を上下に調整します。
+- `StandardScaler` で特徴量を標準化すると、スケールの異なる入力でも安定して学習できます。
 
-## 5. 学習結果の解釈
-
-- **傾き \\(w\\)**  
-  - 入力 \\(x\\) が1増えたとき、\\(y\\) がどの程度変化するかを表す。  
-- **切片 \\(b\\)**  
-  - \\(x=0\\) のときの \\(y\\) の予測値。  
-
-この \\(w, b\\) を求めることで「データの傾向」を数式で表すことができます。
-
----
-
-## 6. まとめ
-
-- 線形回帰は「データを直線で説明する」基本的な手法。  
-- 最小二乗法で「観測値と予測値のズレ（二乗和）」を最小にする。  
-- 解析的に解を導けるだけでなく、ライブラリを使えば簡単に実装できる。  
-- 今後は多変量回帰や正則化（リッジ回帰・ラッソ回帰）などに拡張可能。
-
----
-
+## 参考文献
+{{% references %}}
+<li>Draper, N. R., &amp; Smith, H. (1998). <i>Applied Regression Analysis</i> (3rd ed.). John Wiley &amp; Sons.</li>
+<li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning</i>. Springer.</li>
+{{% /references %}}

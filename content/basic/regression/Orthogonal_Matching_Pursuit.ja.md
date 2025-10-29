@@ -1,42 +1,32 @@
 ---
 title: "Orthogonal Matching Pursuit（OMP）"
-pre: "2.1.11 "
-weight: 11
-title_suffix: "疎な係数を greedy に選ぶ線形回帰"
+pre: "2.1.12 "
+weight: 12
+title_suffix: "疎な係数を貪欲に選ぶ線形回帰"
 ---
 
-{{< lead >}}
-特徴量が非常に多いとき、すべてに係数を割り当てる必要はありません。OMP は「寄与が大きい特徴量を 1 つずつ追加し、残差が小さくなる方向を選ぶ」貪欲法で疎な線形モデルを作ります。
-{{< /lead >}}
+{{% summary %}}
+- Orthogonal Matching Pursuit（OMP）は残差と最も相関の高い特徴量を順番に選び、疎な線形モデルを構築する貪欲法。
+- 各ステップで選択済み特徴量のみに限定した最小二乗解を求めるため、係数が直感的に解釈しやすい。
+- ラッソのような正則化パラメータではなく「残す特徴量数」を直接指定できるのが特徴。
+- 特徴量が強く相関する場合は選択順序に左右されやすいため、標準化や相関チェックが重要。
+{{% /summary %}}
 
----
+## 直感
+大量の特徴量の中から本当に効いているものだけを選びたいとき、OMP は残差を最も減らす特徴量を一つずつ追加していきます。辞書式学習やスパースコーディングの基本アルゴリズムとしても知られ、疎な係数ベクトルを得たい場面で重宝します。
 
-## 1. どうやって動く？
+## 具体的な数式
+初期残差を \(\mathbf{r}^{(0)} = \mathbf{y}\) とし、各ステップ \(t\) で以下を行います。
 
-1. 初期状態では残差を目的変数 \\(y\\) に設定  
-2. 残差と最も相関が高い特徴量を 1 つ選択  
-3. 選択済み特徴量だけで最小二乗解を計算し、残差を更新  
-4. 既定のステップ数や誤差しきい値まで繰り返す
+1. \( \mathbf{x}_j\) と残差の内積が最大の特徴量 \(j\) を選択。
+2. 選択済み特徴量集合 \(\mathcal{A}_t\) に \(j\) を追加。
+3. \(\mathcal{A}_t\) の特徴量だけを使って最小二乗解 \(\hat{\boldsymbol\beta}_{\mathcal{A}_t}\) を求める。
+4. 新しい残差 \(\mathbf{r}^{(t)} = \mathbf{y} - \mathbf{X}_{\mathcal{A}_t} \hat{\boldsymbol\beta}_{\mathcal{A}_t}\) を計算。
 
-これにより、重要な特徴が順番に積み上がっていき、ラッソ回帰に似た疎な係数ベクトルが得られます。
+これを指定したステップ数か残差が小さくなるまで繰り返します。
 
----
-
-## 2. 長所と短所
-
-**長所**
-- 計算が速く、係数が疎になる  
-- 特徴量選択のステップが明示的で解釈しやすい  
-- 正則化ハイパーパラメータよりも「選択する特徴量数」を直接指定しやすい
-
-**短所**
-- Greedy 手法なので最適とは限らない  
-- 特徴量が強く相関していると順番に依存し、ノイズに弱くなる  
-- 選択順序が結果に影響するため、標準化や相関の事前チェックが重要
-
----
-
-## 3. Python 実装（`OrthogonalMatchingPursuit`）
+## Pythonを用いた実験や説明
+疎な真の係数を持つデータで OMP とラッソを比較する例です。
 
 ```python
 import numpy as np
@@ -57,8 +47,8 @@ y = X @ true_coef + rng.normal(scale=0.5, size=n_samples)
 omp = OrthogonalMatchingPursuit(n_nonzero_coefs=4).fit(X, y)
 lasso = Lasso(alpha=0.05).fit(X, y)
 
-print("OMP 係数（非ゼロ）:", np.flatnonzero(omp.coef_))
-print("Lasso 係数（非ゼロ）:", np.flatnonzero(np.abs(lasso.coef_) > 1e-6))
+print("OMP 係数�E�非ゼロ�E�E", np.flatnonzero(omp.coef_))
+print("Lasso 係数�E�非ゼロ�E�E", np.flatnonzero(np.abs(lasso.coef_) > 1e-6))
 
 print("OMP MSE:", mean_squared_error(y, omp.predict(X)))
 print("Lasso MSE:", mean_squared_error(y, lasso.predict(X)))
@@ -71,31 +61,13 @@ coef_df = pd.DataFrame({
 print(coef_df.head(10))
 ```
 
-> 実際の図では、真の係数と OMP/Lasso の推定値を棒グラフで並べると疎性の違いが伝わります。
+### 実行結果の読み方
+- `n_nonzero_coefs` を真の非ゼロ係数数に合わせると、OMP は対象となる特徴量を高確率で復元できる。
+- ラッソと比較すると、OMP は選ばれた特徴量以外の係数が完全に 0 になる。
+- 相関の強い特徴量が存在すると、選択がぶれる可能性があるため注意が必要。
 
----
-
-## 4. ハイパーパラメータの決め方
-
-- `n_nonzero_coefs`: 何本の特徴量を残すか。事前知識があれば固定、なければ CV で探索  
-- `tol`: 残差ノルムのしきい値。満たした時点で停止  
-- 特徴量を標準化しておかないと「スケールの大きい特徴」が優先される  
-- `fit_intercept=True` のままでも、事前に平均を引いておくと安定
-
----
-
-## 5. 使いどころ
-
-- 高次元・少サンプル（\\(n \ll p\\)）で、スパース構造を仮定できるとき  
-- ラッソ回帰に近い結果が欲しいが、シンプルな手順で特徴量選択を説明したいとき  
-- シグナル処理やスパース表現（辞書学習）における基礎アルゴリズムとして
-
----
-
-## 6. まとめ
-
-- OMP は「相関の強い特徴量を順に追加していく」貪欲型の疎回帰アルゴリズム  
-- `OrthogonalMatchingPursuit` で簡単に試せ、ラッソとの比較で直感が掴める  
-- 相関が強い場合は Elastic Net やベイズ的スパース推定と併用して精度を確認しましょう
-
----
+## 参考文献
+{{% references %}}
+<li>Pati, Y. C., Rezaiifar, R., &amp; Krishnaprasad, P. S. (1993). Orthogonal Matching Pursuit: Recursive Function Approximation with Applications to Wavelet Decomposition. In <i>Conference Record of The Twenty-Seventh Asilomar Conference on Signals, Systems and Computers</i>.</li>
+<li>Tropp, J. A. (2004). Greed is Good: Algorithmic Results for Sparse Approximation. <i>IEEE Transactions on Information Theory</i>, 50(10), 2231–2242.</li>
+{{% /references %}}

@@ -5,51 +5,34 @@ weight: 6
 title_suffix: "予測の不確実性まで推論する"
 ---
 
-{{< lead >}}
-ベイズ線形回帰は、係数を確率分布として扱い、予測値とその不確実性を同時に推定できる拡張版の線形回帰です。
-{{< /lead >}}
+{{% summary %}}
+- ベイズ線形回帰は係数を確率変数として扱い、予測値と不確実性の両方を同時に推定できる。
+- 事前分布と尤度から事後分布を解析的に求められ、小規模データや外れ値に対して頑健に振る舞う。
+- 予測分布もガウス形となるため、平均と分散を可視化して意思決定に活かせる。
+- `BayesianRidge` を使えば正則化強度も自動調整され、手軽に実務へ応用可能。
+{{% /summary %}}
 
----
+## 直感
+通常の最小二乗法では「最も確からしい係数」を 1 組だけ求めますが、ベイズ線形回帰では係数の不確実性も含めて推論します。観測データが少ない場合やノイズが大きい場合でも、ベイズ的な更新によって事前の知識とデータから得られる情報をバランス良く統合できます。
 
-## 1. ベイズ的な見方
+## 具体的な数式
+係数ベクトル \(\boldsymbol\beta\) に対し、0 平均・分散 \(\tau^{-1}\) のガウス分布を事前分布として置き、ノイズ分散 \(\alpha^{-1}\) のガウス尤度を仮定すると、事後分布は
 
-通常の線形回帰では、最尤推定によって「最も良い」係数 \\(\boldsymbol\beta\\) を 1 つ求めます。ベイズ線形回帰では、係数に対して事前分布を置き、データを観測した後の事後分布を計算します。
-
-1. **事前分布**: 係数がどのくらいの大きさになりそうかの事前信念（例：平均 0、分散 \\(\tau^{-1}\\) のガウス分布）  
-2. **尤度**: 観測データが得られる確率（誤差分散は \\(\alpha^{-1}\\) のガウスノイズと仮定）  
-3. **事後分布**: ベイズの定理を通じて、係数の確率分布を更新する
-
-この結果、予測値もガウス分布になり、平均だけでなく分散（不確実性）を得られます。
-
----
-
-## 2. 数式のイメージ
-
-### 事前分布
-$$
-p(\boldsymbol\beta) = \mathcal{N}(\boldsymbol\beta \mid \mathbf{0}, \tau^{-1} \mathbf{I})
-$$
-
-### 尤度
-$$
-p(\mathbf{y} \mid \mathbf{X}, \boldsymbol\beta, \alpha) = \prod_{i=1}^{n} \mathcal{N}(y_i \mid \boldsymbol\beta^\top \mathbf{x}_i, \alpha^{-1})
-$$
-
-### 事後分布
 $$
 p(\boldsymbol\beta \mid \mathbf{X}, \mathbf{y}) = \mathcal{N}(\boldsymbol\beta \mid \boldsymbol\mu, \mathbf{\Sigma})
 $$
-ここで
+
+で与えられます。ここで
+
 $$
 \mathbf{\Sigma} = (\alpha \mathbf{X}^\top \mathbf{X} + \tau \mathbf{I})^{-1}, \qquad
 \boldsymbol\mu = \alpha \mathbf{\Sigma} \mathbf{X}^\top \mathbf{y}
 $$
 
-`scikit-learn` の `BayesianRidge` は、\\(\alpha\\) と \\(\tau\\) もデータから推定しながら係数の事後分布を求めてくれます。
+です。予測分布もガウス分布になり、平均と分散を解析的に計算できます。`scikit-learn` の `BayesianRidge` は \(\alpha, \tau\) もデータから推定してくれます。
 
----
-
-## 3. Python 実装例
+## Pythonを用いた実験や説明
+外れ値を含むデータで、通常の線形回帰とベイズ線形回帰を比較する例です。
 
 ```python
 import numpy as np
@@ -59,7 +42,7 @@ import japanize_matplotlib
 from sklearn.linear_model import BayesianRidge, LinearRegression
 from sklearn.metrics import mean_squared_error
 
-# ノイズのある一次関数データ（外れ値を一部混ぜる）
+# ノイズのある一次関数チE�Eタ�E�外れ値を一部混ぜる�E�E
 rng = np.random.default_rng(0)
 X = np.linspace(-4, 4, 120)
 y = 1.8 * X - 0.5 + rng.normal(scale=1.0, size=X.shape)
@@ -67,7 +50,7 @@ outlier_idx = rng.choice(len(X), size=6, replace=False)
 y[outlier_idx] += rng.normal(scale=8.0, size=outlier_idx.shape)
 X = X[:, None]
 
-# モデル学習
+# モチE��学翁E
 ols = LinearRegression().fit(X, y)
 bayes = BayesianRidge(compute_score=True).fit(X, y)
 
@@ -75,22 +58,22 @@ grid = np.linspace(-6, 6, 200)[:, None]
 ols_mean = ols.predict(grid)
 bayes_mean, bayes_std = bayes.predict(grid, return_std=True)
 
-print("最尤推定の MSE:", mean_squared_error(y, ols.predict(X)))
+print("最尤推定�E MSE:", mean_squared_error(y, ols.predict(X)))
 print("ベイズ回帰の MSE:", mean_squared_error(y, bayes.predict(X)))
-print("学習された係数の平均:", bayes.coef_)
-print("事後分散（対角成分）:", np.diag(bayes.sigma_))
+print("学習された係数の平坁E", bayes.coef_)
+print("事後�E散�E�対角�E刁E��E", np.diag(bayes.sigma_))
 
-# 予測分布の 95% 信頼区間を可視化するための数値
+# 予測刁E��E�E 95% 信頼区間を可視化するための数値
 upper = bayes_mean + 1.96 * bayes_std
 lower = bayes_mean - 1.96 * bayes_std
 
 plt.figure(figsize=(10, 5))
 plt.scatter(X, y, color="#ff7f0e", alpha=0.6, label="観測値")
-plt.plot(grid, ols_mean, color="#1f77b4", linestyle="--", label="最尤推定（OLS）")
-plt.plot(grid, bayes_mean, color="#2ca02c", linewidth=2, label="ベイズ線形回帰の平均")
-plt.fill_between(grid.ravel(), lower, upper, color="#2ca02c", alpha=0.2, label="95% 信頼区間")
-plt.xlabel("入力 $x$")
-plt.ylabel("出力 $y$")
+plt.plot(grid, ols_mean, color="#1f77b4", linestyle="--", label="最尤推定！ELS�E�E)
+plt.plot(grid, bayes_mean, color="#2ca02c", linewidth=2, label="ベイズ線形回帰の平坁E)
+plt.fill_between(grid.ravel(), lower, upper, color="#2ca02c", alpha=0.2, label="95% 信頼区閁E)
+plt.xlabel("入劁E$x$")
+plt.ylabel("出劁E$y$")
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -98,24 +81,13 @@ plt.show()
 
 ![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01.svg)
 
-> 後で本物の図を描くときは、信頼区間を塗りつぶして「不確実性がどこで大きいか」を視覚的に示すと理解が深まります。
+### 実行結果の読み方
+- 外れ値が混ざってもベイズ線形回帰は回帰直線が極端に傾きにくく、平均予測に幅を持たせられる。
+- 予測分布の標準偏差 `bayes_std` を使えば、信頼区間や予測区間を簡単に可視化できる。
+- 係数の事後分散から、どの特徴量の不確実性が高いかを推定できる。
 
----
-
-## 4. どんな場面で有効か
-
-- **予測の不確実性が重要**なとき（リスク評価、需要予測など）  
-- サンプル数が少なく、外れ値の影響を受けやすいとき（ベイズ推定で過学習を抑制）  
-- コスト関数に明示的な正則化パラメータをチューニングしたくないとき（ハイパーパラメータも周辺化する）  
-- 係数に意味づけを行いたい研究用途（「重みの信頼区間」を提示できる）
-
----
-
-## 5. まとめ
-
-- ベイズ線形回帰は係数を確率的に推論し、平均と不確実性を同時に扱える  
-- `BayesianRidge` で手軽に実装でき、外れ値の影響にも比較的強い  
-- 予測分布を可視化して意思決定に活かすのがポイント  
-- より高度なベイズモデリング（ガウス過程、ベイズ階層モデル）への入口としても有用です
-
----
+## 参考文献
+{{% references %}}
+<li>Bishop, C. M. (2006). <i>Pattern Recognition and Machine Learning</i>. Springer.</li>
+<li>Murphy, K. P. (2012). <i>Machine Learning: A Probabilistic Perspective</i>. MIT Press.</li>
+{{% /references %}}
