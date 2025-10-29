@@ -44,7 +44,8 @@ for level in range(levels):
         )
 
 ax.axhline(0, color="#475569", linewidth=1)
-ax.set_xticks(range(0, 49, 6), labels=[f"{m}月" for m in range(1, 9)])
+positions = range(0, 48, 6)
+ax.set_xticks(positions, labels=[f"{idx + 1}月" for idx, _ in enumerate(positions)])
 ax.set_yticks([])
 ax.set_title("週次セッション数のホライゾンチャート（基準値からの偏差）")
 ax.set_xlabel("週")

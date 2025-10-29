@@ -38,6 +38,7 @@ TARGET_MARKDOWN = [
     "content/visualize/advanced/interval-dotplot.ja.md",
     "content/visualize/advanced/lag-scatter.ja.md",
     "content/visualize/advanced/pareto-chart-advanced.ja.md",
+    "content/visualize/advanced/quadrant-chart.ja.md",
     "content/visualize/advanced/polar-area.ja.md",
     "content/visualize/advanced/population-pyramid.ja.md",
     "content/visualize/advanced/radar-chart.ja.md",
