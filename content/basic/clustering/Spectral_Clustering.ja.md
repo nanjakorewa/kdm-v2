@@ -1,26 +1,38 @@
 ---
 title: "スペクトラルクラスタリング"
-pre: "2.3.6 "
-weight: 6
-title_suffix: "グラフ固有ベクトルでクラスタを切り分ける"
+pre: "2.5.8 "
+weight: 8
+title_suffix: "グラフ固有ベクトルで分割する"
 ---
 
-{{< lead >}}
-スペクトラルクラスタリングはデータをグラフとみなし、ラプラシアン行列の固有ベクトルを使って低次元に埋め込み、そこに k-means などを適用する手法です。非凸クラスタやグラフデータに適しています。
-{{< /lead >}}
+{{% summary %}}
+- スペクトラルクラスタリングはデータを類似度グラフに変換し、グラフラプラシアンの固有ベクトルを使って低次元空間に埋め込んだ後に k-means などでクラスタ分割する。
+- 非凸クラスタやグラフ構造を持つデータにも対応でき、円環や同心円など k-means が苦手な形状をうまく分離できる。
+- ハイパーパラメータとして類似度の計算方法（`affinity`）、スケール（`gamma` や `n_neighbors`）、クラスタ割り当て手法（`assign_labels`）を調整する。
+- 固有ベクトルの次元はクラスタ数と同じだけ抽出するため、計算コストやメモリ消費に気をつける必要がある。
+{{% /summary %}}
 
----
+## 直感
+データ点をノード、類似度（距離の小ささやカーネル）をエッジ重みとするグラフを考えると、密に繋がった部分同士がクラスタ候補になります。  
+グラフラプラシアンの低次固有ベクトルは、クラスタ間の切断コストを最小化する方向を示すため、これを座標として並べ替え、最後に通常のクラスタリングを適用すれば複雑な構造も分離できます。
 
-## 1. アルゴリズム手順
+## 具体的な数式
+類似度行列を \(W\)、次数行列を \(D = \mathrm{diag}(d_1, \dots, d_n)\)（\(d_i = \sum_j W_{ij}\)）とすると、非正規化ラプラシアンは
 
-1. 類似度行列 \\(W\\) を構築（ガウスカーネルなど）
-2. グラフラプラシアン \\(L = D - W\\) または正規化ラプラシアンを計算
-3. \\(L\\) の小さい固有値に対応する固有ベクトルを取り出し、行ごとに正規化
-4. その埋め込みに対して k-means を実行
+$$
+L = D - W.
+$$
 
----
+ノーマライズ版は
+$$
+L_\mathrm{sym} = D^{-1/2} L D^{-1/2} = I - D^{-1/2} W D^{-1/2}.
+$$
 
-## 2. Python 実装
+クラスタ数 \(k\) に対して、\(L_\mathrm{sym}\) の下位 \(k\) 個の固有ベクトルを列に持つ行列 \(U\) を作り、行単位で正規化した行列を k-means などで分割します。  
+これはグラフの切断問題（Normalized Cut）を緩和した解に相当します。
+
+## Pythonを用いた実験や説明
+二重円（同心円）データを `SpectralClustering` で分割し、非線形構造でもクラスタリングできることを確認します。
 
 ```python
 import numpy as np
@@ -49,30 +61,9 @@ plt.show()
 
 ![spectral-clustering block 1](/images/basic/clustering/spectral-clustering_block01.svg)
 
----
-
-## 3. パラメータ設計
-
-- `affinity` と `gamma`: 類似度のスケール。`nearest_neighbors` を使う方法もある
-- `n_neighbors`: グラフを疎にすることでノイズに強くなる
-- `assign_labels`: 埋め込み後のクラスタリング手法（`kmeans` か `discretize`）
-
----
-
-## 4. 長所と短所
-
-| 長所 | 短所 |
-| ---- | ---- |
-| 非凸クラスタに強い | 類似度行列の計算コストが高い |
-| グラフ構造を直接扱える | ハイパーパラメータが多くチューニングが難しい |
-| 埋め込みを可視化できる | 大規模データではメモリ消費が大きい |
-
----
-
-## 5. まとめ
-
-- 固有ベクトルを使った次元圧縮 + クラスタリングという構成で、非線形構造にも対応
-- 類似度スケールの調整と疎グラフ化が成功の鍵
-- グラフクラスタリングや画像分割など応用範囲が広い手法です
-
----
+## 参考文献
+{{% references %}}
+<li>Shi, J., &amp; Malik, J. (2000). Normalized Cuts and Image Segmentation. <i>IEEE Transactions on Pattern Analysis and Machine Intelligence</i>.</li>
+<li>Ng, A. Y., Jordan, M. I., &amp; Weiss, Y. (2002). On Spectral Clustering: Analysis and an Algorithm. <i>Advances in Neural Information Processing Systems</i>.</li>
+<li>scikit-learn developers. (2024). <i>Spectral clustering</i>. https://scikit-learn.org/stable/modules/clustering.html#spectral-clustering</li>
+{{% /references %}}

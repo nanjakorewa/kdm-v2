@@ -2,42 +2,36 @@
 title: "k-means++"
 weight: 2
 pre: "2.5.2 "
-title_suffix: "の仕組みの説明"
+title_suffix: "初期セントロイドを賢く選ぶ"
 ---
 
 {{< katex />}}
 {{% youtube "ff9xjGcNKX0" %}}
 
-<div class="pagetop-box">
-    <p><b>k-means</b>はクラスタリングの代表的アルゴリズムですが、初期値（セントロイドの配置）によって結果が大きく変わる欠点があります。<br>
-    <b>k-means++</b>は初期値の選び方を工夫することで、より安定して良い解に収束しやすくした改良手法です。</p>
-</div>
+{{% summary %}}
+- k-means++ は k-means の初期セントロイド選択を改良し、遠く離れた点を優先的に選ぶことで収束を安定させる。
+- アルゴリズムは「1 点目はランダム → 距離二乗に比例した確率で次点を選択」を繰り返し、クラスタが偏らないようにする。
+- 乱数初期化との挙動の違いを `scikit-learn` の `KMeans(init="k-means++")` で簡単に比較できる。
+- 大規模データやオンライン処理では k-means++ をベースにした mini-batch 版が実務で広く利用される。
+{{% /summary %}}
 
----
+## 直感
+k-means は初期セントロイドの選び方に敏感で、悪い初期値では局所解に陥ってしまいます。  
+k-means++ では「セントロイド同士ができるだけ離れるように初期化」することで、クラスタの偏りを避けます。  
+最初の 1 点はランダムに選びつつ、2 点目以降は既存セントロイドとの距離が大きい点ほど高い確率で選ばれます。
 
-## 1. 直感：なぜ初期値が重要？
-- k-means はクラスタ中心をランダムに選ぶことが多い。  
-- 初期値が悪いと「局所解」に落ち、クラスタが偏ったり精度が低くなったりする。  
-- k-means++ は「離れた点を優先して初期中心に選ぶ」仕組みで、よりバランス良いスタートを切れる。  
+## 具体的な数式
+既に選ばれたセントロイド集合 \(\{\mu_1, \dots, \mu_m\}\) に対して、新しい候補点 \(x\) の選択確率は
 
----
+$$
+P(x) = \frac{D(x)^2}{\sum_{x' \in \mathcal{X}} D(x')^2}, \qquad D(x) = \min_{1 \le j \le m} \lVert x - \mu_j \rVert.
+$$
 
-## 2. k-means++ のアルゴリズム（数式）
+距離 \(D(x)\) が大きい点、すなわち既存セントロイドから遠い点ほど高い確率で選ばれます。  
+この初期化により、理論的には \(O(\log k)\) 近似保証が得られることが知られています（Arthur & Vassilvitskii, 2007）。
 
-1. 最初のクラスタ中心 \\(\mu_1\\) をデータからランダムに 1 点選ぶ。  
-2. 残りの点について、最近傍の既存中心との距離の二乗を計算：  
-   $$
-   D(x) = \min_{1 \le j \le m} \|x - \mu_j\|^2
-   $$
-3. この \\(D(x)\\) に比例した確率で次の中心を選ぶ。  
-   - 遠い点ほど選ばれやすい。  
-4. これを \\(k\\) 個選ぶまで繰り返す。  
-
----
-
-## 3. Python による比較実験
-
-### コード例
+## Pythonを用いた実験や説明
+乱数初期化と k-means++ 初期化を比較し、クラスタリングの違いを可視化します。
 
 ```python
 import numpy as np
@@ -51,63 +45,43 @@ X, y = make_blobs(
     n_samples=n_samples, random_state=random_state, cluster_std=1.5, centers=8
 )
 
-plt.figure(figsize=(8, 8))
-for i in range(3):  # 繰り返し比較
+for i in range(3):
     rand_index = np.random.permutation(1000)
     X_rand = X[rand_index]
 
-    # random 初期化
-    y_pred_rnd = KMeans(
+    km_random = KMeans(
         n_clusters=5, random_state=random_state, init="random",
         max_iter=1, n_init=1
-    ).fit_predict(X_rand)
+    ).fit(X_rand)
+    y_pred_random = km_random.labels_
 
-    # k-means++ 初期化
-    y_pred_kpp = KMeans(
+    km_kpp = KMeans(
         n_clusters=5, random_state=random_state, init="k-means++",
         max_iter=1, n_init=1
-    ).fit_predict(X_rand)
+    ).fit(X_rand)
+    y_pred_kpp = km_kpp.labels_
 
     plt.figure(figsize=(10, 2))
     plt.subplot(1, 2, 1)
     plt.title("random 初期化")
-    plt.scatter(X_rand[:, 0], X_rand[:, 1], c=y_pred_rnd, marker="x")
+    plt.scatter(X_rand[:, 0], X_rand[:, 1], c=y_pred_random, marker="x")
+
     plt.subplot(1, 2, 2)
     plt.title("k-means++ 初期化")
     plt.scatter(X_rand[:, 0], X_rand[:, 1], c=y_pred_kpp, marker="x")
+    plt.tight_layout()
     plt.show()
 ```
 
 ![k-means2 block 1](/images/basic/clustering/k-means2_block01.svg)
-
 ![k-means2 block 1 fig 1](/images/basic/clustering/k-means2_block01_fig01.svg)
-
 ![k-means2 block 1 fig 2](/images/basic/clustering/k-means2_block01_fig02.svg)
-
 ![k-means2 block 1 fig 3](/images/basic/clustering/k-means2_block01_fig03.svg)
-
 ![k-means2 block 1 fig 4](/images/basic/clustering/k-means2_block01_fig04.svg)
 
----
-
-## 4. 実務でのポイント
-- **scikit-learn** の `KMeans` ではデフォルトが `init="k-means++"`。  
-- ほとんどの場合、`k-means++` を使えば十分安定した結果が得られる。  
-- データが大規模な場合は、サンプリングして初期値を決める手法（mini-batch k-means など）も有効。  
-
----
-
-## 発展：k-means++ の理論的保証
-- 通常のランダム初期化では、最適解から大きく外れることがある。  
-- k-means++ では、**期待値的に \\(O(\log k)\\) 近似保証** があることが示されている（Arthur & Vassilvitskii, 2007）。  
-- つまり「完全最適解ではないが、極端に悪い初期化にはならない」ことが理論的に保証されている。  
-
----
-
-## まとめ
-- k-means は初期値によって結果が変わる弱点がある。  
-- k-means++ は「離れた点を優先して初期中心を選ぶ」ことで安定性を改善。  
-- scikit-learn ではデフォルトで k-means++ が使われているので、基本的にはそのまま使えばよい。  
-- 発展的には **理論的な近似保証** もあり、実務でも安心して利用できる初期化手法。  
-
----
+## 参考文献
+{{% references %}}
+<li>Arthur, D., &amp; Vassilvitskii, S. (2007). k-means++: The Advantages of Careful Seeding. <i>ACM-SIAM SODA</i>.</li>
+<li>Bahmani, B. et al. (2012). Scalable k-means++. <i>Proceedings of the VLDB Endowment</i>.</li>
+<li>scikit-learn developers. (2024). <i>Clustering</i>. https://scikit-learn.org/stable/modules/clustering.html</li>
+{{% /references %}}

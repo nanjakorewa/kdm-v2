@@ -2,24 +2,37 @@
 title: "HDBSCAN"
 pre: "2.5.6 "
 weight: 6
-title_suffix: "密度クラスタを自動で抽出する"
+title_suffix: "密度に階層構造を導入する"
 ---
 
-{{< lead >}}
-HDBSCAN（Hierarchical Density-Based Spatial Clustering of Applications with Noise）は、DBSCAN を階層化してクラスタ数を自動決定する密度ベース手法です。クラスタ密度が異なるデータでも柔軟にグルーピングでき、ノイズ点も明示的に扱えます。
-{{< /lead >}}
+{{% summary %}}
+- HDBSCAN（Hierarchical DBSCAN）は DBSCAN を階層化し、密度の異なる領域を自動的にクラスタ化するアルゴリズム。
+- `min_cluster_size` と `min_samples` の 2 つで密度基準を制御し、ノイズ点（ラベル -1）を自然に切り離す。
+- クラスタごとの「安定度」（persistence）を計算でき、信頼度の高いクラスタのみ採用する運用が可能。
+- UMAP などの次元削減と組み合わせると、高次元データでも柔軟に利用できる。
+{{% /summary %}}
 
----
+## 直感
+DBSCAN は 1 つの `eps`（半径）を用いて密度の高い領域を探しますが、データによっては適切な半径がクラスタごとに異なります。  
+HDBSCAN は `eps` を徐々に広げながら密度が高い領域を追跡し、クラスタの階層構造を構築します。その後、クラスタの安定度を評価し、もっとも安定した部分クラスタを最終的な出力とします。
 
-## 1. DBSCAN との違い
+## 具体的な数式
+HDBSCAN は「距離を密度に変換する」ために、各点のコア距離 \(d_\mathrm{core}(x)\) を計算します。
 
-- DBSCAN は `eps`（近傍半径）を固定するのに対し、HDBSCAN は密度の階層構造を探索しながら最適なクラスターを選択。
-- クラスタに属するサンプルの「安定度」を算出し、不確実な点をノイズとして残す。
-- 密度が高い領域だけでなく、疎な領域と密な領域が混ざったデータでも自然なクラスタを抽出。
+$$
+d_\mathrm{core}(x) = \text{距離}(x, \text{min\_samples 番目に近い点})
+$$
 
----
+緩和距離（mutual reachability distance）は
 
-## 2. Python で実行
+$$
+d_\mathrm{mreach}(x, y) = \max\{d_\mathrm{core}(x), d_\mathrm{core}(y), \lVert x - y \rVert\}
+$$
+
+で定義され、この距離に基づいて最小全域木を構築します。枝を切る閾値を変化させながら得られるクラスタの「滞在時間」を安定度として評価し、信頼度の高いクラスタを残します。
+
+## Pythonを用いた実験や説明
+`hdbscan` ライブラリで月型データをクラスタリングし、ノイズ点とクラスタ安定度を確認します。
 
 ```python
 import numpy as np
@@ -40,49 +53,14 @@ plt.figure(figsize=(6, 5))
 plt.scatter(X[:, 0], X[:, 1], c=labels, cmap="tab10", s=20)
 plt.title("HDBSCAN によるクラスタリング")
 plt.show()
+
+print("クラスタ安定度:", clusterer.cluster_persistence_)
+print("ノイズ点数:", np.sum(labels == -1))
 ```
 
-ラベルが `-1` の点はノイズ扱いです。`clusterer.probabilities_` を見ると、各サンプルがクラスタに属する確からしさを確認できます。
-
----
-
-## 3. ハイパーパラメータの直感
-
-| パラメータ | 役割 | 変えるとどうなるか |
-| --- | --- | --- |
-| `min_cluster_size` | 1 クラスタの最小サイズ | 小さくすると細かなクラスタが生まれるがノイズも増えやすい。大きくすると安定した大きなクラスタにまとまる |
-| `min_samples` | コアとみなす近傍点数（密度の堅さ） | 大きくするとノイズが増える反面、密度の高い点だけをクラスタに残せる |
-| `cluster_selection_method` | クラスタ選択方式 (`eom`, `leaf`) | `eom` は安定度重視、`leaf` は階層の末端クラスタを保持して細分化 |
-| `metric` | 距離指標 | `euclidean` が標準。コサイン距離など他の距離を使うと方向性に基づくクラスタリングが可能 |
-
-`min_samples` を指定しない場合は `min_cluster_size` と同じ値が使われます。クラスタがノイジーなら `min_samples` を `min_cluster_size` より少し大きくするのがコツ。
-
----
-
-## 4. クラスタの安定度を確認
-
-```python
-for cid, stability in clusterer.cluster_persistence_.items():
-    print(f"Cluster {cid}: stability={stability:.2f}")
-```
-
-安定度（Persistence）が高いクラスタほど密度が一貫しており信頼度が高いと解釈できます。閾値を設けて信頼できるクラスタのみを採用する運用も可能です。
-
----
-
-## 5. 実務上のヒント
-
-- **ノイズをそのまま利用**：`-1` ラベルの点を異常値として扱うと、外れ点検知とクラスタリングを同時にこなせる。
-- **特徴量のスケール**：距離ベースなので標準化は必須。特にカテゴリーの埋め込みや PCA 後のベクトルが使いやすい。
-- **可視化**：UMAP と組み合わせて高次元データを 2 次元に落としてから HDBSCAN を適用する手法が人気。
-- **計算量**：データ数が非常に多い場合は時間が掛かる。サブサンプリングで初期探索 → パラメータ決定後に全データへ適用すると良い。
-
----
-
-## まとめ
-
-- HDBSCAN は密度ベースのクラスタリングを階層的に行い、クラスタ数を自動で決定できる。
-- `min_cluster_size` と `min_samples` の調整で、ノイズ耐性とクラスタの粒度を直感的にコントロール可能。
-- ノイズ点の検出やクラスタ安定度の指標が提供されるため、実務での説明責任を果たしやすい。
-
----
+## 参考文献
+{{% references %}}
+<li>Campello, R. J. G. B., Moulavi, D., Zimek, A., &amp; Sander, J. (2013). Density-Based Clustering Based on Hierarchical Density Estimates. <i>Pacific-Asia Conference on Knowledge Discovery and Data Mining</i>.</li>
+<li>McInnes, L., Healy, J., &amp; Astels, S. (2017). hdbscan: Hierarchical Density Based Clustering. <i>Journal of Open Source Software</i>.</li>
+<li>scikit-learn developers. (2024). <i>Clustering</i>. https://scikit-learn.org/stable/modules/clustering.html</li>
+{{% /references %}}
