@@ -92,6 +92,8 @@ plt.title("ソフトマックス回帰による多クラス分類")
 plt.show()
 ```
 
+![softmax block 1](/images/basic/classification/softmax_block01.svg)
+
 ---
 
 ## 4. 特徴と利点

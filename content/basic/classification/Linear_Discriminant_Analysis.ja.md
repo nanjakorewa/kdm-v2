@@ -57,7 +57,7 @@ plt.ylabel("特徴 2")
 plt.show()
 ```
 
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_5_0.png)
+![linear-discriminant-analysis block 1](/images/basic/classification/linear-discriminant-analysis_block01.svg)
 
 ---
 
@@ -104,6 +104,8 @@ plt.grid(alpha=0.25)
 plt.show()
 ```
 
+![linear-discriminant-analysis block 2](/images/basic/classification/linear-discriminant-analysis_block02.svg)
+
 > メモ：もとのコードでは「\\(w\\) に垂直な直線」を描いていましたが、**決定境界は \\(w\\) に直交** します。上記のように \\(w\\) と 境界線を両方描くと、幾何の関係が直感的に掴めます。
 
 ---
@@ -126,7 +128,7 @@ plt.grid(alpha=0.25)
 plt.show()
 ```
 
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_7_1.png)
+![linear-discriminant-analysis block 3](/images/basic/classification/linear-discriminant-analysis_block03.svg)
 
 ---
 
@@ -164,9 +166,11 @@ plt.grid(alpha=0.25)
 plt.show()
 ```
 
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_9_0.png)
+![linear-discriminant-analysis block 4](/images/basic/classification/linear-discriminant-analysis_block04.svg)
 
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_9_1.png)
+![linear-discriminant-analysis block 4 fig 1](/images/basic/classification/linear-discriminant-analysis_block04_fig01.svg)
+
+![linear-discriminant-analysis block 4 fig 2](/images/basic/classification/linear-discriminant-analysis_block04_fig02.svg)
 
 ---
 

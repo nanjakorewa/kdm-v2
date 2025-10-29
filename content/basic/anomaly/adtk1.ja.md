@@ -33,8 +33,6 @@ from adtk.visualization import plot
 plot(s_train)
 ```
 
-![png](/images/basic/anomaly/adtk1_files/adtk1_2_1.png)
-
 ---
 
 ## 2. 代表的な異常検知手法

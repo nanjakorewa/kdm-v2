@@ -71,8 +71,6 @@ coef_df = pd.DataFrame({
 print(coef_df.head(10))
 ```
 
-![ダミー図: OMP と Lasso の係数比較](/images/placeholder_regression.png)
-
 > 実際の図では、真の係数と OMP/Lasso の推定値を棒グラフで並べると疎性の違いが伝わります。
 
 ---

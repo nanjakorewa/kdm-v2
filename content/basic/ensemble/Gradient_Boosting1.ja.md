@@ -105,7 +105,7 @@ plt.title("勾配ブースティング回帰のフィッティング")
 plt.legend(); plt.show()
 ```
 
-![png](/images/basic/ensemble/Gradient_Boosting1_files/Gradient_Boosting1_5_0.png)
+![gradient-boosting1 block 2](/images/basic/ensemble/gradient-boosting1_block02.svg)
 
 ---
 
@@ -149,8 +149,15 @@ for loss in ["squared_error", "absolute_error", "huber", "quantile"]:
     plt.legend(); plt.show()
 ```
 
-![png](/images/basic/ensemble/Gradient_Boosting1_files/Gradient_Boosting1_7_0.png)
-![png](/images/basic/ensemble/Gradient_Boosting1_files/Gradient_Boosting1_7_1.png)
+![gradient-boosting1 block 3](/images/basic/ensemble/gradient-boosting1_block03.svg)
+
+![gradient-boosting1 block 3 fig 1](/images/basic/ensemble/gradient-boosting1_block03_fig01.svg)
+
+![gradient-boosting1 block 3 fig 2](/images/basic/ensemble/gradient-boosting1_block03_fig02.svg)
+
+![gradient-boosting1 block 3 fig 3](/images/basic/ensemble/gradient-boosting1_block03_fig03.svg)
+
+![gradient-boosting1 block 3 fig 4](/images/basic/ensemble/gradient-boosting1_block03_fig04.svg)
 
 ---
 

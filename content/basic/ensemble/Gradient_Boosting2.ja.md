@@ -58,7 +58,7 @@ plt.title("勾配ブースティングの最終予測")
 plt.legend(); plt.show()
 ```
 
-![png](/images/basic/ensemble/Gradient_Boosting2_files/Gradient_Boosting2_5_0.png)
+![gradient-boosting2 block 2](/images/basic/ensemble/gradient-boosting2_block02.svg)
 
 **解説**  
 - 灰色の破線は「初期モデル」（平均値のみの予測）。  
@@ -89,7 +89,7 @@ plt.title("木ごとの寄与を積み上げた可視化")
 plt.legend(); plt.show()
 ```
 
-![png](/images/basic/ensemble/Gradient_Boosting2_files/Gradient_Boosting2_7_1.png)
+![gradient-boosting2 block 3](/images/basic/ensemble/gradient-boosting2_block03.svg)
 
 **解説**  
 - 薄い棒が「各木がどれだけ予測を修正したか」を示します。  
@@ -119,6 +119,18 @@ for i in range(5):
     plt.xlabel("x"); plt.ylabel("y")
     plt.legend(); plt.show()
 ```
+
+![gradient-boosting2 block 4](/images/basic/ensemble/gradient-boosting2_block04.svg)
+
+![gradient-boosting2 block 4 fig 1](/images/basic/ensemble/gradient-boosting2_block04_fig01.svg)
+
+![gradient-boosting2 block 4 fig 2](/images/basic/ensemble/gradient-boosting2_block04_fig02.svg)
+
+![gradient-boosting2 block 4 fig 3](/images/basic/ensemble/gradient-boosting2_block04_fig03.svg)
+
+![gradient-boosting2 block 4 fig 4](/images/basic/ensemble/gradient-boosting2_block04_fig04.svg)
+
+![gradient-boosting2 block 4 fig 5](/images/basic/ensemble/gradient-boosting2_block04_fig05.svg)
 
 **解説**  
 - 1本目：大まかに残差を補正  

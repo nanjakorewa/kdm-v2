@@ -54,8 +54,6 @@ img = Image.open("./sample.png").convert("L").resize((163, 372)).rotate(90, expa
 img
 ```
 
-![png](/images/basic/dimensionality_reduction/SVD_files/SVD_4_0.png)
-
 ---
 
 ## 4. 特異値分解を実行

@@ -27,29 +27,71 @@ k-NN は学習時にパラメータを推定せず、予測時に近いサンプ
 import numpy as np
 import matplotlib.pyplot as plt
 import japanize_matplotlib
-from sklearn.datasets import make_classification
+from sklearn.datasets import make_blobs
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_val_score
 
-X, y = make_classification(
+# まず k の違いで性能がどれくらい変わるかを観察
+X_full, y_full = make_blobs(
     n_samples=600,
-    n_features=4,
-    n_informative=3,
-    n_redundant=1,
-    n_classes=3,
+    centers=3,
+    cluster_std=[1.1, 1.0, 1.2],
     random_state=7,
 )
-
 ks = [1, 3, 5, 7, 11]
 for k in ks:
     model = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=k, weights="distance"))
-    scores = cross_val_score(model, X, y, cv=5)
-    print(f"k={k}: CV accuracy={scores.mean():.3f} ± {scores.std():.3f}")
+    scores = cross_val_score(model, X_full, y_full, cv=5)
+    print(f"k={k}: CV accuracy={scores.mean():.3f} +/- {scores.std():.3f}")
+
+# 2 次元のデータで決定境界を可視化
+X_vis, y_vis = make_blobs(
+    n_samples=450,
+    centers=[(-2, 3), (1.8, 2.2), (0.8, -2.5)],
+    cluster_std=[1.0, 0.9, 1.1],
+    random_state=42,
+)
+vis_model = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=5, weights="distance"))
+vis_model.fit(X_vis, y_vis)
+
+fig, ax = plt.subplots(figsize=(6, 4.5))
+xx, yy = np.meshgrid(
+    np.linspace(X_vis[:, 0].min() - 1.5, X_vis[:, 0].max() + 1.5, 300),
+    np.linspace(X_vis[:, 1].min() - 1.5, X_vis[:, 1].max() + 1.5, 300),
+)
+grid = np.column_stack([xx.ravel(), yy.ravel()])
+pred = vis_model.predict(grid).reshape(xx.shape)
+ax.contourf(xx, yy, pred, levels=np.arange(0, 4) - 0.5, cmap="Pastel1", alpha=0.9)
+
+scatter = ax.scatter(
+    X_vis[:, 0],
+    X_vis[:, 1],
+    c=y_vis,
+    cmap="Set1",
+    edgecolor="#1f2937",
+    linewidth=0.6,
+)
+ax.set_title("k-NN (k=5, 距離重みあり) の決定境界例")
+ax.set_xlabel("特徴量 1")
+ax.set_ylabel("特徴量 2")
+ax.set_xlim(xx.min(), xx.max())
+ax.set_ylim(yy.min(), yy.max())
+ax.grid(alpha=0.15)
+
+legend = ax.legend(
+    handles=scatter.legend_elements()[0],
+    labels=[f"クラス {i}" for i in range(len(np.unique(y_vis)))],
+    loc="upper right",
+    frameon=True,
+)
+legend.get_frame().set_alpha(0.9)
+
+fig.tight_layout()
 ```
 
-![ダミー図: k-NN の決定境界例](/images/placeholder_regression.png)
+![knn block 1](/images/basic/classification/knn_block01.svg)
 
 ---
 

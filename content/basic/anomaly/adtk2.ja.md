@@ -34,8 +34,6 @@ from adtk.visualization import plot
 plot(s_train)
 ```
 
-![png](/images/basic/anomaly/adtk2_files/adtk2_2_1.png)
-
 ---
 
 ## 2. 多次元での異常検知の考え方

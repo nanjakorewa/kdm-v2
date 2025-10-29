@@ -69,7 +69,7 @@ ax.set_ylabel("$x_2$")
 ax.set_zlabel("$x_3$")
 ```
 
-![png](/images/basic/dimensionality_reduction/PCA_files/PCA_4_1.png)
+![pca block 1](/images/basic/dimensionality-reduction/pca_block01.svg)
 
 ---
 
@@ -94,7 +94,7 @@ plt.title("PCAによる2次元化")
 plt.show()
 ```
 
-![png](/images/basic/dimensionality_reduction/PCA_files/PCA_6_1.png)
+![pca block 2](/images/basic/dimensionality-reduction/pca_block02.svg)
 
 ---
 
@@ -132,7 +132,7 @@ plt.scatter(X_pca_ss[:, 0], X_pca_ss[:, 1], c=y, marker="x", alpha=0.6)
 plt.show()
 ```
 
-![png](/images/basic/dimensionality_reduction/PCA_files/PCA_8_0.png)
+![pca block 3](/images/basic/dimensionality-reduction/pca_block03.svg)
 
 ---
 

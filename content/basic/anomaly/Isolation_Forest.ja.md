@@ -49,7 +49,7 @@ plt.show()
 print("異常と判定された数:", np.sum(labels == -1))
 ```
 
-![ダミー図: Isolation Forest のスコアヒートマップ](/images/placeholder_regression.png)
+![isolation-forest block 1](/images/basic/anomaly/isolation-forest_block01.svg)
 
 ---
 

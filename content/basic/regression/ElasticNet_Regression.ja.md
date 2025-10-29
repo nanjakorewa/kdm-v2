@@ -89,8 +89,6 @@ coef_df = pd.DataFrame({
 print(coef_df.head(10))
 ```
 
-![ダミー図: Elastic Net の正則化パス](/images/placeholder_regression.png)
-
 > 実際に図を作るときは、`enet_cv.path_`（`ElasticNetCV` の属性）を使うと \\(\alpha\\) による係数の変化を線グラフで描けます。
 
 ---

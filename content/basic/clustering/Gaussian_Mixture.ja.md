@@ -57,7 +57,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: GMM のクラスタリング結果](/images/placeholder_regression.png)
+![gaussian-mixture block 1](/images/basic/clustering/gaussian-mixture_block01.svg)
 
 ---
 

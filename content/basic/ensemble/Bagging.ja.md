@@ -50,8 +50,6 @@ print("RMSE:", mean_squared_error(y_test, pred, squared=False))
 print("OOB スコア:", bagging.oob_score_)
 ```
 
-![ダミー図: バギングによる予測安定化](/images/placeholder_regression.png)
-
 ---
 
 ## 3. ハイパーパラメータ

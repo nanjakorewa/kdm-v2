@@ -109,8 +109,6 @@ plt.xlabel("x"); plt.ylabel("y"); plt.title("AdaBoost 回帰：学習結果")
 plt.legend(); plt.grid(alpha=0.3); plt.show()
 ```
 
-![png](/images/basic/ensemble/Adaboost_Regression_files/Adaboost_Regression_6_0.png)
-
 **読み方**  
 - 弱学習器は「段差状」の予測をしますが、多数を重ねると<b>なめらかな曲線に近づく</b>傾向があります。  
 - `max_depth` を深く／`n_estimators` を多くすると表現力は上がる一方、過学習しやすくなります。
@@ -151,6 +149,8 @@ plt.scatter(X[err>thr],  y[err>thr],  s=25, c="crimson", label="誤差が大き�
 plt.xlabel("x"); plt.ylabel("y"); plt.title("次の学習で重みが増えやすい点の直感")
 plt.legend(); plt.grid(alpha=0.3); plt.show()
 ```
+
+![adaboost-regression block 3](/images/basic/ensemble/adaboost-regression_block03.svg)
 
 **解釈**  
 - 赤い点（誤差が大きい点）ほど次の器で重点的に学習され、順次改善が試みられます。  

@@ -69,7 +69,7 @@ plt.title("円環状データ")
 plt.show()
 ```
 
-![png](/images/basic/dimensionality_reduction/Kernel-PCA_files/Kernel-PCA_4_1.png)
+![kernel-pca block 1](/images/basic/dimensionality-reduction/kernel-pca_block01.svg)
 
 ---
 
@@ -91,7 +91,7 @@ plt.title("Kernel PCAによる2次元化")
 plt.show()
 ```
 
-![png](/images/basic/dimensionality_reduction/Kernel-PCA_files/Kernel-PCA_6_1.png)
+![kernel-pca block 2](/images/basic/dimensionality-reduction/kernel-pca_block02.svg)
 
 > 通常のPCAでは分離できなかった「同心円のクラス」が、Kernel PCAではきれいに分離できる。
 

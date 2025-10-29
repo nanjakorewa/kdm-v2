@@ -44,7 +44,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: t-SNE 可視化](/images/placeholder_regression.png)
+![tsne block 1](/images/basic/dimensionality-reduction/tsne_block01.svg)
 
 ---
 

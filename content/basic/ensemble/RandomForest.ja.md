@@ -82,8 +82,6 @@ rf_score = roc_auc_score(y_test, y_pred)
 print(f"テストデータでのROC-AUC = {rf_score:.3f}")
 ```
 
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_6_0.png)
-
 ---
 
 ## 4. 各決定木の性能を比較してみる
@@ -107,7 +105,7 @@ plt.ylabel("ROC-AUC")
 plt.show()
 ```
 
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_6_0.png)
+![randomforest block 2](/images/basic/ensemble/randomforest_block02.svg)
 
 > 各木はバラバラの性能ですが、全体でまとめると安定して精度が高くなります。
 
@@ -127,7 +125,7 @@ plt.ylabel("特徴の重要度")
 plt.show()
 ```
 
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_8_0.png)
+![randomforest block 3](/images/basic/ensemble/randomforest_block03.svg)
 
 ### 5.2 Permutation importance（入れ替え重要度）
 
@@ -145,7 +143,7 @@ plt.ylabel("特徴の重要度")
 plt.show()
 ```
 
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_10_0.png)
+![randomforest block 4](/images/basic/ensemble/randomforest_block04.svg)
 
 ---
 
@@ -172,8 +170,6 @@ for i in range(3):
     except Exception:
         pass
 ```
-
-![png](/images/basic/ensemble/RandomForest_files/RandomForest_12_0.png)
 
 ---
 

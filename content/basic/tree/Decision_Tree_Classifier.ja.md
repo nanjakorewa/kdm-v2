@@ -107,7 +107,7 @@ plt.title("決定木による分類境界")
 plt.show()
 ```
 
-![png](/images/basic/tree/Decision_Tree_Classifier_files/Decision_Tree_Classifier_7_0.png)
+![decision-tree-classifier block 3](/images/basic/tree/decision-tree-classifier_block03.svg)
 
 ---
 
@@ -126,7 +126,7 @@ plot_tree(clf, filled=True, feature_names=["x1", "x2"], class_names=["A", "B"])
 plt.show()
 ```
 
-![png](/images/basic/tree/Decision_Tree_Classifier_files/Decision_Tree_Classifier_9_1.png)
+![decision-tree-classifier block 4](/images/basic/tree/decision-tree-classifier_block04.svg)
 
 ---
 

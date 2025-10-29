@@ -73,6 +73,8 @@ plt.grid(alpha=0.3)
 plt.show()
 ```
 
+![decision-tree-regressor block 2](/images/basic/tree/decision-tree-regressor_block02.svg)
+
 **ポイント**  
 - 深さ（`max_depth`）を大きくすると細かく分割でき、当てはまりは上がるが過学習しやすい  
 - 小さすぎると逆に表現力不足（アンダーフィット）
@@ -130,6 +132,8 @@ plot_tree(
 plt.title("決定木（回帰）の構造")
 plt.show()
 ```
+
+![decision-tree-regressor block 4](/images/basic/tree/decision-tree-regressor_block04.svg)
 
 - ノードには「しきい値」「サンプル数」「MSE」「予測値（葉）」が表示されます。
 

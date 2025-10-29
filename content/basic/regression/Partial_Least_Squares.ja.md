@@ -79,7 +79,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: PLS の潜在因子探索](/images/placeholder_regression.png)
+![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01.svg)
 
 ---
 

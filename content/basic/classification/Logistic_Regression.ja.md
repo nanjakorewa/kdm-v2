@@ -69,7 +69,7 @@ plt.grid(True)
 plt.show()
 ```
 
-![png](/images/basic/classification/Logistic_Regression_files/Logistic_Regression_4_0.png)
+![logistic-regression block 1](/images/basic/classification/logistic-regression_block01.svg)
 
 ---
 
@@ -140,7 +140,7 @@ plt.title("ロジスティック回帰による分類")
 plt.show()
 ```
 
-![png](/images/basic/classification/Logistic_Regression_files/Logistic_Regression_6_0.png)
+![logistic-regression block 2](/images/basic/classification/logistic-regression_block02.svg)
 
 ---
 

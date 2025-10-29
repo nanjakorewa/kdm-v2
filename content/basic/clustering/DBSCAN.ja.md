@@ -13,12 +13,14 @@ DBSCAN（Density-Based Spatial Clustering of Applications with Noise）は密度
 
 ## 1. 主要パラメータ
 
-- \\(arepsilon\\)（eps）: 近傍半径
+- \\(
+arepsilon\\)（eps）: 近傍半径
 - `min_samples`: コアポイントと見なすために必要な近傍点数
 - 距離関数: ユークリッドが基本だが他の距離でも良い
 
 ### 用語
-- **コアポイント**: 半径 \\(arepsilon\\) 内に `min_samples` 以上の点がある
+- **コアポイント**: 半径 \\(
+arepsilon\\) 内に `min_samples` 以上の点がある
 - **境界ポイント**: コアポイントには届かないが、コアポイントの近傍に存在
 - **ノイズ**: どちらにも当てはまらない点
 
@@ -52,13 +54,14 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: DBSCAN のクラスタリング結果](/images/placeholder_regression.png)
+![dbscan block 1](/images/basic/clustering/dbscan_block01.svg)
 
 ---
 
 ## 3. パラメータの選び方
 
-- k-距離グラフ（各点から `min_samples` 番目に近い点までの距離を降順に並べる）でヒザ状の位置が \\(arepsilon\\) の目安
+- k-距離グラフ（各点から `min_samples` 番目に近い点までの距離を降順に並べる）でヒザ状の位置が \\(
+arepsilon\\) の目安
 - `min_samples` は次元 + 1 以上にすることが推奨される
 - スケールが異なる特徴が混在する場合は標準化が必須
 
@@ -68,7 +71,8 @@ plt.show()
 
 | 長所 | 短所 |
 | ---- | ---- |
-| クラスタ形状に制約がない | \\(arepsilon\\) の設定が難しく、密度が大きく変わるデータに弱い |
+| クラスタ形状に制約がない | \\(
+arepsilon\\) の設定が難しく、密度が大きく変わるデータに弱い |
 | ノイズを自然に検出できる | 高次元では距離が均一になり性能が低下 |
 | k-means のようにクラスタ数を事前指定しなくてよい | サンプルによっては結果が不安定 |
 

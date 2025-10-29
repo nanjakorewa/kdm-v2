@@ -41,6 +41,8 @@ plt.ylabel("距離")
 plt.show()
 ```
 
+![hierarchical-clustering block 1](/images/basic/clustering/hierarchical-clustering_block01.svg)
+
 `truncate_mode="level"` と `p=5` により、上位 5 階層までに要約して表示。距離が大きく離れているところで切ると、クラスタが自然に分割できます。
 
 ---

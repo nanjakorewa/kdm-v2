@@ -108,7 +108,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: RBF-SVM の決定境界](/images/placeholder_regression.png)
+![svm block 1](/images/basic/classification/svm_block01.svg)
 
 ---
 

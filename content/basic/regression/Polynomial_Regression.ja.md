@@ -85,7 +85,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: 多項式回帰の近似結果](/images/placeholder_regression.png)
+![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01.svg)
 
 > 後でこの図を描き直すときは、学習済みモデルの曲線と真の関数を同じプロットに重ねると差が分かりやすくなります。
 

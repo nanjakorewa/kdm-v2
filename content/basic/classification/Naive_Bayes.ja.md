@@ -53,8 +53,6 @@ pred = model.predict(test.data)
 print(classification_report(test.target, pred, target_names=categories))
 ```
 
-![ダミー図: ナイーブベイズの混同行列](/images/placeholder_regression.png)
-
 ---
 
 ## 4. 平滑化と特徴選択

@@ -90,8 +90,6 @@ _ = rtreeviz_bivar_3D(
 plt.show()
 ```
 
-![png](/images/basic/tree/Parameter_files/Parameter_5_0.png)
-
 ---
 
 ## いろいろなパラメータで挙動を比べる
@@ -117,9 +115,6 @@ _ = rtreeviz_bivar_3D(
 plt.show()
 ```
 
-![png](/images/basic/tree/Parameter_files/Parameter_7_0.png)
-
-![png](/images/basic/tree/Parameter_files/Parameter_7_1.png)
 
 ---
 
@@ -132,8 +127,6 @@ ax = fig.add_subplot(111, projection="3d")
 _ = rtreeviz_bivar_3D(dt, X, y, ["x1","x2"], "y", elev=40, azim=240, dist=8.0, show={"splits","title"}, ax=ax)
 plt.show()
 ```
-
-![png](/images/basic/tree/Parameter_files/Parameter_9_0.png)
 
 **説明**: 深さを大きくすると、データを細かく分けて複雑なルールを表現できます。その結果、訓練データにはよく適合しますが、テストデータでは過学習しやすくなります。
 
@@ -149,8 +142,6 @@ _ = rtreeviz_bivar_3D(dt, X, y, ["x1","x2"], "y", elev=40, azim=240, dist=8.0, s
 plt.show()
 ```
 
-![png](/images/basic/tree/Parameter_files/Parameter_11_0.png)
-
 **説明**: 適度な深さを設定することで、表現力と汎化性能のバランスが取れます。多くの場合、深さを5〜10程度に制限すると過学習を防ぎやすいです。
 
 ---
@@ -164,8 +155,6 @@ ax = fig.add_subplot(111, projection="3d")
 _ = rtreeviz_bivar_3D(dt, X, y, ["x1","x2"], "y", elev=40, azim=240, dist=8.0, show={"splits","title"}, ax=ax)
 plt.show()
 ```
-
-![png](/images/basic/tree/Parameter_files/Parameter_13_0.png)
 
 **説明**: 分割の条件を厳しくしたため、木の細分化が抑えられます。結果としてシンプルになり、過学習を防ぎやすくなりますが、表現力は下がります。
 
@@ -181,8 +170,6 @@ _ = rtreeviz_bivar_3D(dt, X, y, ["x1","x2"], "y", elev=40, azim=240, dist=8.0, s
 plt.show()
 ```
 
-![png](/images/basic/tree/Parameter_files/Parameter_15_0.png)
-
 **説明**: `ccp_alpha` を大きくすると、複雑さにペナルティがかかり、不要な枝が剪定されます。木が小さくなり、解釈しやすい単純なモデルになります。
 
 ---
@@ -196,8 +183,6 @@ ax = fig.add_subplot(111, projection="3d")
 _ = rtreeviz_bivar_3D(dt, X, y, ["x1","x2"], "y", elev=40, azim=240, dist=8.0, show={"splits","title"}, ax=ax)
 plt.show()
 ```
-
-![png](/images/basic/tree/Parameter_files/Parameter_17_0.png)
 
 **説明**: 葉の数を直接制御するため、分割の数＝予測区間の数が少なくなります。シンプルで解釈性は高まりますが、データの細かい特徴は表現できなくなります。
 
@@ -221,8 +206,6 @@ _ = rtreeviz_bivar_3D(dt, X, y, ["x1","x2"], "y", elev=40, azim=240, dist=8.0, s
 plt.show()
 ```
 
-![png](/images/basic/tree/Parameter_files/Parameter_20_0.png)
-
 **説明**: `absolute_error` は外れ値の影響を受けにくく、中央値で予測するためロバストな分割になります。
 
 `squared_error`:
@@ -234,8 +217,6 @@ ax = fig.add_subplot(111, projection="3d")
 _ = rtreeviz_bivar_3D(dt, X, y, ["x1","x2"], "y", elev=40, azim=240, dist=8.0, show={"splits","title"}, ax=ax)
 plt.show()
 ```
-
-![png](/images/basic/tree/Parameter_files/Parameter_21_0.png)
 
 **説明**: `squared_error` は外れ値を強く罰するため、外れ値を分離するような分割が作られやすくなります。
 

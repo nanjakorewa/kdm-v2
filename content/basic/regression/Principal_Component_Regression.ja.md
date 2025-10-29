@@ -70,7 +70,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: 主成分数と CV スコア](/images/placeholder_regression.png)
+![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01.svg)
 
 > 実際のプロットでは、主成分数を横軸、交差検証 MSE を縦軸にすると最適な圧縮次元が視覚的に選べます。
 

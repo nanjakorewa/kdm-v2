@@ -47,7 +47,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: スペクトラルクラスタリング結果](/images/placeholder_regression.png)
+![spectral-clustering block 1](/images/basic/clustering/spectral-clustering_block01.svg)
 
 ---
 

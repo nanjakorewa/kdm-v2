@@ -67,7 +67,7 @@ plt.legend()
 plt.show()
 ```
 
-![png](/images/basic/clustering/k-means1_files/k-means1_5_0.png)
+![k-means1 block 1](/images/basic/clustering/k-means1_block01.svg)
 
 ---
 
@@ -95,7 +95,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![png](/images/basic/clustering/k-means1_files/k-means1_7_0.png)
+![k-means1 block 2](/images/basic/clustering/k-means1_block02.svg)
 
 ---
 
@@ -122,7 +122,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![png](/images/basic/clustering/k-means1_files/k-means1_9_0.png)
+![k-means1 block 3](/images/basic/clustering/k-means1_block03.svg)
 
 ---
 
@@ -151,7 +151,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![png](/images/basic/clustering/k-means1_files/k-means1_11_0.png)
+![k-means1 block 4](/images/basic/clustering/k-means1_block04.svg)
 
 ---
 
@@ -195,6 +195,8 @@ plt.title("エルボー法")
 plt.show()
 ```
 
+![k-means1 block 5](/images/basic/clustering/k-means1_block05.svg)
+
 ---
 
 ### 2. シルエットスコア
@@ -229,6 +231,8 @@ plt.ylabel("シルエットスコア")
 plt.title("シルエット法")
 plt.show()
 ```
+
+![k-means1 block 6](/images/basic/clustering/k-means1_block06.svg)
 
 ---
 

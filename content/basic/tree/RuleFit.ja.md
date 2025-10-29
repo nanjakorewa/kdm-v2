@@ -152,6 +152,8 @@ plt.grid(alpha=0.3)
 plt.show()
 ```
 
+![rulefit block 4](/images/basic/tree/rulefit_block04.svg)
+
 ### 5.2 具体的なルールで分布比較（箱ひげ図）
 
 例：`sqft_living <= 3935.0 & lat <= 47.5315` のような「価格が下がりやすい」ルール。
@@ -170,6 +172,8 @@ plt.title("ルール該当 vs 非該当 の価格分布（対数）")
 plt.grid(alpha=0.3)
 plt.show()
 ```
+
+![rulefit block 5](/images/basic/tree/rulefit_block05.svg)
 
 > **解釈**：ルール該当群の分布が下がっていれば、係数の符号（マイナス）と整合的。
 

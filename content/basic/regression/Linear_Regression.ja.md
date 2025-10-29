@@ -105,6 +105,8 @@ plt.legend()
 plt.show()
 ```
 
+![linear-regression block 1](/images/basic/regression/linear-regression_block01.svg)
+
 ---
 
 ## 5. 学習結果の解釈

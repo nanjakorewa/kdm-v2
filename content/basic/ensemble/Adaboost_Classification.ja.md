@@ -120,8 +120,6 @@ RocCurveDisplay.from_predictions(y_test, y_score)
 plt.grid(alpha=0.3); plt.show()
 ```
 
-![png](/images/basic/ensemble/Adaboost_Classification_files/Adaboost_Classification_10_0.png)
-
 > **補足**：AUC は確率出力に対して評価するのが一般的です（`predict` の 0/1 より情報量が多い）。
 
 ---
@@ -151,8 +149,6 @@ plt.plot(learning_rate_list, scores)
 plt.xlabel("learning_rate"); plt.ylabel("ROC-AUC"); plt.grid(True); plt.show()
 ```
 
-![png](/images/basic/ensemble/Adaboost_Classification_files/Adaboost_Classification_13_0.png)
-
 ### 5.2 `n_estimators`（弱学習器の数）
 多くすると表現力は増すが、過学習や計算コストに注意。  
 `learning_rate` と併せてグリッドで調整。
@@ -175,8 +171,6 @@ plt.figure(figsize=(6,4))
 plt.plot(n_estimators_list, scores)
 plt.xlabel("n_estimators"); plt.ylabel("ROC-AUC"); plt.grid(True); plt.show()
 ```
-
-![png](/images/basic/ensemble/Adaboost_Classification_files/Adaboost_Classification_16_0.png)
 
 ### 5.3 `base_estimator`（弱学習器）
 弱学習器は「弱い」ほど Boosting の恩恵が出やすいのが経験則。  

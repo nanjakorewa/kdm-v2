@@ -79,7 +79,7 @@ X, _ = make_blobs(
 plot_by_kmeans(X)
 ```
 
-![png](/images/basic/clustering/X-means_files/X-means_5_0.png)
+![x-means block 1](/images/basic/clustering/x-means_block01.svg)
 
 ---
 
@@ -107,8 +107,6 @@ def plot_by_xmeans(X, c_min=3, c_max=10, criterion=BAYESIAN_INFORMATION_CRITERIO
 plot_by_xmeans(X, c_min=3, c_max=10, criterion=BAYESIAN_INFORMATION_CRITERION)
 ```
 
-![png](/images/basic/clustering/X-means_files/X-means_7_0.png)
-
 ---
 
 ## 4. tolerance の影響
@@ -124,8 +122,6 @@ for i, ti in enumerate(np.linspace(0.0001, 1, 5)):
     plot_by_xmeans(X, c_min=3, c_max=10, criterion=BAYESIAN_INFORMATION_CRITERION, tolerance=ti)
     plt.title(f"tol={ti}")
 ```
-
-![png](/images/basic/clustering/X-means_files/X-means_11_0.png)
 
 ---
 
@@ -145,8 +141,6 @@ for i in range(3):
     plot_by_xmeans(X, c_min=3, c_max=20)
     plt.show()
 ```
-
-![png](/images/basic/clustering/X-means_files/X-means_13_0.png)
 
 ---
 

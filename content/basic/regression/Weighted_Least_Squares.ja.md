@@ -73,7 +73,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: 加重最小二乗法と通常回帰の比較](/images/placeholder_regression.png)
+![weighted-least-squares block 1](/images/basic/regression/weighted-least-squares_block01.svg)
 
 ---
 

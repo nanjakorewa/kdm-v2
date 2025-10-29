@@ -90,7 +90,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: 分位点回帰の予測バンド](/images/placeholder_regression.png)
+![quantile-regression block 1](/images/basic/regression/quantile-regression_block01.svg)
 
 > 実際のプロットでは、各分位の線を重ねると「予測区間」が視覚的に伝わります。
 

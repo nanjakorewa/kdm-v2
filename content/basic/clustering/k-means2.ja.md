@@ -78,7 +78,15 @@ for i in range(3):  # 繰り返し比較
     plt.show()
 ```
 
-![png](/images/basic/clustering/k-means2_files/k-means2_5_1.png)
+![k-means2 block 1](/images/basic/clustering/k-means2_block01.svg)
+
+![k-means2 block 1 fig 1](/images/basic/clustering/k-means2_block01_fig01.svg)
+
+![k-means2 block 1 fig 2](/images/basic/clustering/k-means2_block01_fig02.svg)
+
+![k-means2 block 1 fig 3](/images/basic/clustering/k-means2_block01_fig03.svg)
+
+![k-means2 block 1 fig 4](/images/basic/clustering/k-means2_block01_fig04.svg)
 
 ---
 

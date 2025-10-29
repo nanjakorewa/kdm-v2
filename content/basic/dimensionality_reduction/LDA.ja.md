@@ -70,7 +70,7 @@ ax.set_ylabel("$x_2$")
 ax.set_zlabel("$x_3$")
 ```
 
-![png](/images/basic/dimensionality_reduction/LDA_files/LDA_4_1.png)
+![lda block 1](/images/basic/dimensionality-reduction/lda_block01.svg)
 
 ---
 
@@ -94,7 +94,7 @@ plt.title("LDAによる2次元化")
 plt.show()
 ```
 
-![png](/images/basic/dimensionality_reduction/LDA_files/LDA_6_1.png)
+![lda block 2](/images/basic/dimensionality-reduction/lda_block02.svg)
 
 ---
 
@@ -116,7 +116,7 @@ plt.title("PCAによる2次元化")
 plt.show()
 ```
 
-![png](/images/basic/dimensionality_reduction/LDA_files/LDA_8_1.png)
+![lda block 3](/images/basic/dimensionality-reduction/lda_block03.svg)
 
 > PCAは「ばらつき最大化」、LDAは「クラス分離最大化」という違いがある。
 

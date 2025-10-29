@@ -134,7 +134,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![png](/images/basic/regression/02_Ridge_and_Lasso_files/02_Ridge_and_Lasso_10_1.png)
+![ridge-and-lasso block 4](/images/basic/regression/ridge-and-lasso_block04.svg)
 
 {{% notice tip %}}
 このデータでは「有用な特徴は2つだけ」でした（<code>n_informative=2</code>）。  

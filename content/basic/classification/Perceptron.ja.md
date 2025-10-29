@@ -73,7 +73,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: パーセプトロンの決定境界](/images/placeholder_regression.png)
+![perceptron block 1](/images/basic/classification/perceptron_block01.svg)
 
 ---
 

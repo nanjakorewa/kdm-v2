@@ -96,7 +96,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![ダミー図: ベイズ線形回帰の予測平均と信頼区間](/images/placeholder_regression.png)
+![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01.svg)
 
 > 後で本物の図を描くときは、信頼区間を塗りつぶして「不確実性がどこで大きいか」を視覚的に示すと理解が深まります。
 

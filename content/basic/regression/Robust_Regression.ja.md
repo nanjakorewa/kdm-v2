@@ -89,7 +89,7 @@ plt.title("二乗・絶対・Huber損失の比較")
 plt.show()
 ```
 
-![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_5_0.png)
+![robust-regression block 2](/images/basic/regression/robust-regression_block02.svg)
 
 ---
 
@@ -118,7 +118,7 @@ plt.title("外れ値を1点含むデータ")
 plt.show()
 ```
 
-![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_7_0.png)
+![robust-regression block 3](/images/basic/regression/robust-regression_block03.svg)
 
 ---
 
@@ -167,7 +167,7 @@ plt.grid(alpha=0.3)
 plt.show()
 ```
 
-![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_9_0.png)
+![robust-regression block 4](/images/basic/regression/robust-regression_block04.svg)
 
 **読み取り方**：  
 - OLS（赤）は外れ値に強く引っ張られています。  
