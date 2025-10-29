@@ -1,9 +1,10 @@
----
+﻿---
 title: "リッジ回帰・ラッソ回帰"
 pre: "2.1.2 "
 weight: 2
 title_suffix: "の仕組みの説明"
 ---
+
 
 {{% youtube "rhGYOBrxPXA" %}}
 
@@ -211,3 +212,12 @@ print("Best α (LassoCV):", lasso_cv.steps[1][1].alpha_)
 - <b>標準化は必須級</b>、<b>αは交差検証でチューニング</b>するのが実務の基本。
 
 ---
+
+
+{{% references %}}
+<li>Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge Regression: Biased Estimation for Nonorthogonal Problems. <i>Technometrics</i>, 12(1), 55-67.</li>
+<li>Tibshirani, R. (1996). Regression Shrinkage and Selection via the Lasso. <i>Journal of the Royal Statistical Society: Series B</i>, 58(1), 267-288.</li>
+<li>Zou, H., &amp; Hastie, T. (2005). Regularization and Variable Selection via the Elastic Net. <i>Journal of the Royal Statistical Society: Series B</i>, 67(2), 301-320.</li>
+{{% /references %}}
+
+
