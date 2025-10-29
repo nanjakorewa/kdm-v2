@@ -1,19 +1,45 @@
----
-title: "決定木(分類)"
+﻿---
+title: "決定木（分類）"
 pre: "2.3.1 "
 weight: 1
-title_suffix: "について仕組みを理解する"
+title_suffix: "分割ルールで直感的に分類する"
 ---
 
 {{% youtube "qQa9Emh0pZE" %}}
 
+{{% summary %}}
+- 決定木分類器は「もし◯◯なら左へ、そうでなければ右へ」という条件分岐を繰り返し、葉ノードでクラスを予測する。
+- 分割の評価にはジニ不純度やエントロピーなどの不純度指標を用い、クラスが純粋になるように特徴量としきい値を選ぶ。
+- 木構造をそのまま図示できるため、予測根拠を人間に説明しやすい。
+- 深さや葉ノードサイズを制御して過学習を防ぎ、必要に応じてアンサンブル手法へ発展させる。
+{{% /summary %}}
 
+## 直感
+サンプルを特徴量に基づいて順番に分岐させ、最終的にたどり着いた葉ノードの多数派クラスを予測として返します。分岐を重ねるほど木は深くなり、データを細かく区切ることができますが、過学習もしやすくなります。木の各ノードは「質問」に相当し、枝は「はい / いいえ」で進むので、意思決定の理由を追跡しやすいのが大きな利点です。
 
-<div class="pagetop-box">
-  <p><b>決定木（分類）</b>とは、データを「はい/いいえ」のようなルールの組合せで分類するモデルです。  
-  分岐のルールを繰り返すと<b>木の枝分かれ</b>のような構造になり、結果が木構造で表現されます。  
-  人間にも読みやすいルールとして可視化できるため、<b>解釈しやすい分類モデル</b>の代表例です。</p>
-</div>
+## 具体的な数式
+ノード \\(t\\) におけるジニ不純度は
+
+$$
+\mathrm{Gini}(t) = 1 - \sum_k p_k^2
+$$
+
+で定義されます（\\(p_k\\) はノード \\(t\\) に含まれるクラス \\(k\\) の割合）。エントロピーは
+
+$$
+H(t) = - \sum_k p_k \log p_k
+$$
+
+です。親ノード \\(t\\) を特徴量 \\(x_j\\) としきい値 \\(s\\) で左右に分割したときの不純度減少量
+
+$$
+\Delta I = I(t) - \frac{n_L}{n_t} I(t_L) - \frac{n_R}{n_t} I(t_R)
+$$
+
+が最大になる組み合わせを選び、葉ノードに達するまで繰り返します。ここで \\(I(\cdot)\\) は選んだ不純度指標、\\(n_t\\) はノード内のサンプル数です。
+
+## Pythonを用いた実験や説明
+人工データで決定境界と木構造を可視化するコードです。元のサンプルコードをそのまま利用しています。
 
 ```python
 import numpy as np
@@ -21,38 +47,6 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import make_classification
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 ```
-
----
-
-## 1. 決定木の基本アイデア
-
-- 特徴量に基づいてデータを「条件分岐」させていく  
-- 各分岐は「質問」に対応（例：年齢 > 30 か？ yes/no）  
-- 最後にたどり着く葉ノードが「クラスの予測」  
-
-### 分岐の基準（不純度）
-分岐を決めるには「どの質問でクラスがよく分かれるか」を測る必要があります。  
-代表的な指標は以下の2つです：
-
-- **ジニ不純度 (Gini impurity)**  
-  $$
-  Gini(t) = 1 - \sum_k p_{k}^2
-  $$
-  （ノード \\(t\\) におけるクラス \\(k\\) の割合 \\(p_k\\) を使う）
-
-- **エントロピー (Entropy)**  
-  $$
-  H(t) = -\sum_k p_k \log p_k
-  $$
-
-どちらも「クラスが混ざっているほど大きくなる」指標で、これを小さくするように分岐を選びます。  
-scikit-learn では `criterion="gini"` または `"entropy"` を指定可能です。
-
----
-
-## 2. サンプルデータの作成
-
-ここでは 2 クラス分類ができる人工データを作ります。
 
 ```python
 n_classes = 2
@@ -66,17 +60,6 @@ X, y = make_classification(
     n_clusters_per_class=1,
 )
 ```
-
----
-
-## 3. 決定木を学習して境界を可視化
-
-`DecisionTreeClassifier(criterion="gini")` を用いて分類モデルを作成します。  
-学習後、決定境界をカラーマップで表示して、分類がどう行われているかを見てみましょう。
-
-{{% notice document %}}
-[sklearn.tree.DecisionTreeClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html#sklearn.tree.DecisionTreeClassifier)
-{{% /notice %}}
 
 ```python
 # モデルの学習
@@ -109,17 +92,6 @@ plt.show()
 
 ![decision-tree-classifier block 3](/images/basic/tree/decision-tree-classifier_block03.svg)
 
----
-
-## 4. 決定木の構造を可視化
-
-木そのものを図として描くこともできます。  
-分岐条件・サンプル数・ジニ不純度・クラス比率などが表示されます。
-
-{{% notice document %}}
-[sklearn.tree.plot_tree](https://scikit-learn.org/stable/modules/generated/sklearn.tree.plot_tree.html)
-{{% /notice %}}
-
 ```python
 plt.figure(figsize=(12, 12))
 plot_tree(clf, filled=True, feature_names=["x1", "x2"], class_names=["A", "B"])
@@ -128,35 +100,8 @@ plt.show()
 
 ![decision-tree-classifier block 4](/images/basic/tree/decision-tree-classifier_block04.svg)
 
----
-
-## 5. 決定木の長所と短所
-
-### 長所
-- ルールが木構造で表現されるので<b>解釈しやすい</b>  
-- データのスケーリングが不要（正規化・標準化の前処理がなくてもOK）  
-- 数値・カテゴリ変数の両方を扱える  
-
-### 短所
-- 枝分かれが増えると<b>過学習</b>しやすい  
-- データに少しの変化があるだけで木の形が大きく変わる（不安定）  
-- 境界は必ず「軸に平行な直線」になるので複雑な分離は苦手  
-
----
-
-## 6. 実務での工夫
-
-- **深さ制限（max_depth）** や **最小サンプル数（min_samples_split/min_samples_leaf）** を指定して過学習を防ぐ  
-- **ランダムフォレストや勾配ブースティング**など「多数の木を組み合わせる手法」として発展（高精度化）  
-- 可視化による説明性を活かして「意思決定の根拠」を提示できる  
-
----
-
-## まとめ
-
-- 決定木は「条件分岐の木構造」で分類するモデル  
-- 分岐ルールには「ジニ不純度」や「エントロピー」が使われる  
-- 可視化しやすく、解釈性が高いのが大きな利点  
-- ただし単独では過学習しやすいため、正則化やアンサンブル手法と組み合わせるのが実務的  
-
----
+## 参考文献
+{{% references %}}
+<li>Breiman, L., Friedman, J. H., Olshen, R. A., &amp; Stone, C. J. (1984). <i>Classification and Regression Trees</i>. Wadsworth.</li>
+<li>scikit-learn developers. (2024). <i>Decision Trees</i>. https://scikit-learn.org/stable/modules/tree.html</li>
+{{% /references %}}
