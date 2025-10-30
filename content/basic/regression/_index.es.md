@@ -10,7 +10,7 @@ pre: "<b>2.1 </b>"
 {{% summary %}}
 - La regresión lineal captura la relación lineal entre variables de entrada y salida y es la base para tareas de predicción e interpretación.
 - Al combinar extensiones como regularización, métodos robustos o reducción de dimensionalidad, se adapta a distintos tipos de datos.
-- Cada página del capítulo sigue el mismo recorrido Eresumen, intuición, fórmulas, experimentos en Python y referencias Epara pasar de los fundamentos a aplicaciones prácticas.
+- Cada página del capítulo sigue el mismo recorrido—resumen, intuición, fórmulas, experimentos en Python y referencias—para pasar de los fundamentos a aplicaciones prácticas.
 {{% /summary %}}
 
 # Regresión lineal
