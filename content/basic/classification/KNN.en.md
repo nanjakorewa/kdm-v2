@@ -1,31 +1,31 @@
 ---
-title: "k近傍法 (k-NN)"
+title: "k-Nearest Neighbours (k-NN)"
 pre: "2.2.7 "
 weight: 7
-title_suffix: "距離にもとづく怠惰学習"
+title_suffix: "Lazy learning based on distances"
 ---
 
 {{% summary %}}
-- k-NN は学習時にモデルを作らず、予測時に近いサンプルの多数決でクラスを決めるシンプルな手法。
-- ハイパーパラメータは主に近傍数 \(k\) と距離の重み付けで、探索しやすい。
-- 非線形な決定境界を自然に表現できる一方、次元が高くなると距離の差が縮む「次元の呪い」に注意。
-- 前処理として標準化や特徴選択を行うと距離計算が安定しやすくなる。
+- k-NN stores the training data and predicts by majority vote among the \(k\) nearest neighbours of a query point.
+- The main hyperparameters are the number of neighbours \(k\) and the distance weighting scheme, which are easy to tune.
+- It naturally models non-linear decision boundaries, but distance metrics become less informative in high dimensions (“the curse of dimensionality”).
+- Standardising features or selecting informative ones makes distance calculations more stable.
 {{% /summary %}}
 
-## 直感
-「近くのサンプルは似たラベルを持つだろう」という仮定の下、予測したい点から最も近い \(k\) 個のサンプルを探し、多数決や距離重み付き投票でラベルを決めます。モデルを事前に学習する必要がないため、怠惰学習 (lazy learning) と呼ばれます。
+## Intuition
+Under the assumption that “nearby samples share the same label”, k-NN finds the \(k\) closest training samples to a query point and predicts the label via majority vote (optionally weighted by distance). Because no explicit model is trained in advance, k-NN is known as a lazy learner.
 
-## 具体的な数式
-テスト点 \(\mathbf{x}\) に対して訓練集合 \(D\) から距離 \(d(\mathbf{x}, \mathbf{x}_i)\) が小さい順に \(k\) 個を選び、クラス \(c\) の票数は
+## Mathematical formulation
+For a test point \(\mathbf{x}\), let \(\mathcal{N}_k(\mathbf{x})\) be the set of \(k\) nearest neighbours in the training set. The vote for class \(c\) is
 
 $$
-v_c = \sum_{i \in \mathcal{N}_k(\mathbf{x})} w_i \,\mathbb{1}(y_i = c)
+v_c = \sum_{i \in \mathcal{N}_k(\mathbf{x})} w_i \,\mathbb{1}(y_i = c),
 $$
 
-で計算します。ここで \(\mathcal{N}_k(\mathbf{x})\) は近傍集合、重み \(w_i\) は距離の逆数などで設定できます。最も票の多いクラスを予測ラベルとします。
+where the weights \(w_i\) can be uniform or a function of distance (e.g. inverse distance). The predicted class is the one with the highest vote.
 
-## Pythonを用いた実験や説明
-次のコードは k の値を変えたときの交差検証精度を比較し、2 次元データで決定境界を可視化する例です。
+## Experiments with Python
+The following code compares cross-validation accuracy for different values of \(k\) and visualises the decision boundary on a two-dimensional data set.
 
 ```python
 import numpy as np
@@ -37,7 +37,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_val_score
 
-# k の違いで性能がどれくらい変わるかを観察
+# Evaluate how accuracy changes with different k
 X_full, y_full = make_blobs(
     n_samples=600,
     centers=3,
@@ -50,7 +50,7 @@ for k in ks:
     scores = cross_val_score(model, X_full, y_full, cv=5)
     print(f"k={k}: CV accuracy={scores.mean():.3f} +/- {scores.std():.3f}")
 
-# 2 次元データで決定境界を可視化
+# Visualise the decision boundary in 2D
 X_vis, y_vis = make_blobs(
     n_samples=450,
     centers=[(-2, 3), (1.8, 2.2), (0.8, -2.5)],
@@ -77,16 +77,16 @@ scatter = ax.scatter(
     edgecolor="#1f2937",
     linewidth=0.6,
 )
-ax.set_title("k-NN (k=5, 距離重み) の決定境界")
-ax.set_xlabel("特徴量 1")
-ax.set_ylabel("特徴量 2")
+ax.set_title("k-NN (k=5, distance weights) decision boundary")
+ax.set_xlabel("feature 1")
+ax.set_ylabel("feature 2")
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
 ax.grid(alpha=0.15)
 
 legend = ax.legend(
     handles=scatter.legend_elements()[0],
-    labels=[f"クラス {i}" for i in range(len(np.unique(y_vis)))],
+    labels=[f"class {i}" for i in range(len(np.unique(y_vis)))],
     loc="upper right",
     frameon=True,
 )
@@ -97,7 +97,7 @@ fig.tight_layout()
 
 ![knn block 1](/images/basic/classification/knn_block01.svg)
 
-## 参考文献
+## References
 {{% references %}}
 <li>Cover, T. M., &amp; Hart, P. E. (1967). Nearest Neighbor Pattern Classification. <i>IEEE Transactions on Information Theory</i>, 13(1), 21–27.</li>
 <li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning</i>. Springer.</li>

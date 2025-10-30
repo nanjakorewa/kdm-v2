@@ -1,56 +1,39 @@
 ---
-title: "Clasificación Softmax"
+title: "Regresión softmax"
 pre: "2.2.2 "
 weight: 2
-title_suffix: "Multiclase en Python"
+title_suffix: "Predecir todas las probabilidades a la vez"
 ---
 
-<div class="pagetop-box">
-  <p>La <b>clasificación softmax</b> generaliza la regresión logística a <b>múltiples clases</b>. Con dos clases equivale a logística; con tres o más devuelve una probabilidad válida sobre clases.</p>
-</div>
+{{% summary %}}
+- La regresión softmax generaliza la regresión logística al caso multiclase, produciendo simultáneamente la probabilidad de cada clase.
+- Las salidas están entre 0 y 1 y suman 1, por lo que se integran fácilmente en umbrales de decisión, reglas con costes o pipelines posteriores.
+- El entrenamiento minimiza la entropía cruzada, corrigiendo directamente la discrepancia entre la distribución predicha y la verdadera.
+- En scikit-learn, `LogisticRegression(multi_class="multinomial")` implementa la regresión softmax y admite regularización L1/L2.
+{{% /summary %}}
 
----
+## Intuición
+En el caso binario, la sigmoide entrega la probabilidad de la clase 1. Con varias clases necesitamos todas las probabilidades a la vez. La regresión softmax calcula un puntaje lineal por clase, lo exponentia y lo normaliza para obtener una verdadera distribución de probabilidad: puntajes altos se realzan y los bajos se atenúan.
 
-## 1. Función softmax
-
-Dado \\(z=(z_1,\dots,z_K)\\):
-
-$$
-\mathrm{softmax}(z_i) = \frac{\exp(z_i)}{\sum_{j=1}^{K} \exp(z_j)} \quad (i=1,\dots,K)
-$$
-
-- Salida en <b>[0,1]</b>  
-- Suma <b>1</b> entre clases  
-- Interpretación como probabilidades
-
----
-
-## 2. Modelo
-
-Para \\(x\\), el score de la clase \\(k\\):
+## Formulación matemática
+Sea \(K\) el número de clases, \(\mathbf{w}_k\) y \(b_k\) los parámetros de la clase \(k\). Entonces
 
 $$
-z_k = w_k^\top x + b_k
+P(y = k \mid \mathbf{x}) =
+\frac{\exp\left(\mathbf{w}_k^\top \mathbf{x} + b_k\right)}
+{\sum_{j=1}^{K} \exp\left(\mathbf{w}_j^\top \mathbf{x} + b_j\right)}.
 $$
 
-Probabilidad softmax:
+La función objetivo es la entropía cruzada
 
 $$
-P(y=k\mid x) = \frac{\exp(w_k^\top x + b_k)}{\sum_{j=1}^{K} \exp(w_j^\top x + b_j)}
+L = - \sum_{i=1}^{n} \sum_{k=1}^{K} \mathbb{1}(y_i = k) \log P(y = k \mid \mathbf{x}_i),
 $$
 
-Se entrena con entropía cruzada multinomial.
+con la posibilidad de añadir regularización para evitar sobreajuste.
 
----
-
-## 3. Probar en Python
-
-Use `LogisticRegression` con `multi_class="multinomial"`.
-
-{{% notice document %}}
-- [LogisticRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html)  
-- [make_classification](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html)
-{{% /notice %}}
+## Experimentos con Python
+El siguiente código entrena una regresión softmax sobre un conjunto sintético de tres clases y dibuja las regiones de decisión. Basta con indicar `multi_class="multinomial"` para activar la formulación softmax.
 
 ```python
 import matplotlib.pyplot as plt
@@ -58,6 +41,7 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_classification
 
+# Generar un conjunto de 3 clases
 X, y = make_classification(
     n_samples=300,
     n_features=2,
@@ -65,49 +49,36 @@ X, y = make_classification(
     n_informative=2,
     n_redundant=0,
     n_clusters_per_class=1,
-    random_state=42
+    random_state=42,
 )
 
+# Regresión softmax (regresión logística multiclase)
 clf = LogisticRegression(multi_class="multinomial", solver="lbfgs")
 clf.fit(X, y)
 
-x_min, x_max = X[:,0].min()-1, X[:,0].max()+1
-y_min, y_max = X[:,1].min()-1, X[:,1].max()+1
-xx, yy = np.meshgrid(np.linspace(x_min, x_max, 200),
-                     np.linspace(y_min, y_max, 200))
+# Crear una malla para visualizar
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+xx, yy = np.meshgrid(
+    np.linspace(x_min, x_max, 200),
+    np.linspace(y_min, y_max, 200),
+)
 Z = clf.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
 
+# Mostrar
 plt.figure(figsize=(8, 6))
 plt.contourf(xx, yy, Z, alpha=0.3, cmap=plt.cm.coolwarm)
-plt.scatter(X[:,0], X[:,1], c=y, edgecolor="k", cmap=plt.cm.coolwarm)
-plt.title("Clasificación softmax (logística multinomial)")
+plt.scatter(X[:, 0], X[:, 1], c=y, edgecolor="k", cmap=plt.cm.coolwarm)
+plt.title("Regiones de decisión de la regresión softmax")
+plt.xlabel("característica 1")
+plt.ylabel("característica 2")
 plt.show()
 ```
 
----
+![softmax block 1](/images/basic/classification/softmax_block01.svg)
 
-## 4. Notas
-
-- Probabilidades adecuadas para decisiones  
-- Fronteras lineales en el espacio de características  
-- Escalado de variables recomendado; añadir no linealidades si hace falta
-
----
-
-## 5. Usos típicos
-
-- <b>Texto</b> (temas multiclase)  
-- <b>Imágenes</b> (dígitos 0–9, etc.)  
-- <b>Intención de usuario</b> (una entre varias)
-
----
-
-## Resumen
-
-- Softmax generaliza logística a multiclase.  
-- Devuelve una distribución de probabilidad válida.  
-- En scikit-learn, `multi_class="multinomial"`.  
-- Base simple y fuerte para muchos problemas.
-
----
-
+## Referencias
+{{% references %}}
+<li>Bishop, C. M. (2006). <i>Pattern Recognition and Machine Learning</i>. Springer.</li>
+<li>Murphy, K. P. (2012). <i>Machine Learning: A Probabilistic Perspective</i>. MIT Press.</li>
+{{% /references %}}

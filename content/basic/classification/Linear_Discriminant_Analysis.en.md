@@ -1,12 +1,31 @@
 ---
-title: "Linear Discriminant Analysis"
-pre: "2.2.2 "
-weight: 2
+title: "Linear Discriminant Analysis (LDA)"
+pre: "2.2.4 "
+weight: 4
+title_suffix: "Learn directions that separate classes"
 ---
 
-<div class="pagetop-box">
-    <p>Linear Discriminant Analysis (LDA) is a method of drawing a boundary that can discriminate between classes based on the degree of data cohesion between classes and the degree of data variability between classes for two classes of data. It also allows for dimensionality reduction of the data based on the results obtained. On this page, we will visualize the decision boundaries obtained by LDA and visualize the results of dimensionality reduction.</p>
-</div>
+{{% summary %}}
+- LDA finds directions that maximize the ratio of between-class variance to within-class variance, serving both classification and dimensionality reduction.
+- The decision boundary takes the form \(\mathbf{w}^\top \mathbf{x} + b = 0\), which becomes a line in 2D or a plane in 3D, giving a clear geometric interpretation.
+- Assuming each class is Gaussian with the same covariance matrix, LDA approaches the Bayes-optimal classifier.
+- scikit-learn’s `LinearDiscriminantAnalysis` makes it easy to visualise decision boundaries and to inspect the projected features.
+{{% /summary %}}
+
+## Intuition
+LDA searches for directions that keep samples of the same class close together while pushing samples from different classes far apart. Projecting the data onto that direction makes the classes easier to separate, so it can be used directly for classification or as a dimensionality-reduction step before another classifier.
+
+## Mathematical formulation
+For the two-class case, the projection direction \(\mathbf{w}\) maximizes
+
+$$
+J(\mathbf{w}) = \frac{\mathbf{w}^\top \mathbf{S}_B \mathbf{w}}{\mathbf{w}^\top \mathbf{S}_W \mathbf{w}},
+$$
+
+where \(\mathbf{S}_B\) is the between-class scatter matrix and \(\mathbf{S}_W\) is the within-class scatter matrix. In the multi-class case we obtain up to \(K-1\) projection directions, which can be used for dimensionality reduction.
+
+## Experiments with Python
+Below we apply LDA to a synthetic two-class data set, draw the decision boundary, and plot the projected 1D features. Calling `transform` returns the projected data directly.
 
 ```python
 import numpy as np
@@ -14,112 +33,64 @@ import matplotlib.pyplot as plt
 import japanize_matplotlib
 from sklearn.datasets import make_blobs
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-```
 
-## Generate dataset
+rs = 42
+X, y = make_blobs(
+    n_samples=200, centers=2, n_features=2, cluster_std=2, random_state=rs
+)
 
-
-```python
-n_samples = 200
-X, y = make_blobs(n_samples=200, centers=2, n_features=2, cluster_std=2)
-X[:, 0] -= np.mean(X[:, 0])
-X[:, 1] -= np.mean(X[:, 1])
-
-fig = plt.figure(figsize=(7, 7))
-plt.title("Scatter plots of data", fontsize=20)
-plt.scatter(X[:, 0], X[:, 1], c=y)
-plt.show()
-```
-
-
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_5_0.png)
-    
-
-
-## Find decision boundaries by Linear discriminant analysis
-
-{{% notice document %}}
-[sklearn.discriminant_analysis.LinearDiscriminantAnalysis](https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html)
-{{% /notice %}}
-
-
-```python
-# Find the decision boundary
 clf = LinearDiscriminantAnalysis(store_covariance=True)
 clf.fit(X, y)
 
-# Check the decision boundary
 w = clf.coef_[0]
-wt = -1 / (w[1] / w[0])  ## Find the slope perpendicular to w
-xs = np.linspace(-10, 10, 100)
-ys_w = [(w[1] / w[0]) * xi for xi in xs]
-ys_wt = [wt * xi for xi in xs]
+b = clf.intercept_[0]
 
-fig = plt.figure(figsize=(7, 7))
-plt.title("Visualize the slope of the decision boundary", fontsize=20)
-plt.scatter(X[:, 0], X[:, 1], c=y)  # sample dataset
-plt.plot(xs, ys_w, "-.", color="k", alpha=0.5)  # orientation of W
-plt.plot(xs, ys_wt, "--", color="k")  # Orientation perpendicular to w
+xs = np.linspace(X[:, 0].min() - 1, X[:, 0].max() + 1, 200)
+ys_boundary = -(w[0] / w[1]) * xs - b / w[1]
 
-plt.xlim(-10, 10)
-plt.ylim(-10, 10)
+scale = 3.0
+origin = X.mean(axis=0)
+arrow_end = origin + scale * (w / np.linalg.norm(w))
+
+plt.figure(figsize=(7, 7))
+plt.title("LDA decision boundary and projection direction", fontsize=16)
+plt.scatter(X[:, 0], X[:, 1], c=y, cmap="coolwarm", edgecolor="k", alpha=0.8, label="samples")
+plt.plot(xs, ys_boundary, "k--", lw=1.2, label=r"$\mathbf{w}^\top \mathbf{x} + b = 0$")
+plt.arrow(
+    origin[0],
+    origin[1],
+    (arrow_end - origin)[0],
+    (arrow_end - origin)[1],
+    head_width=0.5,
+    length_includes_head=True,
+    color="k",
+    alpha=0.7,
+    label="projection direction $\mathbf{w}$",
+)
+plt.xlabel("feature 1")
+plt.ylabel("feature 2")
+plt.legend()
+plt.xlim(X[:, 0].min() - 2, X[:, 0].max() + 2)
+plt.ylim(X[:, 1].min() - 2, X[:, 1].max() + 2)
+plt.grid(alpha=0.25)
 plt.show()
 
-# The result of transferring data to one dimension based on the vector w obtained
-X_1d = clf.transform(X).reshape(1, -1)[0]
-fig = plt.figure(figsize=(7, 7))
-plt.title("Location of data when data is projected in one dimension", fontsize=15)
-plt.scatter(X_1d, [0 for _ in range(n_samples)], c=y)
-plt.show()
-```
+X_1d = clf.transform(X)[:, 0]
 
-
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_7_0.png)
-    
-
-
-
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_7_1.png)
-    
-
-
-## Example with more than 2-dimensional data
-
-
-```python
-X_3d, y_3d = make_blobs(n_samples=200, centers=3, n_features=3, cluster_std=3)
-
-# Distribution of sample data
-fig = plt.figure(figsize=(7, 7))
-plt.title("Scatter plots of data", fontsize=20)
-ax = fig.add_subplot(projection="3d")
-ax.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2], c=y_3d)
-plt.show()
-
-# Apply LDA
-clf_3d = LinearDiscriminantAnalysis()
-clf_3d.fit(X_3d, y_3d)
-X_2d = clf_3d.transform(X_3d)
-
-# Location of data when data is projected in two dimensions
-fig = plt.figure(figsize=(7, 7))
-
-plt.title("Location of data when data is projected in two dimensions", fontsize=15)
-plt.scatter(X_2d[:, 0], X_2d[:, 1], c=y_3d)
+plt.figure(figsize=(8, 4))
+plt.title("One-dimensional projection by LDA", fontsize=15)
+plt.hist(X_1d[y == 0], bins=20, alpha=0.7, label="class 0")
+plt.hist(X_1d[y == 1], bins=20, alpha=0.7, label="class 1")
+plt.xlabel("projected feature")
+plt.legend()
+plt.grid(alpha=0.25)
 plt.show()
 ```
 
+![linear-discriminant-analysis block 2](/images/basic/classification/linear-discriminant-analysis_block02.svg)
 
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_9_0.png)
-    
-
-
-
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_9_1.png)
-    
-
+## References
+{{% references %}}
+<li>Fisher, R. A. (1936). The Use of Multiple Measurements in Taxonomic Problems. <i>Annals of Eugenics</i>, 7(2), 179–188.</li>
+<li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning</i>. Springer.</li>
+{{% /references %}}

@@ -1,13 +1,31 @@
 ---
-title: "Analisis Diskriminan Linier"
-pre: "2.2.2 "
-weight: 2
-searchtitle: "Analisis Diskriminan Linier dalam python"
+title: "Linear Discriminant Analysis (LDA)"
+pre: "2.2.4 "
+weight: 4
+title_suffix: "Mencari arah yang memisahkan kelas"
 ---
 
-<div class="pagetop-box">
-    <p>Linear Discriminant Analysis (LDA) adalah metode penarikan batas yang dapat mendiskriminasikan antar kelas berdasarkan derajat kohesi data antar kelas dan derajat variabilitas data antar kelas untuk dua kelas data. Hal ini juga memungkinkan dilakukannya reduksi dimensionalitas data berdasarkan hasil yang diperoleh. Pada halaman ini, kita akan memvisualisasikan batas-batas keputusan yang diperoleh LDA dan memvisualisasikan hasil pengurangan dimensionalitas.</p>
-</div>
+{{% summary %}}
+- LDA mencari arah yang memaksimalkan rasio antara variansi antar kelas dan variansi intra kelas, sehingga berguna untuk klasifikasi sekaligus reduksi dimensi.
+- Batas keputusan berbentuk \(\mathbf{w}^\top \mathbf{x} + b = 0\); di 2D berupa garis dan di 3D berupa bidang, mudah ditafsirkan secara geometris.
+- Dengan asumsi tiap kelas berdistribusi Gaussian dan berbagi kovarians yang sama, LDA mendekati klasifikator Bayes optimal.
+- `LinearDiscriminantAnalysis` di scikit-learn memudahkan visualisasi batas keputusan dan inspeksi fitur hasil proyeksi.
+{{% /summary %}}
+
+## Intuisi
+LDA mencari arah proyeksi yang membuat sampel dalam kelas yang sama tetap rapat, namun mendorong sampel dari kelas berbeda saling menjauh. Setelah diproyeksikan, kelas menjadi lebih mudah dipisahkan, sehingga LDA dapat dipakai langsung untuk klasifikasi atau sebagai langkah reduksi dimensi sebelum model lain.
+
+## Formulasi matematis
+Untuk dua kelas, arah proyeksi \(\mathbf{w}\) memaksimalkan
+
+$$
+J(\mathbf{w}) = \frac{\mathbf{w}^\top \mathbf{S}_B \mathbf{w}}{\mathbf{w}^\top \mathbf{S}_W \mathbf{w}},
+$$
+
+di mana \(\mathbf{S}_B\) adalah matriks sebar antar kelas dan \(\mathbf{S}_W\) adalah matriks sebar intra kelas. Pada kasus multikelas diperoleh hingga \(K-1\) arah proyeksi yang berguna untuk reduksi dimensi.
+
+## Eksperimen dengan Python
+Contoh berikut menerapkan LDA pada data sintetis dua kelas, menggambar batas keputusan, dan menampilkan fitur hasil proyeksi 1D. Dengan `transform`, data hasil proyeksi dapat langsung diperoleh.
 
 ```python
 import numpy as np
@@ -15,111 +33,64 @@ import matplotlib.pyplot as plt
 import japanize_matplotlib
 from sklearn.datasets import make_blobs
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-```
 
-## Generate dataset
+rs = 42
+X, y = make_blobs(
+    n_samples=200, centers=2, n_features=2, cluster_std=2, random_state=rs
+)
 
-
-```python
-n_samples = 200
-X, y = make_blobs(n_samples=200, centers=2, n_features=2, cluster_std=2)
-X[:, 0] -= np.mean(X[:, 0])
-X[:, 1] -= np.mean(X[:, 1])
-
-fig = plt.figure(figsize=(7, 7))
-plt.title("Plot sebaran data", fontsize=20)
-plt.scatter(X[:, 0], X[:, 1], c=y)
-plt.show()
-```
-
-
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_5_0.png)
-    
-
-
-## Temukan batas-batas keputusan dengan analisis diskriminan Linear
-{{% notice document %}}
-[sklearn.discriminant_analysis.LinearDiscriminantAnalysis](https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html)
-{{% /notice %}}
-
-
-```python
-# Temukan batas keputusan
 clf = LinearDiscriminantAnalysis(store_covariance=True)
 clf.fit(X, y)
 
-# Periksa batas keputusan
 w = clf.coef_[0]
-wt = -1 / (w[1] / w[0])  ## Temukan kemiringan yang tegak lurus terhadap w
-xs = np.linspace(-10, 10, 100)
-ys_w = [(w[1] / w[0]) * xi for xi in xs]
-ys_wt = [wt * xi for xi in xs]
+b = clf.intercept_[0]
 
-fig = plt.figure(figsize=(7, 7))
-plt.title("Visualisasi kemiringan batas keputusan.", fontsize=20)
-plt.scatter(X[:, 0], X[:, 1], c=y)
-plt.plot(xs, ys_w, "-.", color="k", alpha=0.5)  # orientasi dari W
-plt.plot(xs, ys_wt, "--", color="k")  # Orientasi tegak lurus terhadap w
+xs = np.linspace(X[:, 0].min() - 1, X[:, 0].max() + 1, 200)
+ys_boundary = -(w[0] / w[1]) * xs - b / w[1]
 
-plt.xlim(-10, 10)
-plt.ylim(-10, 10)
+scale = 3.0
+origin = X.mean(axis=0)
+arrow_end = origin + scale * (w / np.linalg.norm(w))
+
+plt.figure(figsize=(7, 7))
+plt.title("Batas keputusan dan arah proyeksi LDA", fontsize=16)
+plt.scatter(X[:, 0], X[:, 1], c=y, cmap="coolwarm", edgecolor="k", alpha=0.8, label="sampel")
+plt.plot(xs, ys_boundary, "k--", lw=1.2, label=r"$\mathbf{w}^\top \mathbf{x} + b = 0$")
+plt.arrow(
+    origin[0],
+    origin[1],
+    (arrow_end - origin)[0],
+    (arrow_end - origin)[1],
+    head_width=0.5,
+    length_includes_head=True,
+    color="k",
+    alpha=0.7,
+    label="arah proyeksi $\mathbf{w}$",
+)
+plt.xlabel("fitur 1")
+plt.ylabel("fitur 2")
+plt.legend()
+plt.xlim(X[:, 0].min() - 2, X[:, 0].max() + 2)
+plt.ylim(X[:, 1].min() - 2, X[:, 1].max() + 2)
+plt.grid(alpha=0.25)
 plt.show()
 
-# Lokasi data ketika memproyeksikan data dalam satu dimensi.
-X_1d = clf.transform(X).reshape(1, -1)[0]
-fig = plt.figure(figsize=(7, 7))
-plt.title("Lokasi data ketika memproyeksikan data dalam satu dimensi.", fontsize=15)
-plt.scatter(X_1d, [0 for _ in range(n_samples)], c=y)
-plt.show()
-```
+X_1d = clf.transform(X)[:, 0]
 
-
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_7_0.png)
-    
-
-
-
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_7_1.png)
-    
-
-
-## Contoh dengan data dalam lebih dari dua dimensi.
-
-
-```python
-X_3d, y_3d = make_blobs(n_samples=200, centers=3, n_features=3, cluster_std=3)
-
-# Distribusi data sampel
-fig = plt.figure(figsize=(7, 7))
-plt.title("Distribusi data sampel", fontsize=20)
-ax = fig.add_subplot(projection="3d")
-ax.scatter(X_3d[:, 0], X_3d[:, 1], X_3d[:, 2], c=y_3d)
-plt.show()
-
-# Terapkan LDA
-clf_3d = LinearDiscriminantAnalysis()
-clf_3d.fit(X_3d, y_3d)
-X_2d = clf_3d.transform(X_3d)
-
-# Lokasi data ketika data diproyeksikan dalam dua dimensi
-fig = plt.figure(figsize=(7, 7))
-
-plt.title("Lokasi data ketika data diproyeksikan dalam dua dimensi", fontsize=15)
-plt.scatter(X_2d[:, 0], X_2d[:, 1], c=y_3d)
+plt.figure(figsize=(8, 4))
+plt.title("Proyeksi satu dimensi dengan LDA", fontsize=15)
+plt.hist(X_1d[y == 0], bins=20, alpha=0.7, label="kelas 0")
+plt.hist(X_1d[y == 1], bins=20, alpha=0.7, label="kelas 1")
+plt.xlabel("fitur terproyeksi")
+plt.legend()
+plt.grid(alpha=0.25)
 plt.show()
 ```
 
+![linear-discriminant-analysis block 2](/images/basic/classification/linear-discriminant-analysis_block02.svg)
 
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_9_0.png)
-    
-
-
-
-    
-![png](/images/basic/classification/Linear_Discriminant_Analysis_files/Linear_Discriminant_Analysis_9_1.png)
-    
-
+## Referensi
+{{% references %}}
+<li>Fisher, R. A. (1936). The Use of Multiple Measurements in Taxonomic Problems. <i>Annals of Eugenics</i>, 7(2), 179–188.</li>
+<li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning</i>. Springer.</li>
+{{% /references %}}

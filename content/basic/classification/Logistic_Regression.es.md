@@ -2,58 +2,45 @@
 title: "Regresión logística"
 pre: "2.2.1 "
 weight: 1
-searchtitle: "Ejecución de la regresión logística en python"
+title_suffix: "Estimar probabilidades con la sigmoide"
 ---
 
-<div class="pagetop-box">
-    <p>La regresión logística es un modelo de clasificación de dos clases. Este método trata de convertir los valores numéricos que arroja el modelo de regresión lineal en probabilidades para poder resolver el problema de clasificación.
-En esta página, ejecutaré la regresión logística implementada en sikit-learn y dibujaré su límite de decisión (el límite en el que se basa la clasificación).</p>
-</div>
+{{% summary %}}
+- La regresión logística aplica una combinación lineal de las entradas a la función sigmoide para predecir la probabilidad de que la etiqueta sea 1.
+- La salida está en \([0, 1]\), lo que permite fijar umbrales de decisión con flexibilidad y leer los coeficientes como contribuciones al logit.
+- El entrenamiento minimiza la entropía cruzada (equivale a maximizar la verosimilitud); la regularización L1/L2 ayuda a evitar el sobreajuste.
+- Con `LogisticRegression` de scikit-learn se cubren el preprocesamiento, el ajuste y la visualización de la frontera de decisión en pocas líneas.
+{{% /summary %}}
+
+## Intuición
+La regresión lineal produce valores reales, pero en clasificación suele interesar “¿cuál es la probabilidad de la clase 1?”. La regresión logística aborda el problema pasando el puntaje lineal \(z = \mathbf{w}^\top \mathbf{x} + b\) por la función sigmoide \(\sigma(z) = 1 / (1 + e^{-z})\), obteniendo valores con interpretación probabilística. Una regla simple, como “predecir 1 si \(P(y=1 \mid \mathbf{x}) > 0.5\)”, basta para clasificar.
+
+## Formulación matemática
+La probabilidad de la clase 1 dada \(\mathbf{x}\) es
+
+$$
+P(y=1 \mid \mathbf{x}) = \sigma(\mathbf{w}^\top \mathbf{x} + b) = \frac{1}{1 + \exp\left(-(\mathbf{w}^\top \mathbf{x} + b)\right)}.
+$$
+
+El aprendizaje maximiza la log-verosimilitud
+
+$$
+\ell(\mathbf{w}, b) = \sum_{i=1}^{n} \Bigl[ y_i \log p_i + (1 - y_i) \log (1 - p_i) \Bigr], \quad p_i = \sigma(\mathbf{w}^\top \mathbf{x}_i + b),
+$$
+
+o, de forma equivalente, minimiza la entropía cruzada negativa. Agregar regularización L2 evita coeficientes inestables, mientras que L1 puede anular características irrelevantes.
+
+## Experimentos con Python
+El siguiente ejemplo ajusta la regresión logística a un conjunto sintético bidimensional y visualiza la frontera resultante. Gracias a scikit-learn, entrenar y trazar la frontera requiere pocas líneas.
 
 ```python
-import matplotlib.pyplot as plt
 import numpy as np
-```
-
-## Visualización de las funciones Logit
-
-
-```python
-fig = plt.figure(figsize=(4, 8))
-p = np.linspace(0.01, 0.999, num=100)
-y = np.log(p / (1 - p))
-plt.plot(p, y)
-
-plt.xlabel("p")
-plt.ylabel("y")
-plt.axhline(y=0, color="k")
-plt.ylim(-3, 3)
-plt.grid()
-plt.show()
-```
-
-
-    
-![png](/images/basic/classification/Logistic_Regression_files/Logistic_Regression_4_0.png)
-    
-
-
-## Regresión logística
-
-En esta sección, intento entrenar la regresión logística con datos generados artificialmente.
-
-{{% notice document %}}
-- [sklearn.linear_model.LogisticRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html)
-- [sklearn.datasets.make_classification](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html)
-{{% /notice %}}
-
-
-```python
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_classification
 
-## Conjunto de datos
-X, Y = make_classification(
+# Generar un conjunto de clasificación 2D
+X, y = make_classification(
     n_samples=300,
     n_features=2,
     n_redundant=0,
@@ -62,29 +49,34 @@ X, Y = make_classification(
     n_clusters_per_class=1,
 )
 
-# Entrenamiento de la regresión logística
+# Entrenar el modelo
 clf = LogisticRegression()
-clf.fit(X, Y)
+clf.fit(X, y)
 
-# Encontrar el límite de decisión
+# Calcular la frontera de decisión
 b = clf.intercept_[0]
 w1, w2 = clf.coef_.T
-b_1 = -w1 / w2
-b_0 = -b / w2
-xmin, xmax = np.min(X[:, 0]), np.max(X[:, 0])
-ymin, ymax = np.min(X[:, 1]), np.max(X[:, 1])
-xd = np.array([xmin, xmax])
-yd = b_1 * xd + b_0
+slope = -w1 / w2
+intercept = -b / w2
 
-# Trazar gráficos
-plt.figure(figsize=(10, 10))
-plt.plot(xd, yd, "k", lw=1, ls="-")
-plt.scatter(*X[Y == 0].T, marker="o")
-plt.scatter(*X[Y == 1].T, marker="x")
-plt.xlim(xmin, xmax)
-plt.ylim(ymin, ymax)
+xmin, xmax = np.min(X[:, 0]), np.max(X[:, 0])
+xd = np.array([xmin, xmax])
+yd = slope * xd + intercept
+
+# Visualizar
+plt.figure(figsize=(8, 8))
+plt.plot(xd, yd, "k-", lw=1, label="frontera de decisión")
+plt.scatter(*X[y == 0].T, marker="o", label="clase 0")
+plt.scatter(*X[y == 1].T, marker="x", label="clase 1")
+plt.legend()
+plt.title("Frontera de la regresión logística")
 plt.show()
 ```
 
+![logistic-regression block 2](/images/basic/classification/logistic-regression_block02.svg)
 
-![png](/images/basic/classification/Logistic_Regression_files/Logistic_Regression_6_0.png)
+## Referencias
+{{% references %}}
+<li>Agresti, A. (2015). <i>Foundations of Linear and Generalized Linear Models</i>. Wiley.</li>
+<li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning</i>. Springer.</li>
+{{% /references %}}

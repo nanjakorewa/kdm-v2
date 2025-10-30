@@ -2,57 +2,45 @@
 title: "Regresi Logistik"
 pre: "2.2.1 "
 weight: 1
-searchtitle: "Regresi Logistik in python"
+title_suffix: "Menghitung probabilitas dengan sigmoid"
 ---
 
-<div class="pagetop-box">
-    <p>Regresi logistik adalah model untuk klasifikasi dua kelas. Metode ini mencoba untuk mengubah nilai numerik yang dihasilkan oleh model regresi linier menjadi probabilitas sehingga masalah klasifikasi dapat diselesaikan.
-Pada halaman ini, saya akan menjalankan regresi logistik yang diimplementasikan di sikit-learn dan menggambar batas keputusannya (batas yang menjadi dasar klasifikasi).</p>
-</div>
+{{% summary %}}
+- Regresi logistik memasukkan kombinasi linear fitur ke fungsi sigmoid untuk memperkirakan probabilitas bahwa label bernilai 1.
+- Keluaran berada di rentang \([0, 1]\), sehingga ambang keputusan dapat diatur fleksibel dan koefisien dapat dibaca sebagai kontribusi terhadap log-odds.
+- Pelatihan meminimalkan loss entropi silang (sama dengan memaksimalkan log-likelihood); regularisasi L1/L2 membantu menekan overfitting.
+- Dengan `LogisticRegression` dari scikit-learn, pra-pemrosesan, pelatihan, hingga visualisasi garis keputusan dapat diselesaikan dalam beberapa baris kode.
+{{% /summary %}}
+
+## Intuisi
+Regresi linear menghasilkan bilangan real, namun pada klasifikasi kita sering membutuhkan probabilitas “seberapa besar kemungkinan kelas 1?”. Regresi logistik menyelesaikannya dengan memasukkan skor linear \(z = \mathbf{w}^\top \mathbf{x} + b\) ke fungsi sigmoid \(\sigma(z) = 1 / (1 + e^{-z})\), sehingga keluar nilai yang dapat diinterpretasikan sebagai probabilitas. Dengan probabilitas tersebut, aturan sederhana seperti “prediksi 1 jika \(P(y=1 \mid \mathbf{x}) > 0.5\)” sudah cukup untuk mengklasifikasikan.
+
+## Formulasi matematis
+Probabilitas kelas 1 diberikan oleh
+
+$$
+P(y=1 \mid \mathbf{x}) = \sigma(\mathbf{w}^\top \mathbf{x} + b) = \frac{1}{1 + \exp\left(-(\mathbf{w}^\top \mathbf{x} + b)\right)}.
+$$
+
+Model dilatih dengan memaksimalkan log-likelihood
+
+$$
+\ell(\mathbf{w}, b) = \sum_{i=1}^{n} \Bigl[ y_i \log p_i + (1 - y_i) \log (1 - p_i) \Bigr], \quad p_i = \sigma(\mathbf{w}^\top \mathbf{x}_i + b),
+$$
+
+atau, secara ekuivalen, meminimalkan entropi silang negatif. Regularisasi L2 menahan koefisien agar tidak terlalu besar, sedangkan L1 dapat meniadakan fitur yang tidak relevan.
+
+## Eksperimen dengan Python
+Contoh berikut menyesuaikan regresi logistik pada data sintetis dua dimensi dan memvisualisasikan garis keputusan yang dihasilkan. Berkat scikit-learn, seluruh proses pelatihan dan plotting hanya membutuhkan sedikit kode.
 
 ```python
-import matplotlib.pyplot as plt
 import numpy as np
-```
-
-## Visualisasi Fungsi Logit
-
-```python
-fig = plt.figure(figsize=(4, 8))
-p = np.linspace(0.01, 0.999, num=100)
-y = np.log(p / (1 - p))
-plt.plot(p, y)
-
-plt.xlabel("p")
-plt.ylabel("y")
-plt.axhline(y=0, color="k")
-plt.ylim(-3, 3)
-plt.grid()
-plt.show()
-```
-
-
-    
-![png](/images/basic/classification/Logistic_Regression_files/Logistic_Regression_4_0.png)
-    
-
-
-## Regresi Logistik
-
-Pada bagian ini, saya mencoba melatih regresi Logistik pada data yang dibuat secara artifisial.
-
-{{% notice document %}}
-- [sklearn.linear_model.LogisticRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html)
-- [sklearn.datasets.make_classification](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html)
-{{% /notice %}}
-
-
-```python
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_classification
 
-## Dataset
-X, Y = make_classification(
+# Membuat dataset klasifikasi 2D
+X, y = make_classification(
     n_samples=300,
     n_features=2,
     n_redundant=0,
@@ -61,29 +49,34 @@ X, Y = make_classification(
     n_clusters_per_class=1,
 )
 
-# Pelatihan LogisticRegression
+# Melatih model
 clf = LogisticRegression()
-clf.fit(X, Y)
+clf.fit(X, y)
 
-# Temukan batas keputusan
+# Menghitung garis keputusan
 b = clf.intercept_[0]
 w1, w2 = clf.coef_.T
-b_1 = -w1 / w2
-b_0 = -b / w2
-xmin, xmax = np.min(X[:, 0]), np.max(X[:, 0])
-ymin, ymax = np.min(X[:, 1]), np.max(X[:, 1])
-xd = np.array([xmin, xmax])
-yd = b_1 * xd + b_0
+slope = -w1 / w2
+intercept = -b / w2
 
-# Plot Grafik
-plt.figure(figsize=(10, 10))
-plt.plot(xd, yd, "k", lw=1, ls="-")
-plt.scatter(*X[Y == 0].T, marker="o")
-plt.scatter(*X[Y == 1].T, marker="x")
-plt.xlim(xmin, xmax)
-plt.ylim(ymin, ymax)
+xmin, xmax = np.min(X[:, 0]), np.max(X[:, 0])
+xd = np.array([xmin, xmax])
+yd = slope * xd + intercept
+
+# Visualisasi
+plt.figure(figsize=(8, 8))
+plt.plot(xd, yd, "k-", lw=1, label="garis keputusan")
+plt.scatter(*X[y == 0].T, marker="o", label="kelas 0")
+plt.scatter(*X[y == 1].T, marker="x", label="kelas 1")
+plt.legend()
+plt.title("Garis keputusan regresi logistik")
 plt.show()
 ```
 
+![logistic-regression block 2](/images/basic/classification/logistic-regression_block02.svg)
 
-![png](/images/basic/classification/Logistic_Regression_files/Logistic_Regression_6_0.png)
+## Referensi
+{{% references %}}
+<li>Agresti, A. (2015). <i>Foundations of Linear and Generalized Linear Models</i>. Wiley.</li>
+<li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning</i>. Springer.</li>
+{{% /references %}}
