@@ -16,7 +16,8 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt  # noqa: E402
-import japanize_matplotlib  # noqa: E402
+import japanize_matplotlib as jam
+
 
 plt.style.use("scripts/k_dm.mplstyle")
 
@@ -80,7 +81,7 @@ def main(_: argparse.Namespace) -> None:
         code_blocks = extract_python_blocks(md_path.read_text(encoding="utf-8"))
 
         for idx, block in enumerate(code_blocks, start=1):
-            japanize_matplotlib.japanize()
+            jam.japanize()
             try:
                 run_snippet(block, md_path)
                 print(f"Executed block {idx} from {relative_path.as_posix()}")

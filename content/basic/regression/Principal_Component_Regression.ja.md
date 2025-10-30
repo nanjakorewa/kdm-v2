@@ -1,31 +1,31 @@
 ---
-title: "主成分回帰（PCR）"
+title: "主成分回帰 (PCR)"
 pre: "2.1.8 "
 weight: 8
 title_suffix: "多重共線性を緩和する次元圧縮回帰"
 ---
 
 {{% summary %}}
-- 主成分回帰（PCR）は PCA で特徴量を圧縮してから線形回帰を行い、多重共線性による不安定さを抑える。
-- 主成分はデータの分散が大きい方向を優先するため、ノイズ軸を削り情報を保ったままモデルを構築できる。
-- 残す主成分数を適切に選ぶことで、過学習を防ぎながら計算量も削減できる。
-- 標準化や欠損値処理など前処理を整えることが精度向上と解釈の土台になる。
+- 主成分回帰 (PCR) は PCA で特徴量を圧縮してから線形回帰を行い、多重共線性による不安定さを抑える。
+- 主成分はデータの分散が大きい方向を優先するため、ノイズの多い軸を削り情報を保ったままモデルを構築できる。
+- 残す主成分数を調整することで、過学習を防ぎながら計算量も削減できる。
+- 標準化や欠損値処理などの前処理を整えることが精度向上と解釈の土台になる。
 {{% /summary %}}
 
 ## 直感
-説明変数同士に強い相関があると、最小二乗法では係数が過度に変動したり、解釈が難しくなります。PCR はまず PCA で相関のある軸をまとめ、情報量の多い順に並べ替えた主成分スコアだけを用いて回帰します。重要な変動だけを残すことで、安定した回帰係数を得られるという発想です。
+説明変数同士に強い相関があると、最小二乗法では係数が過度に変動したり解釈が難しくなります。PCR はまず PCA で相関のある軸をまとめ、情報量の多い順に並べ替えた主成分スコアだけを用いて回帰します。重要な変動だけを残すことで、安定した回帰係数を得ようという発想です。
 
 ## 具体的な数式
-標準化した説明変数行列 \\(\mathbf{X}\\) に PCA を適用し、固有値の大きい順に \\(k\\) 個の主成分を選びます。主成分スコアを \\(\mathbf{Z} = \mathbf{X} \mathbf{W}_k\\) とすると、回帰モデルは
+標準化した説明変数行列 \(\mathbf{X}\) に PCA を適用し、固有値の大きいものから \(k\) 個の主成分を選びます。主成分スコアを \(\mathbf{Z} = \mathbf{X} \mathbf{W}_k\) とすると、回帰モデルは
 
 $$
 y = \boldsymbol{\gamma}^\top \mathbf{Z} + b
 $$
 
-で学習されます。最終的に元の特徴量空間の係数は \\(\boldsymbol{\beta} = \mathbf{W}_k \boldsymbol{\gamma}\\) として復元できます。主成分数 \\(k\\) は累積寄与率や交差検証で選びます。
+で学習されます。最終的に元の特徴量空間の係数は \(\boldsymbol{\beta} = \mathbf{W}_k \boldsymbol{\gamma}\) として復元できます。主成分数 \(k\) は累積寄与率や交差検証で選ぶのが一般的です。
 
 ## Pythonを用いた実験や説明
-糖尿病データセットを使い、主成分数ごとに交差検証スコアを比較する例です。
+糖尿病データセットを使って主成分数ごとの交差検証スコアを比較します。
 
 ```python
 import numpy as np
@@ -56,16 +56,16 @@ for k in components:
     cv_scores.append(score.mean())
 
 best_k = components[int(np.argmax(cv_scores))]
-print("CVで最良の主成�E数:", best_k)
+print("CVで最良の主成分数:", best_k)
 
 best_model = build_pcr(best_k).fit(X, y)
-print("学習済みモチE��の PCA 寁E��率:", best_model["pca"].explained_variance_ratio_)
+print("学習済みモデルの PCA 寄与率:", best_model["pca"].explained_variance_ratio_)
 
 plt.figure(figsize=(8, 4))
 plt.plot(components, [-s for s in cv_scores], marker="o")
 plt.axvline(best_k, color="red", linestyle="--", label=f"best={best_k}")
-plt.xlabel("主成�E数 k")
-plt.ylabel("CV MSE (小さぁE��どよい)")
+plt.xlabel("主成分数 k")
+plt.ylabel("CV MSE (小さいほどよい)")
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -74,9 +74,9 @@ plt.show()
 ![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01.svg)
 
 ### 実行結果の読み方
-- 主成分数を増やすと訓練データの適合は上がるが、交差検証 MSE が最小となるポイントが存在する。
+- 主成分数を増やすと訓練データへの適合が上がるが、交差検証 MSE が最小となるポイントがある。
 - PCA の寄与率を確認すると、どの主成分が全体の説明力に貢献しているかを把握できる。
-- 主成分の負荷量を調べれば、元の特徴量がどの主成分に強く寄与しているかが分かる。
+- 主成分の負荷量を調べれば、どの特徴量が各主成分に強く寄与しているかが分かる。
 
 ## 参考文献
 {{% references %}}

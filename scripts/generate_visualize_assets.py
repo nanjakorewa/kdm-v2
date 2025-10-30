@@ -18,7 +18,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import japanize_matplotlib as jam
 import matplotlib.pyplot as plt
-import japanize_matplotlib
+import japanize_matplotlib as jam
 
 plt.style.use("scripts/k_dm.mplstyle")
 
