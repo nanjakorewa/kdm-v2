@@ -2,204 +2,102 @@
 title: "Regresi Ridge dan Lasso"
 pre: "2.1.2 "
 weight: 2
-title_suffix: "Intuisi dan praktik"
+title_suffix: "Meningkatkan generalisasi dengan regularisasi"
 ---
 
-{{% youtube "rhGYOBrxPXA" %}}
+{{% summary %}}
+- Ridge mengecilkan koefisien secara halus dengan penalti L2 dan tetap stabil meskipun terjadi multikolinearitas.
+- Lasso menggunakan penalti L1 yang dapat membuat sebagian koefisien menjadi nol sehingga fitur penting tetap tersisa dan model mudah ditafsirkan.
+- Menyetel kekuatan regularisasi \(\alpha\) mengendalikan kompromi antara ketepatan pada data latih dan kemampuan generalisasi.
+- Kombinasi standardisasi dan validasi silang membantu memilih hiperparameter yang mencegah overfitting tanpa mengorbankan kinerja.
+{{% /summary %}}
 
+## Intuisi
+Kuadrat terkecil dapat menghasilkan koefisien ekstrem saat ada pencilan atau ketika fitur saling berkorelasi kuat. Ridge dan Lasso menambahkan penalti agar koefisien tidak tumbuh tak terbatas, sehingga keseimbangan antara akurasi dan interpretabilitas terjaga. Ridge “menyusutkan semuanya sedikit E, sedangkan Lasso “mematikan Esebagian koefisien dengan membuat nilainya tepat nol.
 
-<div class="pagetop-box">
-  <p><b>Ridge</b> (L2) dan <b>Lasso</b> (L1) menambahkan penalti pada besaran koefisien untuk <b>mengurangi overfitting</b> dan meningkatkan <b>generalization</b>. Ini disebut <b>regularisasi</b>. Kita akan melatih OLS, Ridge, dan Lasso dengan kondisi yang sama dan membandingkan perilakunya.</p>
-  </div>
+## Formulasi matematis
+Kedua metode meminimalkan loss kuadrat biasa ditambah term regularisasi:
 
----
-
-## 1. Intuisi dan rumus
-
-OLS meminimalkan jumlah kuadrat residual:
-$$
-\text{RSS}(\boldsymbol\beta, b) = \sum_{i=1}^n \big(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\big)^2.
-$$
-Dengan banyak fitur, kolinearitas kuat, atau data berisik, koefisien bisa terlalu besar dan overfit. Regularisasi menambah penalti untuk <b>mengecilkan</b> koefisien.
-
-- <b>Ridge (L2)</b>
+- **Ridge**
   $$
-  \min_{\boldsymbol\beta, b}\; \text{RSS}(\boldsymbol\beta,b) + \alpha \lVert \boldsymbol\beta \rVert_2^2
+  \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2 + \alpha \lVert \boldsymbol\beta \rVert_2^2
   $$
-  Mengecilkan semua koefisien secara halus (jarang tepat nol).
-
-- <b>Lasso (L1)</b>
+- **Lasso**
   $$
-  \min_{\boldsymbol\beta, b}\; \text{RSS}(\boldsymbol\beta,b) + \alpha \lVert \boldsymbol\beta \rVert_1
+  \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2 + \alpha \lVert \boldsymbol\beta \rVert_1
   $$
-  Membuat sebagian koefisien tepat nol (seleksi fitur).
 
-> Heuristik:
-> - Ridge “mengecilkan semuanya sedikit” → stabil, tidak sparse.
-> - Lasso “membuat sebagian nol” → model sparse, bisa tidak stabil saat kolinearitas kuat.
+Semakin besar \(\alpha\), semakin kuat kontraksinya. Pada Lasso, jika \(\alpha\) melewati ambang tertentu maka beberapa koefisien menjadi nol sehingga model menjadi jarang (sparse).
 
----
-
-## 2. Persiapan
-
-{{% notice tip %}}
-Dalam regularisasi, <b>skala fitur penting</b>. Gunakan <b>StandardScaler</b> agar penalti berlaku adil.
-{{% /notice %}}
+## Eksperimen dengan Python
+Contoh berikut menerapkan ridge, lasso, dan regresi linier biasa pada dataset regresi sintetis yang sama serta membandingkan besar koefisien dan skor generalisasi.
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 import japanize_matplotlib
-from sklearn.datasets import make_regression
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.linear_model import Lasso, LassoCV, LinearRegression, Ridge, RidgeCV
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-```
 
----
+# Parameter
+n_samples = 200
+n_features = 10
+n_informative = 3
+rng = np.random.default_rng(42)
 
-## 3. Data: hanya 2 fitur informatif
+# Koefisien sebenarnya (hanya tiga fitur informatif)
+coef = np.zeros(n_features)
+coef[:n_informative] = rng.normal(loc=3.0, scale=1.0, size=n_informative)
 
-{{% notice document %}}
-- [sklearn.datasets.make_regression](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_regression.html)
-{{% /notice %}}
+X = rng.normal(size=(n_samples, n_features))
+y = X @ coef + rng.normal(scale=5.0, size=n_samples)
 
-Kita buat data dengan tepat dua fitur informatif (<code>n_informative=2</code>) lalu menambah transformasi redundan untuk mensimulasikan banyak fitur tak berguna.
-
-```python
-n_features = 5
-n_informative = 2
-
-X, y = make_regression(
-    n_samples=500,
-    n_features=n_features,
-    n_informative=n_informative,
-    noise=0.5,
-    random_state=777,
-)
-
-# Tambahkan transformasi nonlinier redundan
-X = np.concatenate([X, np.log(X + 100)], axis=1)
-
-# Standarkan y untuk skala yang adil
-y = (y - y.mean()) / np.std(y)
-```
-
----
-
-## 4. Latih tiga model dengan pipeline yang sama
-
-{{% notice document %}}
-- [make_pipeline](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html)  
-- [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)  
-- [Ridge](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)  
-- [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html)
-{{% /notice %}}
-
-```python
-lin_r = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
-rid_r = make_pipeline(StandardScaler(with_mean=False), Ridge(alpha=2)).fit(X, y)
-las_r = make_pipeline(StandardScaler(with_mean=False), Lasso(alpha=0.1, max_iter=10_000)).fit(X, y)
-```
-
-> Lasso bisa lambat konvergen; praktiknya, naikkan <code>max_iter</code> bila perlu.
-
----
-
-## 5. Bandingkan besar koefisien (plot)
-
-- OLS: koefisien jarang mendekati nol.  
-- Ridge: mengecilkan koefisien secara umum.  
-- Lasso: sebagian koefisien menjadi tepat nol (seleksi fitur).
-
-```python
-feat_index = np.arange(X.shape[1])
-
-plt.figure(figsize=(12, 4))
-plt.bar(feat_index - 0.25, np.abs(lin_r.steps[1][1].coef_), width=0.25, label="Linear")
-plt.bar(feat_index,         np.abs(rid_r.steps[1][1].coef_), width=0.25, label="Ridge")
-plt.bar(feat_index + 0.25,  np.abs(las_r.steps[1][1].coef_), width=0.25, label="Lasso")
-
-plt.xlabel(r"indeks koefisien $\beta$")
-plt.ylabel(r"$|\beta|$")
-plt.grid(alpha=0.3)
-plt.legend()
-plt.tight_layout()
-plt.show()
-```
-
-![png](/images/basic/regression/02_Ridge_and_Lasso_files/02_Ridge_and_Lasso_10_1.png)
-
-{{% notice tip %}}
-Di sini hanya dua fitur yang informatif (<code>n_informative=2</code>). Lasso cenderung men-nol-kan banyak fitur tak berguna (model sparse), sedangkan Ridge mengecilkan semua koefisien secara halus untuk menstabilkan solusi.
-{{% /notice %}}
-
----
-
-## 6. Cek generalisasi (CV)
-
-<code>alpha</code> tetap bisa menyesatkan; bandingkan dengan cross-validation.
-
-```python
-from sklearn.metrics import make_scorer, mean_squared_error
-
-scorer = make_scorer(mean_squared_error, greater_is_better=False)
-
-models = {
-    "Linear": lin_r,
-    "Ridge (α=2)": rid_r,
-    "Lasso (α=0.1)": las_r,
-}
-
-for name, model in models.items():
-    scores = cross_val_score(model, X, y, cv=5, scoring="r2")
-    print(f"{name:12s}  R^2 (CV mean±std): {scores.mean():.3f} ± {scores.std():.3f}")
-```
-
-{{% notice tip %}}
-Tidak ada satu jawaban untuk semua. Dengan kolinearitas kuat atau sampel kecil, Ridge/Lasso sering lebih stabil daripada OLS. <b>Atur α</b> via CV.
-{{% /notice %}}
-
----
-
-## 7. Memilih α otomatis
-
-Dalam praktik, gunakan <code>RidgeCV</code>/<code>LassoCV</code> (atau <code>GridSearchCV</code>).
-
-```python
-from sklearn.linear_model import RidgeCV, LassoCV
-
-ridge_cv = make_pipeline(
+linear = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
+ridge = make_pipeline(
     StandardScaler(with_mean=False),
     RidgeCV(alphas=np.logspace(-3, 3, 13), cv=5)
 ).fit(X, y)
-
-lasso_cv = make_pipeline(
+lasso = make_pipeline(
     StandardScaler(with_mean=False),
     LassoCV(alphas=np.logspace(-3, 1, 9), cv=5, max_iter=50_000)
 ).fit(X, y)
 
-print("α terbaik (RidgeCV):", ridge_cv.steps[1][1].alpha_)
-print("α terbaik (LassoCV):", lasso_cv.steps[1][1].alpha_)
+models = {
+    "Linear": linear,
+    "Ridge": ridge,
+    "Lasso": lasso,
+}
+
+# Visualisasi koefisien
+indices = np.arange(n_features)
+width = 0.25
+plt.figure(figsize=(10, 4))
+plt.bar(indices - width, np.abs(linear[-1].coef_), width=width, label="Linear")
+plt.bar(indices, np.abs(ridge[-1].coef_), width=width, label="Ridge")
+plt.bar(indices + width, np.abs(lasso[-1].coef_), width=width, label="Lasso")
+plt.xlabel("indeks fitur")
+plt.ylabel("|koefisien|")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+# Skor R^2 dengan validasi silang
+for name, model in models.items():
+    scores = cross_val_score(model, X, y, cv=5, scoring="r2")
+    print(f"{name:>6}: R^2 = {scores.mean():.3f} ± {scores.std():.3f}")
 ```
 
----
+### Membaca hasil
+- Ridge mengecilkan semua koefisien dan tetap stabil meski ada multikolinearitas.
+- Lasso membuat sebagian koefisien bernilai nol sehingga hanya fitur terpenting yang tersisa.
+- Pilih \(\alpha\) dengan validasi silang untuk menyeimbangkan bias dan varians, serta lakukan standardisasi agar tiap fitur berada pada skala yang sebanding.
 
-## 8. Pilih yang mana?
-
-- Banyak fitur / kolinearitas kuat → coba <b>Ridge</b> dulu (menstabilkan).
-- Butuh seleksi fitur / interpretabilitas → <b>Lasso</b>.
-- Kolinearitas kuat dan Lasso tidak stabil → <b>Elastic Net</b> (L1+L2).
-
----
-
-## 9. Ringkasan
-
-- Regularisasi menambah <b>penalti pada besaran koefisien</b> untuk mengurangi overfitting.
-- <b>Ridge (L2)</b> mengecilkan secara halus; jarang tepat nol.
-- <b>Lasso (L1)</b> membuat sebagian koefisien nol; seleksi fitur.
-- <b>Standarisasi penting</b>; <b>atur α via CV</b>.
-
----
-
+## Referensi
+{{% references %}}
+<li>Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge Regression: Biased Estimation for Nonorthogonal Problems. <i>Technometrics</i>, 12(1), 55–67.</li>
+<li>Tibshirani, R. (1996). Regression Shrinkage and Selection via the Lasso. <i>Journal of the Royal Statistical Society: Series B</i>, 58(1), 267–288.</li>
+<li>Zou, H., &amp; Hastie, T. (2005). Regularization and Variable Selection via the Elastic Net. <i>Journal of the Royal Statistical Society: Series B</i>, 67(2), 301–320.</li>
+{{% /references %}}

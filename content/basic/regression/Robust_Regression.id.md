@@ -1,16 +1,45 @@
 ---
-title: "Outlier dan Robustness"
+title: "Regresi robust"
 pre: "2.1.3 "
 weight: 3
-title_suffix: "Menangani dengan Regresi Huber"
+title_suffix: "Menangani outlier dengan loss Huber"
 ---
 
-{{% youtube "CrN5Si0379g" %}}
+{{% summary %}}
+- Metode kuadrat terkecil (OLS) sangat sensitif terhadap outlier karena residu dikuadratkan sehingga satu kesalahan besar dapat menyeret garis hasil.
+- Loss Huber mempertahankan loss kuadrat untuk residu kecil dan beralih ke penalti linear untuk residu besar sehingga pengaruh titik ekstrem berkurang.
+- Menyetel ambang \(\delta\) (epsilon di scikit-learn) serta penalti L2 opsional \(\alpha\) membantu menyeimbangkan ketahanan dan varians.
+- Kombinasi penskalaan dan validasi silang menghasilkan model yang stabil pada data nyata yang sering mencampurkan titik normal dan anomali.
+{{% /summary %}}
 
+## Intuisi
+Outlier dapat muncul akibat gangguan sensor, kesalahan input, atau perubahan pola. Dalam OLS, residu outlier yang dikuadratkan menjadi sangat besar sehingga garis regresi tertarik ke arah titik tersebut. Regresi robust memperlakukan residu besar dengan lebih lunak agar model mengikuti tren utama sambil mengabaikan observasi yang meragukan. Loss Huber adalah pilihan klasik: perilakunya kuadrat di sekitar nol dan absolut pada ekor distribusi.
 
-<div class="pagetop-box">
-  <p><b>Outlier</b> adalah observasi yang sangat menyimpang dari mayoritas data. Apa itu outlier tergantung masalah, distribusi, dan skala target. Di sini kita bandingkan OLS (loss kuadrat) dengan <b>loss Huber</b> pada data yang mengandung titik ekstrem.</p>
-  </div>
+## Formulasi matematis
+Dengan residu \(r = y - \hat{y}\) dan ambang \(\delta > 0\), loss Huber didefinisikan sebagai
+
+$$
+\ell_\delta(r) =
+\begin{cases}
+\dfrac{1}{2} r^2, & |r| \le \delta, \\
+\delta \bigl(|r| - \dfrac{1}{2}\delta\bigr), & |r| > \delta.
+\end{cases}
+$$
+
+Residu kecil tetap berbentuk kuadrat, sedangkan residu besar tumbuh secara linear. Fungsi pengaruhnya pun jenuh:
+
+$$
+\psi_\delta(r) =
+\begin{cases}
+r, & |r| \le \delta, \\
+\delta\,\mathrm{sign}(r), & |r| > \delta.
+\end{cases}
+$$
+
+Dalam scikit-learn parameter `epsilon` setara dengan \(\delta\). Kita juga dapat menambahkan penalti L2 \(\alpha \lVert \boldsymbol\beta \rVert_2^2\) untuk menstabilkan koefisien saat fitur saling berkorelasi.
+
+## Eksperimen dengan Python
+Berikut visualisasi bentuk loss serta perbandingan OLS, Ridge, dan Huber pada dataset kecil yang mengandung satu outlier ekstrem.
 
 ```python
 import japanize_matplotlib
@@ -18,43 +47,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 ```
 
----
-
-## 1. Mengapa OLS sensitif terhadap outlier
-
-OLS meminimalkan jumlah kuadrat residual
-$$
-\text{RSS} = \sum_{i=1}^n (y_i - \hat y_i)^2.
-$$
-Karena residual di<b>kuadrat</b>kan, satu titik ekstrem saja dapat mendominasi loss dan <b>menyeret garis</b> hasil fitting menuju outlier.
-
----
-
-## 2. Loss Huber: kompromi antara kuadrat dan absolut
-
-<b>Loss Huber</b> memakai kuadrat untuk residual kecil dan absolut untuk residual besar. Untuk <code>r = y - \hat y</code> dan ambang <code>\\(\delta > 0\\)</code>:
-
-$$
-\ell_\delta(r) = \begin{cases}
-\dfrac{1}{2}r^2, & |r| \le \delta \\
-\delta\left(|r| - \dfrac{1}{2}\delta\right), & |r| > \delta.
-\end{cases}
-$$
-
-Turunannya (pengaruh)
-$$
-\psi_\delta(r) = \frac{d}{dr}\ell_\delta(r) = \begin{cases}
-r, & |r| \le \delta \\
-\delta\,\mathrm{sign}(r), & |r| > \delta,
-\end{cases}
-$$
-sehingga gradien <b>terklip</b> untuk residual besar (outlier).
-
-> Catatan: di <code>HuberRegressor</code> scikit-learn, ambang disebut <code>epsilon</code> (sesuai <code>\\(\delta\\)</code> di atas).
-
----
-
-## 3. Visualisasi bentuk loss
+### Loss Huber dibandingkan loss kuadrat dan absolut
 
 ```python
 def huber_loss(r: np.ndarray, delta: float = 1.5):
@@ -73,19 +66,13 @@ plt.plot(r_vals, h_vals,            "green", label=fr"Huber ($\delta={delta}$)")
 plt.axhline(0, color="k", linewidth=0.8)
 plt.grid(True, alpha=0.3)
 plt.legend()
-plt.xlabel("residual $r$")
+plt.xlabel("residu $r$")
 plt.ylabel("loss")
-plt.title("Kuadrat vs absolut vs Huber")
+plt.title("Perbandingan loss kuadrat, absolut, dan Huber")
 plt.show()
 ```
 
-![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_5_0.png)
-
----
-
-## 4. Apa yang terjadi bila ada outlier? (data)
-
-Buat masalah linear 2 fitur dan suntikkan <b>satu outlier ekstrem</b> pada <code>y</code>.
+### Dataset sederhana dengan satu outlier
 
 ```python
 np.random.seed(42)
@@ -93,115 +80,57 @@ np.random.seed(42)
 N = 30
 x1 = np.arange(N)
 x2 = np.arange(N)
-X = np.c_[x1, x2]                      # (N, 2)
-epsilon = np.random.rand(N)            # noise [0, 1)
+X = np.c_[x1, x2]
+epsilon = np.random.rand(N)
 y = 5 * x1 + 10 * x2 + epsilon * 10
 
-y[5] = 500  # satu outlier sangat besar
+y[5] = 500  # tambahkan satu outlier ekstrem
 
 plt.figure(figsize=(8, 6))
 plt.plot(x1, y, "ko", label="data")
 plt.xlabel("$x_1$")
 plt.ylabel("$y$")
 plt.legend()
-plt.title("Dataset dengan outlier")
+plt.title("Data dengan outlier")
 plt.show()
 ```
 
-![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_7_0.png)
-
----
-
-## 5. Bandingkan OLS vs Ridge vs Huber
-
-- <b>OLS</b>: sangat sensitif terhadap outlier.  
-- <b>Ridge</b> (L2): mengecilkan koefisien; sedikit lebih stabil, tetap terpengaruh.  
-- <b>Huber</b>: mengklip pengaruh outlier; garis kurang terseret.
-
-{{% notice document %}}
-- [HuberRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.HuberRegressor.html)
-{{% /notice %}}
-
-{{% notice seealso %}}
-[Pendekatan praproses: label anomali (JP)](https://k-dm.work/ja/prep/numerical/add_label_to_anomaly/)
-{{% /notice %}}
+### Membandingkan OLS, Ridge, dan Huber
 
 ```python
 from sklearn.linear_model import HuberRegressor, Ridge, LinearRegression
 
 plt.figure(figsize=(8, 6))
 
-# Huber: epsilon=3 untuk mengurangi pengaruh outlier
 huber = HuberRegressor(alpha=0.0, epsilon=3.0)
 huber.fit(X, y)
 plt.plot(x1, huber.predict(X), "green", label="Huber")
 
-# Ridge (L2). Dengan alpha≈0, mirip OLS
 ridge = Ridge(alpha=1.0, random_state=0)
 ridge.fit(X, y)
 plt.plot(x1, ridge.predict(X), "orange", label="Ridge (α=1.0)")
 
-# OLS
-lr = LinearRegression()
-lr.fit(X, y)
-plt.plot(x1, lr.predict(X), "r-", label="OLS")
+ols = LinearRegression()
+ols.fit(X, y)
+plt.plot(x1, ols.predict(X), "r-", label="OLS")
 
-# data mentah
 plt.plot(x1, y, "kx", alpha=0.7)
-
 plt.xlabel("$x_1$")
 plt.ylabel("$y$")
 plt.legend()
-plt.title("Dampak outlier pada garis hasil fitting")
+plt.title("Pengaruh outlier pada berbagai regresor")
 plt.grid(alpha=0.3)
 plt.show()
 ```
 
-![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_9_0.png)
+### Membaca hasil
+- OLS (merah) sangat tertarik oleh outlier.
+- Ridge (oranye) sedikit lebih stabil berkat penalti L2 tetapi masih terdampak.
+- Huber (hijau) membatasi pengaruh outlier dan lebih mengikuti tren utama.
 
-Interpretasi:
-- OLS (merah) sangat terseret oleh outlier.
-- Ridge (oranye) sedikit meredakan namun tetap terpengaruh.
-- Huber (hijau) mengurangi pengaruh outlier dan mengikuti tren keseluruhan lebih baik.
-
----
-
-## 6. Parameter: epsilon dan alpha
-
-- <code>epsilon</code> (ambang <code>\\(\delta\\)</code>):
-  - Lebih besar → mendekati OLS; lebih kecil → mendekati loss absolut.
-  - Bergantung skala residual; lakukan standardisasi atau robust scaling.
-- <code>alpha</code> (penalti L2):
-  - Menstabilkan koefisien; berguna pada kolinearitas.
-
-Sensitivitas terhadap <code>epsilon</code>:
-
-```python
-from sklearn.metrics import mean_squared_error
-
-for eps in [1.2, 1.5, 2.0, 3.0]:
-    h = HuberRegressor(alpha=0.0, epsilon=eps).fit(X, y)
-    mse = mean_squared_error(y, h.predict(X))
-    print(f"epsilon={eps:>3}: MSE={mse:.3f}")
-```
-
----
-
-## 7. Catatan praktis
-
-- <b>Penskalaan</b>: jika skala fitur/target berbeda, makna <code>epsilon</code> berubah; lakukan standardisasi atau robust scaling.
-- <b>Titik leverage tinggi</b>: Huber robust untuk outlier vertikal di <code>y</code>, tidak selalu untuk titik ekstrem di <code>X</code>.
-- <b>Pemilihan ambang</b>: atur <code>epsilon</code> dan <code>alpha</code> (misalnya <code>GridSearchCV</code>).
-- <b>Evaluasi dengan CV</b>: jangan hanya melihat kecocokan pada data latih.
-
----
-
-## 8. Ringkasan
-
-- OLS sensitif terhadap outlier; garis hasil fitting dapat terseret.
-- Huber memakai kuadrat untuk error kecil dan absolut untuk error besar, <b>mengklip gradien</b> untuk outlier.
-- Menyetel <code>epsilon</code> dan <code>alpha</code> menyeimbangkan robustness dan kecocokan.
-- Waspada titik leverage; kombinasikan dengan inspeksi dan praproses bila perlu.
-
----
-
+## Referensi
+{{% references %}}
+<li>Huber, P. J. (1964). Robust Estimation of a Location Parameter. <i>The Annals of Mathematical Statistics</i>, 35(1), 73–101.</li>
+<li>Hampel, F. R. et al. (1986). <i>Robust Statistics: The Approach Based on Influence Functions</i>. Wiley.</li>
+<li>Huber, P. J., &amp; Ronchetti, E. M. (2009). <i>Robust Statistics</i> (2nd ed.). Wiley.</li>
+{{% /references %}}

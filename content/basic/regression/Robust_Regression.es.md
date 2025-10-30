@@ -1,16 +1,45 @@
 ---
-title: "Valores atípicos y robustez"
+title: "Regresión robusta"
 pre: "2.1.3 "
 weight: 3
-title_suffix: "Tratamiento con regresión Huber"
+title_suffix: "Controlar outliers con la pérdida de Huber"
 ---
 
-{{% youtube "CrN5Si0379g" %}}
+{{% summary %}}
+- Los mínimos cuadrados ordinarios (OLS) reaccionan con fuerza a los outliers porque los residuos al cuadrado crecen rápidamente y distorsionan el ajuste.
+- La pérdida de Huber mantiene la pérdida cuadrática para residuos pequeños y adopta una penalización lineal para residuos grandes, lo que reduce la influencia de valores extremos.
+- Ajustar el umbral \(\delta\) (epsilon en scikit-learn) y la penalización L2 opcional \(\alpha\) permite equilibrar robustez y varianza.
+- Combinar escalado con validación cruzada proporciona modelos estables incluso cuando los datos reales mezclan observaciones normales y anomalías.
+{{% /summary %}}
 
+## Intuición
+Los outliers pueden surgir por fallos de sensores, errores de captura o cambios de régimen. En OLS el residuo de un outlier, al elevarse al cuadrado, domina el ajuste y la recta se desplaza hacia ese punto. La regresión robusta trata los residuos grandes con menos severidad para que el modelo siga la tendencia dominante mientras descuenta observaciones dudosas. La pérdida de Huber es un ejemplo clásico: se comporta como la pérdida cuadrática cerca de cero y como la absoluta en las colas.
 
-<div class="pagetop-box">
-  <p>Los <b>valores atípicos</b> (outliers) son observaciones que se desvían fuertemente del resto. Qué es un outlier depende del problema, la distribución y la escala del objetivo. Aquí comparamos mínimos cuadrados (pérdida cuadrática) con la <b>pérdida de Huber</b> usando datos con un punto extremo.</p>
-  </div>
+## Formulación matemática
+Sea el residuo \(r = y - \hat{y}\). Para un umbral \(\delta > 0\), la pérdida de Huber se define como
+
+$$
+\ell_\delta(r) =
+\begin{cases}
+\dfrac{1}{2} r^2, & |r| \le \delta, \\
+\delta \bigl(|r| - \dfrac{1}{2}\delta\bigr), & |r| > \delta.
+\end{cases}
+$$
+
+Los residuos pequeños se tratan igual que en OLS, pero los grandes crecen de manera lineal. La función de influencia se satura:
+
+$$
+\psi_\delta(r) =
+\begin{cases}
+r, & |r| \le \delta, \\
+\delta\,\mathrm{sign}(r), & |r| > \delta.
+\end{cases}
+$$
+
+En scikit-learn el parámetro `epsilon` corresponde a \(\delta\). También se puede añadir una penalización L2 \(\alpha \lVert \boldsymbol\beta \rVert_2^2\) para estabilizar los coeficientes cuando las variables están correlacionadas.
+
+## Experimentos con Python
+Visualizamos las formas de las pérdidas y comparamos OLS, Ridge y Huber en un conjunto de datos sintético que incluye un outlier extremo.
 
 ```python
 import japanize_matplotlib
@@ -18,43 +47,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 ```
 
----
-
-## 1. Por qué OLS es sensible a outliers
-
-OLS minimiza la suma de cuadrados de los residuos
-$$
-\text{RSS} = \sum_{i=1}^n (y_i - \hat y_i)^2.
-$$
-Al <b>elevar al cuadrado</b> los residuos, un solo punto extremo puede dominar la pérdida y <b>arrastrar</b> la recta ajustada hacia el outlier.
-
----
-
-## 2. Pérdida de Huber: compromiso entre cuadrada y absoluta
-
-La <b>pérdida de Huber</b> usa cuadrática para residuos pequeños y absoluta para grandes. Para <code>r = y - \hat y</code> y umbral <code>\\(\delta > 0\\)</code>:
-
-$$
-\ell_\delta(r) = \begin{cases}
-\dfrac{1}{2}r^2, & |r| \le \delta \\
-\delta\left(|r| - \dfrac{1}{2}\delta\right), & |r| > \delta.
-\end{cases}
-$$
-
-La derivada (influencia) es
-$$
-\psi_\delta(r) = \frac{d}{dr}\ell_\delta(r) = \begin{cases}
-r, & |r| \le \delta \\
-\delta\,\mathrm{sign}(r), & |r| > \delta,
-\end{cases}
-$$
-por lo que el gradiente se <b>satura</b> ante residuos grandes (outliers).
-
-> Nota: en <code>HuberRegressor</code> de scikit-learn, el umbral es <code>epsilon</code> (corresponde a <code>\\(\delta\\)</code>).
-
----
-
-## 3. Visualizar las formas de las pérdidas
+### Pérdida de Huber frente a pérdidas cuadrática y absoluta
 
 ```python
 def huber_loss(r: np.ndarray, delta: float = 1.5):
@@ -75,17 +68,11 @@ plt.grid(True, alpha=0.3)
 plt.legend()
 plt.xlabel("residuo $r$")
 plt.ylabel("pérdida")
-plt.title("Cuadrática vs absoluta vs Huber")
+plt.title("Comparación de las pérdidas cuadrática, absoluta y Huber")
 plt.show()
 ```
 
-![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_5_0.png)
-
----
-
-## 4. ¿Qué pasa con un outlier? (datos)
-
-Creamos un problema lineal con 2 variables y <b>inyectamos un outlier extremo</b> en <code>y</code>.
+### Conjunto de datos de juguete con un outlier
 
 ```python
 np.random.seed(42)
@@ -93,115 +80,57 @@ np.random.seed(42)
 N = 30
 x1 = np.arange(N)
 x2 = np.arange(N)
-X = np.c_[x1, x2]                      # (N, 2)
-epsilon = np.random.rand(N)            # ruido en [0, 1)
+X = np.c_[x1, x2]
+epsilon = np.random.rand(N)
 y = 5 * x1 + 10 * x2 + epsilon * 10
 
-y[5] = 500  # un outlier muy grande
+y[5] = 500  # introducimos un outlier extremo
 
 plt.figure(figsize=(8, 6))
 plt.plot(x1, y, "ko", label="datos")
 plt.xlabel("$x_1$")
 plt.ylabel("$y$")
 plt.legend()
-plt.title("Conjunto con un outlier")
+plt.title("Datos con un outlier")
 plt.show()
 ```
 
-![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_7_0.png)
-
----
-
-## 5. Comparar OLS vs Ridge vs Huber
-
-- <b>OLS</b>: muy sensible a outliers.  
-- <b>Ridge</b> (L2): encoge coeficientes; algo más estable, pero aún afectado.  
-- <b>Huber</b>: satura la influencia de outliers; la recta se arrastra menos.
-
-{{% notice document %}}
-- [HuberRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.HuberRegressor.html)
-{{% /notice %}}
-
-{{% notice seealso %}}
-[Enfoque de preprocesamiento: etiquetar anomalías (JP)](https://k-dm.work/ja/prep/numerical/add_label_to_anomaly/)
-{{% /notice %}}
+### Comparación entre OLS, Ridge y Huber
 
 ```python
 from sklearn.linear_model import HuberRegressor, Ridge, LinearRegression
 
 plt.figure(figsize=(8, 6))
 
-# Huber: epsilon=3 para reducir la influencia de outliers
 huber = HuberRegressor(alpha=0.0, epsilon=3.0)
 huber.fit(X, y)
 plt.plot(x1, huber.predict(X), "green", label="Huber")
 
-# Ridge (L2). Con alpha≈0, se parece a OLS
 ridge = Ridge(alpha=1.0, random_state=0)
 ridge.fit(X, y)
 plt.plot(x1, ridge.predict(X), "orange", label="Ridge (α=1.0)")
 
-# OLS
-lr = LinearRegression()
-lr.fit(X, y)
-plt.plot(x1, lr.predict(X), "r-", label="OLS")
+ols = LinearRegression()
+ols.fit(X, y)
+plt.plot(x1, ols.predict(X), "r-", label="OLS")
 
-# datos brutos
 plt.plot(x1, y, "kx", alpha=0.7)
-
 plt.xlabel("$x_1$")
 plt.ylabel("$y$")
 plt.legend()
-plt.title("Efecto de un outlier en las rectas ajustadas")
+plt.title("Efecto del outlier en distintos regresores")
 plt.grid(alpha=0.3)
 plt.show()
 ```
 
-![png](/images/basic/regression/03_Robust_Regression_files/03_Robust_Regression_9_0.png)
-
-Interpretación:
+### Interpretación de los resultados
 - OLS (rojo) es fuertemente arrastrado por el outlier.
-- Ridge (naranja) mitiga un poco pero sigue afectado.
-- Huber (verde) reduce la influencia del outlier y sigue mejor la tendencia global.
+- Ridge (naranja) se estabiliza un poco gracias a la penalización L2, pero sigue viéndose afectado.
+- Huber (verde) limita la influencia del outlier y sigue mejor la tendencia principal.
 
----
-
-## 6. Parámetros: epsilon y alpha
-
-- <code>epsilon</code> (umbral <code>\\(\delta\\)</code>):
-  - Mayor → más cercano a OLS; menor → más cercano a pérdida absoluta.
-  - Depende de la escala de residuos; estandarice o use escalado robusto.
-- <code>alpha</code> (penalización L2):
-  - Estabiliza coeficientes; útil con colinealidad.
-
-Sensibilidad a <code>epsilon</code>:
-
-```python
-from sklearn.metrics import mean_squared_error
-
-for eps in [1.2, 1.5, 2.0, 3.0]:
-    h = HuberRegressor(alpha=0.0, epsilon=eps).fit(X, y)
-    mse = mean_squared_error(y, h.predict(X))
-    print(f"epsilon={eps:>3}: MSE={mse:.3f}")
-```
-
----
-
-## 7. Notas prácticas
-
-- <b>Escalado</b>: si las escalas de variables/objetivo difieren, cambia el significado de <code>epsilon</code>; estandarice o use escalado robusto.
-- <b>Puntos de alto apalancamiento</b>: Huber es robusta a outliers verticales en <code>y</code>, no necesariamente a extremos en <code>X</code>.
-- <b>Elegir umbrales</b>: ajuste <code>epsilon</code> y <code>alpha</code> (por ejemplo, con <code>GridSearchCV</code>).
-- <b>Evalúe con CV</b>: no se guíe solo por el ajuste en entrenamiento.
-
----
-
-## 8. Resumen
-
-- OLS es sensible a outliers; el ajuste puede ser arrastrado.
-- Huber usa cuadrática para errores pequeños y absoluta para grandes, <b>saturando gradientes</b> ante outliers.
-- Ajuste <code>epsilon</code> y <code>alpha</code> para balancear robustez y ajuste.
-- Cuidado con puntos de apalancamiento; combine con inspección y preprocesamiento si es necesario.
-
----
-
+## Referencias
+{{% references %}}
+<li>Huber, P. J. (1964). Robust Estimation of a Location Parameter. <i>The Annals of Mathematical Statistics</i>, 35(1), 73–101.</li>
+<li>Hampel, F. R. et al. (1986). <i>Robust Statistics: The Approach Based on Influence Functions</i>. Wiley.</li>
+<li>Huber, P. J., &amp; Ronchetti, E. M. (2009). <i>Robust Statistics</i> (2nd ed.). Wiley.</li>
+{{% /references %}}

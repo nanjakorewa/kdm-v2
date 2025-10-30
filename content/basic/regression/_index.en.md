@@ -7,43 +7,38 @@ not_use_twitter: true
 pre: "<b>2.1 </b>"
 ---
 
+{{% summary %}}
+- Linear regression captures a linear relationship between inputs and outputs and forms the backbone for both prediction and interpretation.
+- By combining extensions such as regularization, robust losses, or dimensionality reduction, it adapts to a wide variety of data sets.
+- Each page in this chapter follows the same flow—overview, intuition, formulas, Python experiments, and references—to deepen understanding from fundamentals to applications.
+{{% /summary %}}
+
 # Linear Regression
 
-<div class="pagetop-box">
-  <p><b>Linear regression</b> is one of the most fundamental methods in machine learning and statistics. It approximates the relationship between inputs (features) and an output (target) with a “line” or “plane” to predict values and understand variable relationships.</p>
-</div>
+## Intuition
+Linear regression answers the simple question “If the input increases by 1, how much does the output change?” Because the coefficients are easy to interpret and the computations are fast, it is often the first model applied in machine learning projects.
 
----
+## Mathematical formulation
+Ordinary least squares estimates the coefficients by minimizing the sum of squared errors between observations and predictions. For multiple features with matrix \(\mathbf{X}\) and target vector \(\mathbf{y}\),
 
-## Why learn linear regression?
+$$
+\hat{\boldsymbol\beta} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}.
+$$
 
-- Mathematically simple and interpretable  
-- Easy to implement and compute  
-- Useful for both prediction and interpretation  
-- Foundation for many advanced methods (Ridge/Lasso, GLMs, neural nets, etc.)
+The remaining pages in this chapter extend this framework with regularization, robustification, and other techniques.
 
----
+## Experiments with Python
+Throughout the chapter we provide executable `scikit-learn` examples that cover topics such as:
 
-## What can it do?
+- Foundations: ordinary least squares, Ridge, Lasso, robust regression  
+- Enhanced expressiveness: polynomial regression, Elastic Net, quantile regression, Bayesian linear regression  
+- Dimensionality reduction and sparsity: principal component regression, PLS, weighted least squares, Orthogonal Matching Pursuit, SVR, and more
 
-- <b>Prediction</b>: e.g., predict sales from advertising, exam score from study time  
-- <b>Relationship analysis</b>: coefficients show how outputs change per unit change in inputs  
-- <b>Feature importance</b>: identify which variables matter for prediction
+Run the code yourself to see how the models behave on synthetic and real data.
 
----
-
-## What you’ll learn in this section
-
-1. <b>Least squares</b> — how to fit the best line to data  
-2. <b>Ridge and Lasso</b> — regularization to combat overfitting  
-3. <b>Robust regression</b> (e.g., Huber) — handling messy data with outliers
-
----
-
-## Summary
-
-- Linear regression is “simple yet widely applicable”.  
-- Despite its simplicity, it’s heavily used in practice.  
-- The concepts here carry over to more advanced models (trees, SVMs, neural nets).
-
----
+## References
+{{% references %}}
+<li>Draper, N. R., &amp; Smith, H. (1998). <i>Applied Regression Analysis</i> (3rd ed.). John Wiley &amp; Sons.</li>
+<li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning</i>. Springer.</li>
+<li>Seber, G. A. F., &amp; Lee, A. J. (2012). <i>Linear Regression Analysis</i> (2nd ed.). Wiley.</li>
+{{% /references %}}

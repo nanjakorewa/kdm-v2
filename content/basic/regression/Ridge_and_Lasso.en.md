@@ -2,204 +2,102 @@
 title: "Ridge and Lasso Regression"
 pre: "2.1.2 "
 weight: 2
-title_suffix: "Intuition and Practice"
+title_suffix: "Improve generalization with regularization"
 ---
 
-{{% youtube "rhGYOBrxPXA" %}}
+{{% summary %}}
+- Ridge regression shrinks coefficients smoothly with an L2 penalty and remains stable even when features are highly correlated.
+- Lasso regression applies an L1 penalty that can drive some coefficients exactly to zero, providing built-in feature selection and interpretability.
+- Tuning the regularization strength \(\alpha\) controls the trade-off between fitting the training data and generalizing to unseen data.
+- Combining standardization with cross-validation helps choose hyperparameters that prevent overfitting while keeping performance strong.
+{{% /summary %}}
 
+## Intuition
+Least squares can produce extreme coefficients when outliers or multicollinearity are present. Ridge and Lasso add penalties so coefficients cannot grow arbitrarily large, balancing predictive accuracy and interpretability. Ridge “shrinks everything a little Ewhereas Lasso “turns some coefficients off Ein the sense that they become exactly zero.
 
-<div class="pagetop-box">
-  <p><b>Ridge</b> (L2) and <b>Lasso</b> (L1) add penalties on coefficient size to <b>reduce overfitting</b> and improve <b>generalization</b>. This is called <b>regularization</b>. We’ll fit ordinary least squares, Ridge, and Lasso under the same conditions and compare their behavior.</p>
-  </div>
+## Mathematical formulation
+Both methods minimize the usual squared-error loss plus a regularization term:
 
----
-
-## 1. Intuition and formulas
-
-Ordinary least squares minimizes the residual sum of squares
-$$
-\text{RSS}(\boldsymbol\beta, b) = \sum_{i=1}^n \big(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\big)^2.
-$$
-With many features, strong collinearity, or noisy data, coefficients can grow too large and overfit. Regularization adds a penalty on coefficient size to <b>shrink</b> them.
-
-- <b>Ridge (L2)</b>
+- **Ridge regression**
   $$
-  \min_{\boldsymbol\beta, b}\; \text{RSS}(\boldsymbol\beta,b) + \alpha \lVert \boldsymbol\beta \rVert_2^2
+  \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2 + \alpha \lVert \boldsymbol\beta \rVert_2^2
   $$
-  Shrinks all coefficients smoothly (rarely sets exactly to zero).
-
-- <b>Lasso (L1)</b>
+- **Lasso regression**
   $$
-  \min_{\boldsymbol\beta, b}\; \text{RSS}(\boldsymbol\beta,b) + \alpha \lVert \boldsymbol\beta \rVert_1
+  \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2 + \alpha \lVert \boldsymbol\beta \rVert_1
   $$
-  Sets some coefficients exactly to zero (feature selection).
 
-> Heuristics:
-> - Ridge “shrinks everything a bit” → stable, not sparse.
-> - Lasso “shrinks some to zero” → sparse/parsimonious models, can be unstable under strong collinearity.
+Larger \(\alpha\) enforces stronger shrinkage. In the case of Lasso, when \(\alpha\) exceeds a threshold, some coefficients become exactly zero, yielding sparse models.
 
----
-
-## 2. Setup
-
-{{% notice tip %}}
-With regularization, <b>feature scales matter</b>. Use <b>StandardScaler</b> so the penalty acts fairly across features.
-{{% /notice %}}
+## Experiments with Python
+The example below applies ridge, lasso, and ordinary least squares to the same synthetic regression problem. We compare coefficient magnitudes and generalization scores.
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 import japanize_matplotlib
-from sklearn.datasets import make_regression
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.linear_model import Lasso, LassoCV, LinearRegression, Ridge, RidgeCV
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-```
 
----
+# Parameters
+n_samples = 200
+n_features = 10
+n_informative = 3
+rng = np.random.default_rng(42)
 
-## 3. Data: only 2 informative features
+# True coefficients (only first three informative)
+coef = np.zeros(n_features)
+coef[:n_informative] = rng.normal(loc=3.0, scale=1.0, size=n_informative)
 
-{{% notice document %}}
-- [sklearn.datasets.make_regression](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_regression.html)
-{{% /notice %}}
+X = rng.normal(size=(n_samples, n_features))
+y = X @ coef + rng.normal(scale=5.0, size=n_samples)
 
-We create data with exactly two informative features (<code>n_informative=2</code>) and then add redundant transforms to simulate lots of non-useful features.
-
-```python
-n_features = 5
-n_informative = 2
-
-X, y = make_regression(
-    n_samples=500,
-    n_features=n_features,
-    n_informative=n_informative,
-    noise=0.5,
-    random_state=777,
-)
-
-# Add redundant nonlinear transforms
-X = np.concatenate([X, np.log(X + 100)], axis=1)
-
-# Standardize target for fair scaling
-y = (y - y.mean()) / np.std(y)
-```
-
----
-
-## 4. Train three models under the same pipeline
-
-{{% notice document %}}
-- [make_pipeline](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html)  
-- [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)  
-- [Ridge](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)  
-- [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html)
-{{% /notice %}}
-
-```python
-lin_r = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
-rid_r = make_pipeline(StandardScaler(with_mean=False), Ridge(alpha=2)).fit(X, y)
-las_r = make_pipeline(StandardScaler(with_mean=False), Lasso(alpha=0.1, max_iter=10_000)).fit(X, y)
-```
-
-> Lasso can converge slowly; in practice, increase <code>max_iter</code> if needed.
-
----
-
-## 5. Compare coefficient magnitudes (plot)
-
-- OLS: coefficients are rarely near zero.  
-- Ridge: coefficients shrink broadly.  
-- Lasso: some coefficients become exactly zero (feature selection).
-
-```python
-feat_index = np.arange(X.shape[1])
-
-plt.figure(figsize=(12, 4))
-plt.bar(feat_index - 0.25, np.abs(lin_r.steps[1][1].coef_), width=0.25, label="Linear")
-plt.bar(feat_index,         np.abs(rid_r.steps[1][1].coef_), width=0.25, label="Ridge")
-plt.bar(feat_index + 0.25,  np.abs(las_r.steps[1][1].coef_), width=0.25, label="Lasso")
-
-plt.xlabel(r"coefficient index $\beta$")
-plt.ylabel(r"$|\beta|$")
-plt.grid(alpha=0.3)
-plt.legend()
-plt.tight_layout()
-plt.show()
-```
-
-![png](/images/basic/regression/02_Ridge_and_Lasso_files/02_Ridge_and_Lasso_10_1.png)
-
-{{% notice tip %}}
-Here only two features are informative (<code>n_informative=2</code>). Lasso tends to zero-out many useless features (sparse model), while Ridge shrinks all coefficients smoothly to stabilize the solution.
-{{% /notice %}}
-
----
-
-## 6. Rough generalization check (CV)
-
-Fixed <code>alpha</code> can mislead; compare via cross-validation.
-
-```python
-from sklearn.metrics import make_scorer, mean_squared_error
-
-scorer = make_scorer(mean_squared_error, greater_is_better=False)
-
-models = {
-    "Linear": lin_r,
-    "Ridge (α=2)": rid_r,
-    "Lasso (α=0.1)": las_r,
-}
-
-for name, model in models.items():
-    scores = cross_val_score(model, X, y, cv=5, scoring="r2")
-    print(f"{name:12s}  R^2 (CV mean±std): {scores.mean():.3f} ± {scores.std():.3f}")
-```
-
-{{% notice tip %}}
-There’s no one-size-fits-all. With strong collinearity or small samples, Ridge/Lasso often yield more stable scores than OLS. <b>Tune α</b> via CV.
-{{% /notice %}}
-
----
-
-## 7. Choosing α automatically
-
-In practice, use <code>RidgeCV</code>/<code>LassoCV</code> (or <code>GridSearchCV</code>).
-
-```python
-from sklearn.linear_model import RidgeCV, LassoCV
-
-ridge_cv = make_pipeline(
+linear = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
+ridge = make_pipeline(
     StandardScaler(with_mean=False),
     RidgeCV(alphas=np.logspace(-3, 3, 13), cv=5)
 ).fit(X, y)
-
-lasso_cv = make_pipeline(
+lasso = make_pipeline(
     StandardScaler(with_mean=False),
     LassoCV(alphas=np.logspace(-3, 1, 9), cv=5, max_iter=50_000)
 ).fit(X, y)
 
-print("Best α (RidgeCV):", ridge_cv.steps[1][1].alpha_)
-print("Best α (LassoCV):", lasso_cv.steps[1][1].alpha_)
+models = {
+    "Linear": linear,
+    "Ridge": ridge,
+    "Lasso": lasso,
+}
+
+# Plot coefficient magnitudes
+indices = np.arange(n_features)
+width = 0.25
+plt.figure(figsize=(10, 4))
+plt.bar(indices - width, np.abs(linear[-1].coef_), width=width, label="Linear")
+plt.bar(indices, np.abs(ridge[-1].coef_), width=width, label="Ridge")
+plt.bar(indices + width, np.abs(lasso[-1].coef_), width=width, label="Lasso")
+plt.xlabel("feature index")
+plt.ylabel("|coefficient|")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+# Cross-validated R^2 scores
+for name, model in models.items():
+    scores = cross_val_score(model, X, y, cv=5, scoring="r2")
+    print(f"{name:>6}: R^2 = {scores.mean():.3f} ± {scores.std():.3f}")
 ```
 
----
+### Reading the results
+- Ridge shrinks all coefficients slightly and remains stable even with multicollinearity.
+- Lasso pushes some coefficients to zero, keeping only the most important features.
+- Select \(\alpha\) via cross-validation to balance bias and variance, and standardize features to ensure fair comparison across dimensions.
 
-## 8. Which to use?
-
-- Many features / strong collinearity → try <b>Ridge</b> first (stabilizes coefficients).
-- Want feature selection / interpretability → <b>Lasso</b>.
-- Strong collinearity and Lasso unstable → <b>Elastic Net</b> (L1+L2).
-
----
-
-## 9. Summary
-
-- Regularization adds <b>penalties on coefficient size</b> to reduce overfitting.
-- <b>Ridge (L2)</b> shrinks coefficients smoothly; rarely exactly zero.
-- <b>Lasso (L1)</b> drives some coefficients to zero; performs feature selection.
-- <b>Standardization matters</b>; <b>tune α via CV</b>.
-
----
-
+## References
+{{% references %}}
+<li>Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge Regression: Biased Estimation for Nonorthogonal Problems. <i>Technometrics</i>, 12(1), 55–67.</li>
+<li>Tibshirani, R. (1996). Regression Shrinkage and Selection via the Lasso. <i>Journal of the Royal Statistical Society: Series B</i>, 58(1), 267–288.</li>
+<li>Zou, H., &amp; Hastie, T. (2005). Regularization and Variable Selection via the Elastic Net. <i>Journal of the Royal Statistical Society: Series B</i>, 67(2), 301–320.</li>
+{{% /references %}}

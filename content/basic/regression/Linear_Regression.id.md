@@ -1,146 +1,81 @@
 ---
-title: "Metode Kuadrat Terkecil"
+title: "Regresi linear dan metode kuadrat terkecil"
 pre: "2.1.1 "
 weight: 1
-title_suffix: "Konsep dan Implementasi"
+title_suffix: "Memahami dari prinsip dasar"
 ---
 
-{{% youtube "KKuAxQbuJpk" %}}
+{{% summary %}}
+- Regresi linear memodelkan hubungan linier antara masukan dan keluaran dan menjadi landasan untuk prediksi maupun interpretasi.
+- Metode kuadrat terkecil (ordinary least squares) menghitung koefisien dengan meminimalkan jumlah kuadrat residu sehingga menghasilkan solusi tertutup.
+- Koefisien kemiringan menunjukkan seberapa besar keluaran berubah ketika masukan bertambah satu satuan, sedangkan intercept memberi nilai harapan saat masukan bernilai nol.
+- Jika noise atau pencilan besar, kombinasikan standardisasi dan pendekatan robust agar praproses dan evaluasi tetap andal.
+{{% /summary %}}
 
+## Intuisi
+Ketika plot sebar \((x_i, y_i)\) membentuk garis lurus, memperpanjang garis tersebut adalah cara alami untuk menginterpolasi masukan baru. Metode kuadrat terkecil menarik satu garis yang sedekat mungkin dengan seluruh titik dengan meminimalkan penyimpangan total antara observasi dan garis.
 
+## Formulasi matematis
+Model linear satu variabel ditulis sebagai
 
-<div class="pagetop-box">
-  <p><b>Kuadrat terkecil</b> mencari koefisien fungsi yang paling pas terhadap pasangan observasi <code>(x_i, y_i)</code> dengan meminimalkan jumlah kuadrat residual. Kita fokus pada kasus paling sederhana, garis lurus <code>y = wx + b</code>, dan meninjau intuisi serta implementasi praktisnya.</p>
-  </div>
+$$
+y = w x + b.
+$$
 
-{{% notice tip %}}
-Rumus ditampilkan dengan KaTeX. <code>\\(\hat y\\)</code> adalah prediksi model dan <code>\\(\epsilon\\)</code> adalah noise.
-{{% /notice %}}
+Dengan meminimalkan jumlah kuadrat residu \(\epsilon_i = y_i - (w x_i + b)\)
 
-## Tujuan
-- Mempelajari garis <code>\\(\hat y = wx + b\\)</code> yang paling pas dengan data.
-- “Paling pas” berarti meminimalkan jumlah kuadrat error (SSE):
-  <code>\\(\displaystyle L(w,b) = \sum_{i=1}^n (y_i - (w x_i + b))^2\\)</code>
+$$
+L(w, b) = \sum_{i=1}^{n} \big(y_i - (w x_i + b)\big)^2,
+$$
 
-## Buat dataset sederhana
-Kita buat garis lurus dengan noise dan tetapkan seed agar hasil dapat direproduksi.
+kita memperoleh solusi analitik
+
+$$
+w = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}, \qquad b = \bar{y} - w \bar{x},
+$$
+
+dengan \(\bar{x}\) dan \(\bar{y}\) adalah rata-rata \(x\) dan \(y\). Ide yang sama berlaku untuk regresi multivariat menggunakan vektor dan matriks.
+
+## Eksperimen dengan Python
+Contoh berikut menyesuaikan garis regresi menggunakan `scikit-learn` dan menampilkan hasilnya. Kodenya sama seperti versi bahasa Jepang sehingga gambar yang dihasilkan konsisten.
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
-import japanize_matplotlib  # opsional untuk label Jepang
-
-rng = np.random.RandomState(42)
-n_samples = 200
-
-# Garis sebenarnya (kemiringan 0.8, intersep 0.5) dengan noise
-X = np.linspace(-10, 10, n_samples)
-epsilon = rng.normal(loc=0.0, scale=1.0, size=n_samples)
-y = 0.8 * X + 0.5 + epsilon
-
-# Ubah ke 2D untuk scikit-learn: (n_samples, 1)
-X_2d = X.reshape(-1, 1)
-
-plt.figure(figsize=(10, 5))
-plt.scatter(X, y, marker="x", label="observasi", c="orange")
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.legend()
-plt.show()
-```
-
-![png](/images/basic/regression/01_Linear_Regression_files/01_Linear_Regression_6_0.png)
-
-{{% notice info %}}
-Di scikit-learn, fitur selalu berbentuk array 2D: baris = sampel, kolom = fitur. Gunakan <code>X.reshape(-1, 1)</code> untuk satu fitur.
-{{% /notice %}}
-
-## Periksa noise
-Mari lihat distribusi <code>epsilon</code>.
-
-```python
-plt.figure(figsize=(10, 5))
-plt.hist(epsilon, bins=30)
-plt.xlabel("$\\epsilon$")
-plt.ylabel("jumlah")
-plt.show()
-```
-
-![png](/images/basic/regression/01_Linear_Regression_files/01_Linear_Regression_8_0.png)
-
-## Regresi linear (kuadrat terkecil) dengan scikit-learn
-Kita gunakan <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html" target="_blank" rel="noopener">sklearn.linear_model.LinearRegression</a>.
-
-```python
+import japanize_matplotlib  # opsional; tetap menampilkan label Jepang bila notebook dijalankan
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-
-model = LinearRegression()  # fit_intercept=True secara default
-model.fit(X_2d, y)
-
-print("kemiringan w:", model.coef_[0])
-print("intersep b:", model.intercept_)
-
-y_pred = model.predict(X_2d)
-
-# Metrik
-mse = mean_squared_error(y, y_pred)
-r2 = r2_score(y, y_pred)
-print("MSE:", mse)
-print("R^2:", r2)
-
-# Plot
-plt.figure(figsize=(10, 5))
-plt.scatter(X, y, marker="x", label="observasi", c="orange")
-plt.plot(X, y_pred, label="garis terpasang", c="C0")
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.legend()
-plt.show()
-```
-
-![png](/images/basic/regression/01_Linear_Regression_files/01_Linear_Regression_10_0.png)
-
-{{% notice tip %}}
-Penskalaan tidak wajib untuk OLS, tetapi membantu pada kasus multivariat dan regularisasi.
-{{% /notice %}}
-
-## Solusi bentuk tertutup (referensi)
-Untuk <code>\\(\hat y = wx + b\\)</code>:
-
-- <code>\\(\displaystyle w = \frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)}\\)</code>
-- <code>\\(\displaystyle b = \bar y - w\,\bar x\\)</code>
-
-Verifikasi dengan NumPy:
-
-```python
-x_mean, y_mean = X.mean(), y.mean()
-w_hat = ((X - x_mean) * (y - y_mean)).sum() / ((X - x_mean) ** 2).sum()
-b_hat = y_mean - w_hat * x_mean
-print(w_hat, b_hat)
-```
-
-## Jebakan umum
-- Bentuk array: <code>X</code> harus <code>(n_samples, n_features)</code>. Untuk satu fitur, gunakan <code>reshape(-1, 1)</code>.
-- Bentuk target: <code>y</code> bisa <code>(n_samples,)</code>. <code>(n,1)</code> juga berfungsi; perhatikan broadcasting.
-- Intersep: default <code>fit_intercept=True</code>. Jika fitur dan target sudah dicenter, <code>False</code> juga baik.
-- Reproducibility: gunakan seed tetap via <code>np.random.RandomState</code> atau <code>np.random.default_rng</code>.
-
-## Lanjut (multivariat)
-Untuk banyak fitur, pertahankan <code>X</code> sebagai <code>(n_samples, n_features)</code>. Pipeline memadukan pra-pemrosesan dan estimator.
-
-```python
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-X_multi = rng.normal(size=(n_samples, 2))
-y_multi = 1.0 * X_multi[:, 0] - 2.0 * X_multi[:, 1] + 0.3 + rng.normal(size=n_samples)
+# Membuat data
+n_samples = 100
+X = np.linspace(-5, 5, n_samples)[:, np.newaxis]
+epsilon = np.random.normal(scale=2, size=n_samples)
+y = 2 * X.ravel() + 1 + epsilon  # hubungan sebenarnya y = 2x + 1 + noise
 
-pipe = make_pipeline(StandardScaler(), LinearRegression())
-pipe.fit(X_multi, y_multi)
+# Melatih model dengan standardisasi opsional
+lin_reg = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
+y_pred = lin_reg.predict(X)
+
+# Visualisasi
+plt.figure(figsize=(10, 5))
+plt.scatter(X, y, marker="x", label="observasi", c="orange")
+plt.plot(X, y_pred, label="regresi linear (OLS)")
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.legend()
+plt.show()
 ```
 
-{{% notice note %}}
-Kode untuk pembelajaran; gambar sudah dirender sebelumnya untuk situs.
-{{% /notice %}}
+![linear-regression block 1](/images/basic/regression/linear-regression_block01.svg)
 
+### Membaca hasil
+- **Kemiringan \(w\)**: menunjukkan seberapa besar keluaran naik atau turun ketika masukan bertambah satu satuan; estimasinya seharusnya mendekati nilai sebenarnya.
+- **Intercept \(b\)**: memberikan nilai harapan saat masukan bernilai 0 dan menggeser garis secara vertikal.
+- Menstandardisasi fitur dengan `StandardScaler` membantu stabilitas ketika skala masukan berbeda-beda.
+
+## Referensi
+{{% references %}}
+<li>Draper, N. R., &amp; Smith, H. (1998). <i>Applied Regression Analysis</i> (3rd ed.). John Wiley &amp; Sons.</li>
+<li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning</i>. Springer.</li>
+{{% /references %}}
