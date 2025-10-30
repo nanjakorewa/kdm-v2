@@ -8,12 +8,12 @@ title_suffix: "Estimate class probabilities with the sigmoid"
 {{% summary %}}
 - Logistic regression passes a linear combination of the inputs through the sigmoid function to predict the probability that the label is 1.
 - The output lives in \([0, 1]\), so you can set decision thresholds flexibly and interpret coefficients as contributions to the log-odds.
-- Training minimizes the cross-entropy loss (equivalently maximizes the log-likelihood); L1/L2 regularization keeps the model from overfitting.
-- scikit-learn’s `LogisticRegression` handles preprocessing, training, and decision-boundary visualization with a few lines of code.
+- Training minimises the cross-entropy loss (equivalently maximises the log-likelihood); L1/L2 regularisation keeps the model from overfitting.
+- scikit-learn's `LogisticRegression` handles preprocessing, training, and decision-boundary visualisation with a few lines of code.
 {{% /summary %}}
 
 ## Intuition
-Linear regression produces real-valued outputs, but classification often demands probabilities such as “how likely is class 1?”. Logistic regression addresses this by feeding the linear score \(z = \mathbf{w}^\top \mathbf{x} + b\) into the sigmoid function \(\sigma(z) = 1 / (1 + e^{-z})\), yielding values that can be interpreted probabilistically. With that probability in hand, a simple rule like “predict class 1 if \(P(y=1 \mid \mathbf{x}) > 0.5\)” solves the classification task.
+Linear regression produces real-valued outputs, but classification often demands probabilities such as "how likely is class 1?". Logistic regression addresses this by feeding the linear score \(z = \mathbf{w}^\top \mathbf{x} + b\) into the sigmoid function \(\sigma(z) = 1 / (1 + e^{-z})\), yielding values that can be interpreted probabilistically. With that probability in hand, a simple rule like "predict class 1 if \(P(y=1 \mid \mathbf{x}) > 0.5\)" solves the classification task.
 
 ## Mathematical formulation
 The probability of class 1 given \(\mathbf{x}\) is
@@ -22,16 +22,16 @@ $$
 P(y=1 \mid \mathbf{x}) = \sigma(\mathbf{w}^\top \mathbf{x} + b) = \frac{1}{1 + \exp\left(-(\mathbf{w}^\top \mathbf{x} + b)\right)}.
 $$
 
-Learning maximizes the log-likelihood
+Learning maximises the log-likelihood
 
 $$
 \ell(\mathbf{w}, b) = \sum_{i=1}^{n} \Bigl[ y_i \log p_i + (1 - y_i) \log (1 - p_i) \Bigr], \quad p_i = \sigma(\mathbf{w}^\top \mathbf{x}_i + b),
 $$
 
-or equivalently minimizes the negative cross-entropy loss. Adding L2 regularization keeps coefficients from exploding, while L1 regularization can drive irrelevant weights all the way to zero.
+or equivalently minimises the negative cross-entropy loss. Adding L2 regularisation keeps coefficients from exploding, while L1 regularisation can drive irrelevant weights all the way to zero.
 
 ## Experiments with Python
-The snippet below fits logistic regression to a synthetic two-dimensional data set and visualizes the resulting decision boundary. Everything—from training to plotting—fits in a few lines thanks to scikit-learn.
+The snippet below fits logistic regression to a synthetic two-dimensional data set and visualises the resulting decision boundary. Everything—from training to plotting—fits in a few lines thanks to scikit-learn.
 
 ```python
 import numpy as np
