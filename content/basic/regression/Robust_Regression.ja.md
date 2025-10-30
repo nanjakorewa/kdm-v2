@@ -6,27 +6,27 @@ title_suffix: "Huber損失で外れ値に強くする"
 ---
 
 {{% summary %}}
-- 最小二乗法は外れ値の影響を強く受けるため、観測ミスが混ざると大きく歪んだ推定になりやすい。
-- Huber損失は小さな誤差には二乗誤差、大きな誤差には線形誤差を適用して外れ値の影響を抑える。
-- しきい値 \\(\delta\\) や L2 正則化 \\(\alpha\\) を調整することで、外れ値への頑健性と分散のバランスを取れる。
-- スケーリングや交差検証を組み合わせると、実務データでも安定して学習できる。
+- 最小二乗法は外れ値の影響を強く受けるため、観測ミスが混ざると推定が大きく歪みやすい。
+- Huber損失は小さな誤差には二乗誤差、大きな誤差には線形誤差を適用し、外れ値の影響を自動的に抑える。
+- しきい値 \(\delta\) と L2 正則化 \(\alpha\) を調整することで、外れ値への頑健性とバイアスのバランスを取れる。
+- 特徴量のスケーリングと交差検証を組み合わせると、実務データでも安定して学習できる。
 {{% /summary %}}
 
 ## 直感
-外れ値はセンサー異常や入力ミスなどで生じ、最小二乗法では二乗誤差が極端に大きくなるため推定全体が引きずられてしまいます。ロバスト回帰は外れ値には緩やかな罰則を与え、典型的なデータ点には従来と同じ評価を行うことで、代表的な傾向を保ちながら頑健性を高めるアプローチです。Huber損失はその代表例で、二乗損失と絶対値損失を滑らかに繋いで外れ値を扱います。
+外れ値はセンサー異常や入力ミスなどで発生し、最小二乗法では二乗誤差が極端に大きくなるため推定全体が引きずられてしまいます。ロバスト回帰は外れ値には緩やかな罰則を与えつつ、典型的なデータ点には従来と同じ評価を行うことで、代表的な傾向を保ちながら頑健性を高めるアプローチです。Huber損失はその代表例で、二乗損失と絶対値損失を滑らかに接続して外れ値を扱いやすくします。
 
 ## 具体的な数式
-残差 \\(r = y - \hat{y}\\) とし、パラメータ \\(\delta > 0\\) を用いると Huber損失は次のように定義されます。
+残差 \(r = y - \hat{y}\) とし、パラメータ \(\delta > 0\) を用いると Huber損失は
 
 $$
 \ell_\delta(r) =
 \begin{cases}
-\dfrac{1}{2}r^2, & |r| \le \delta \\
+\dfrac{1}{2}r^2, & |r| \le \delta \\\\
 \delta \left(|r| - \dfrac{1}{2}\delta \right), & |r| > \delta
 \end{cases}
 $$
 
-小さな残差では通常の二乗誤差と同じ振る舞いになり、大きな残差では線形に増加するため外れ値がもたらす極端な影響が抑えられます。導関数（影響関数）も同様に折れ線状になり、外れ値の重みが自動的に切り下げられます。
+と定義されます。小さな残差では通常の二乗誤差と同じ挙動、大きな残差では線形に増加するため外れ値がもたらす極端な影響が抑えられます。導関数（影響関数）も折れ線状になるため、外れ値の重みが自動的に落とされます。
 
 ## Pythonを用いた実験や説明
 以下は Huber損失の形状と、外れ値を含むデータでの回帰結果を `scikit-learn` で確認する例です。
@@ -37,7 +37,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 ```
 
-### �ŏ����� Huber �����̔�r
+### Huber損失と関連損失の比較
 
 ```python
 def huber_loss(r: np.ndarray, delta: float = 1.5):
@@ -50,19 +50,19 @@ r_vals = np.arange(-2, 2, 0.01)
 h_vals = huber_loss(r_vals, delta=delta)
 
 plt.figure(figsize=(8, 6))
-plt.plot(r_vals, np.square(r_vals), "red",   label=r"���덷 $r^2$")
-plt.plot(r_vals, np.abs(r_vals),    "orange",label=r"��Ό덷 $|r|")
-plt.plot(r_vals, h_vals,            "green", label=fr"Huber�����i$\delta={delta}$�j")
+plt.plot(r_vals, np.square(r_vals), "red", label=r"二乗損失 $r^2$")
+plt.plot(r_vals, np.abs(r_vals), "orange", label=r"絶対値損失 $|r|$")
+plt.plot(r_vals, h_vals, "green", label=fr"Huber損失 ($\delta={delta}$)")
 plt.axhline(0, color="k", linewidth=0.8)
 plt.grid(True, alpha=0.3)
 plt.legend()
-plt.xlabel("�c�� $r$")
-plt.ylabel("����")
-plt.title("���E��΁EHuber �����̔�r")
+plt.xlabel("残差 $r$")
+plt.ylabel("損失値")
+plt.title("二乗・絶対値・Huber損失の比較")
 plt.show()
 ```
 
-### �O��l���܂ރf�[�^�ł̔�r
+### 外れ値を含むデータでの挙動
 
 ```python
 np.random.seed(42)
@@ -74,14 +74,14 @@ X = np.c_[x1, x2]
 epsilon = np.random.rand(N)
 y = 5 * x1 + 10 * x2 + epsilon * 10
 
-y[5] = 500  # �O��l�� 1 ������
+y[5] = 500  # 外れ値を1点だけ挿入
 
 plt.figure(figsize=(8, 6))
 plt.plot(x1, y, "ko", label="data")
 plt.xlabel("$x_1$")
 plt.ylabel("$y$")
 plt.legend()
-plt.title("�O��l���܂ރf�[�^")
+plt.title("外れ値を含むデータ")
 plt.show()
 ```
 
@@ -92,29 +92,29 @@ plt.figure(figsize=(8, 6))
 
 huber = HuberRegressor(alpha=0.0, epsilon=3.0)
 huber.fit(X, y)
-plt.plot(x1, huber.predict(X), "green", label="Huber��A")
+plt.plot(x1, huber.predict(X), "green", label="Huber回帰")
 
 ridge = Ridge(alpha=1.0, random_state=0)
 ridge.fit(X, y)
-plt.plot(x1, ridge.predict(X), "orange", label="���b�W��A�i��=1.0�j")
+plt.plot(x1, ridge.predict(X), "orange", label="リッジ回帰 (α=1.0)")
 
 lr = LinearRegression()
 lr.fit(X, y)
-plt.plot(x1, lr.predict(X), "r-", label="�ŏ����@ (OLS)")
+plt.plot(x1, lr.predict(X), "r-", label="最小二乗法 (OLS)")
 
 plt.plot(x1, y, "kx", alpha=0.7)
 plt.xlabel("$x_1$")
 plt.ylabel("$y$")
 plt.legend()
-plt.title("�O��l������Ƃ��̉�A�����̈Ⴂ")
+plt.title("外れ値を含むときの推定曲線の違い")
 plt.grid(alpha=0.3)
 plt.show()
 ```
 
 ### 実行結果の読み方
-- Huber損失は残差が小さい範囲では最小二乗法と同じ挙動、大きい範囲では絶対値損失に近い挙動を示す。
-- 外れ値があっても、Huber回帰はリッジや通常の線形回帰よりも影響を受けにくい。
-- ハイパーパラメータ `epsilon` や `alpha` を調整し、交差検証で最適値を探すと安定したモデルになる。
+- Huber損失は残差が小さい領域では最小二乗法と同じ挙動、大きい領域では絶対値損失に近い挙動を示す。
+- 外れ値があっても、Huber回帰はリッジ回帰や通常の線形回帰よりも影響を受けにくい。
+- ハイパーパラメータ `epsilon` と `alpha` を調整し、交差検証で最適値を探すと安定したモデルになる。
 
 ## 参考文献
 {{% references %}}
