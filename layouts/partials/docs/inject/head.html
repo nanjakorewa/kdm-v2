@@ -6,6 +6,10 @@
 {{- $site  := site.Title -}}
 {{- $lang  := .Lang -}}
 {{- $author:= (or .Params.author site.Params.author) -}}
+{{- $canonical := $url -}}
+{{- with .Params.canonical -}}
+  {{- $canonical = . | absURL -}}
+{{- end -}}
 {{- $gaMeasurementId := "" -}}
 {{- with site.Params.analytics }}
   {{- with .googleMeasurementId }}
@@ -50,6 +54,10 @@
   gtag('config', '{{ $gaMeasurementId }}');
 </script>
 {{- end -}}
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="{{ $canonical }}">
 
 {{/* Robots（ドラフト/明示noindexは除外）。高度ロボッツも付与 */}}
 {{- $isNoindex := or .Draft .Params.noindex (eq .Params.robots "noindex") -}}
@@ -97,12 +105,23 @@
 {{ with (or .Params.twitterCreator site.Params.twitterCreator) }}<meta name="twitter:creator" content="@{{ . }}">{{ end }}
 
 <!-- hreflang（絶対URL） -->
-{{- range .AllTranslations -}}
-<link rel="alternate" hreflang="{{ .Lang }}" href="{{ .Permalink }}">
+{{- $seen := newScratch -}}
+{{- range append .AllTranslations . -}}
+  {{- if not ($seen.Get .Lang) -}}
+    <link rel="alternate" hreflang="{{ .Lang }}" href="{{ .Permalink }}">
+    {{- $seen.Set .Lang true -}}
+  {{- end -}}
 {{- end -}}
-{{- if .IsHome -}}
-<link rel="alternate" hreflang="x-default" href="{{ site.Home.Permalink }}">
+{{- $defaultLang := site.Language.Lang -}}
+{{- $defaultPage := . -}}
+{{- if ne .Lang $defaultLang -}}
+  {{- range append .AllTranslations . -}}
+    {{- if eq .Lang $defaultLang -}}
+      {{- $defaultPage = . -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
+<link rel="alternate" hreflang="x-default" href="{{ $defaultPage.Permalink }}">
 
 <!-- JSON-LD: Article/WebSite + BreadcrumbList + Publisher/logo -->
 {{- if .IsPage -}}
