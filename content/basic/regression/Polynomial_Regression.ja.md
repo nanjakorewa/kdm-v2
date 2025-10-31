@@ -76,7 +76,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01.svg)
+![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01_ja.png)
 
 ### 結果の読み方
 - 単純な線形回帰では曲線の中央付近で大きくずれているが、多項式回帰は真の曲線に沿って学習できている。

@@ -74,7 +74,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01.svg)
+![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01_ja.png)
 
 ### 実行結果の読み方
 - 潜在因子数を増やすにつれて CV MSE が下がり、最小となる点を過ぎると悪化し始める。

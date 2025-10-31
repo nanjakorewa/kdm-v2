@@ -67,7 +67,7 @@ plt.legend()
 plt.show()
 ```
 
-![linear-regression block 1](/images/basic/regression/linear-regression_block01.svg)
+![linear-regression block 1](/images/basic/regression/linear-regression_block01_en.png)
 
 ### Reading the results
 - **Slope \(w\)**: indicates how much the output increases or decreases when the input grows by one unit. The estimate should be close to the true slope.

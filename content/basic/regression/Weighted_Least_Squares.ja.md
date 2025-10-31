@@ -67,7 +67,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![weighted-least-squares block 1](/images/basic/regression/weighted-least-squares_block01.svg)
+![weighted-least-squares block 1](/images/basic/regression/weighted-least-squares_block01_ja.png)
 
 ### 実行結果の読み方
 - `weights` を与えることでノイズの小さい区間がより重視され、真の直線に近い推定になる。

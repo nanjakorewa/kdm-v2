@@ -240,8 +240,12 @@ def detect_language(md_path: Path) -> str:
     return ""
 
 
-def iter_targets(content_root: Path) -> list[tuple[Path, list[str], list[str], str]]:
-    unsorted_targets: list[tuple[tuple[str, ...], int, Path, list[str], list[str], str]] = []
+def iter_targets(
+    content_root: Path,
+) -> list[tuple[Path, list[str], list[str], str, str]]:
+    unsorted_targets: list[
+        tuple[tuple[str, ...], int, Path, list[str], list[str], str, str]
+    ] = []
     for md_path in sorted(content_root.rglob("*.md")):
         if md_path.suffix != ".md":
             continue
@@ -257,10 +261,15 @@ def iter_targets(content_root: Path) -> list[tuple[Path, list[str], list[str], s
         lang = detect_language(md_path)
         base_key = tuple(rel_slugs + [file_slug])
         priority = LANG_PRIORITY.get(lang, len(LANG_PRIORITY))
-        unsorted_targets.append((base_key, priority, md_path, blocks, rel_slugs, file_slug))
+        unsorted_targets.append(
+            (base_key, priority, md_path, blocks, rel_slugs, file_slug, lang)
+        )
 
     unsorted_targets.sort(key=lambda item: (item[0], item[1], str(item[2])))
-    return [(md_path, blocks, rel_slugs, file_slug) for _, _, md_path, blocks, rel_slugs, file_slug in unsorted_targets]
+    return [
+        (md_path, blocks, rel_slugs, file_slug, lang)
+        for _, _, md_path, blocks, rel_slugs, file_slug, lang in unsorted_targets
+    ]
 
 
 def save_figures(
@@ -269,16 +278,20 @@ def save_figures(
     rel_slugs: list[str],
     file_slug: str,
     block_idx: int,
+    lang: str,
 ) -> None:
     output_dir = repo_root / "static" / "images" / "basic"
     if rel_slugs:
         output_dir = output_dir.joinpath(*rel_slugs)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    lang_suffix_map = {"ja": "_ja", "en": "_en", "es": "_es", "id": "_id"}
+    lang_suffix = lang_suffix_map.get(lang or "ja", "_ja")
+
     for fig_idx, fig_num in enumerate(figures, start=1):
         fig = plt.figure(fig_num)
         suffix = "" if fig_idx == 1 else f"_fig{fig_idx:02d}"
-        filename = f"{file_slug}_block{block_idx:02d}{suffix}.svg"
+        filename = f"{file_slug}_block{block_idx:02d}{suffix}{lang_suffix}.png"
         output_path = output_dir / filename
         fig.savefig(output_path, bbox_inches="tight")
         print(f"Saved {output_path.relative_to(repo_root)}")
@@ -291,7 +304,7 @@ def main(_: argparse.Namespace) -> None:
 
     install_sklearn_stub()
 
-    for md_path, blocks, rel_slugs, file_slug in iter_targets(content_root):
+    for md_path, blocks, rel_slugs, file_slug, lang in iter_targets(content_root):
         print(f"Processing {md_path.relative_to(repo_root)}")
         namespace: dict[str, object] = {}
         for block_idx, code in enumerate(blocks, start=1):
@@ -311,7 +324,7 @@ def main(_: argparse.Namespace) -> None:
                 print(f"  Block {block_idx}: no figures captured")
                 continue
 
-            save_figures(new_figs, repo_root, rel_slugs, file_slug, block_idx)
+            save_figures(new_figs, repo_root, rel_slugs, file_slug, block_idx, lang)
 
         plt.close("all")
 

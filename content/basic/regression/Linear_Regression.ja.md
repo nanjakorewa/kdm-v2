@@ -67,7 +67,7 @@ plt.legend()
 plt.show()
 ```
 
-![linear-regression block 1](/images/basic/regression/linear-regression_block01.svg)
+![linear-regression block 1](/images/basic/regression/linear-regression_block01_ja.png)
 
 ### 実行結果の読み方
 - **傾き \\(w\\)**: 入力が 1 増えたときに出力がどれだけ増減するかを表し、真の傾きに近い値が推定されます。

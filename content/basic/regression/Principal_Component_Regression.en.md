@@ -71,7 +71,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01.svg)
+![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01_en.png)
 
 ### Reading the results
 - As the number of components increases, the training fit improves, but cross-validated MSE reaches a minimum at an intermediate value.

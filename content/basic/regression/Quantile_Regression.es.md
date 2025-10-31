@@ -80,7 +80,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![quantile-regression block 1](/images/basic/regression/quantile-regression_block01.svg)
+![quantile-regression block 1](/images/basic/regression/quantile-regression_block01_es.png)
 
 ### Interpretación de los resultados
 - Cada cuantil produce una línea distinta, capturando la dispersión vertical de los datos.

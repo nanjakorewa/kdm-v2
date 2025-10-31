@@ -78,7 +78,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01.svg)
+![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01_en.png)
 
 ### Reading the results
 - OLS is pulled toward the outliers, while Bayesian linear regression keeps the mean prediction more stable.

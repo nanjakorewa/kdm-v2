@@ -78,7 +78,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01.svg)
+![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01_ja.png)
 
 ### 実行結果の読み方
 - OLS は外れ値に引きずられて直線が傾きやすいが、ベイズ線形回帰は平均の変動が抑えられる。

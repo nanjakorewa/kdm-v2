@@ -67,7 +67,7 @@ plt.legend()
 plt.show()
 ```
 
-![linear-regression block 1](/images/basic/regression/linear-regression_block01.svg)
+![linear-regression block 1](/images/basic/regression/linear-regression_block01_es.png)
 
 ### Interpretación de los resultados
 - **Pendiente \(w\)**: muestra cuánto aumenta o disminuye la salida cuando la entrada crece una unidad; la estimación debería acercarse al valor real.

@@ -67,7 +67,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![weighted-least-squares block 1](/images/basic/regression/weighted-least-squares_block01.svg)
+![weighted-least-squares block 1](/images/basic/regression/weighted-least-squares_block01_es.png)
 
 ### Interpretación de los resultados
 - El uso de pesos inclina el ajuste hacia la región de bajo ruido y produce estimaciones cercanas a la recta verdadera.

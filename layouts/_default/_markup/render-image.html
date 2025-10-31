@@ -1,8 +1,8 @@
-﻿{{- $alt := .Text | plainify -}}
+{{- $alt := .Text | plainify -}}
 {{- $title := .Title -}}
 {{- $src := .Destination -}}
 
-{{/* Page Bundle 内の相対画像を優先して最適化（無ければそのまま） */}}
+{{/* Page Bundle ���̑��Ή摜��D�悵�čœK���i������΂��̂܂܁j */}}
 {{- $res := .Page.Resources.GetMatch (printf "**%s" $src) -}}
 {{- if and $res (eq $res.MediaType.Type "image") -}}
   {{- $sizes := slice 360 720 960 1200 -}}
@@ -21,7 +21,20 @@
     width="{{ $main.Width }}" height="{{ $main.Height }}"
     loading="lazy" decoding="async" fetchpriority="low">
 {{- else -}}
-  {{/* static/ 配下などの絶対パス画像 */}}
+  {{/* static/ �z���Ȃǂ̐�΃p�X�摜 */}}
+  {{- $lang := or .Page.Lang "ja" -}}
+  {{- $langMap := dict "ja" "_ja" "en" "_en" "es" "_es" "id" "_id" -}}
+  {{- $langSuffix := default "_ja" (index $langMap $lang) -}}
+  {{- $ext := path.Ext $src -}}
+  {{- $preferredExt := cond (ne $ext "") $ext ".png" -}}
+  {{- $base := cond (ne $ext "") (strings.TrimSuffix $src $ext) $src -}}
+  {{- if not (strings.HasSuffix $base $langSuffix) -}}
+    {{- $candidate := printf "%s%s%s" $base $langSuffix $preferredExt -}}
+    {{- $candidateRel := strings.TrimPrefix $candidate "/" -}}
+    {{- if fileExists (printf "static/%s" $candidateRel) -}}
+      {{- $src = $candidate -}}
+    {{- end -}}
+  {{- end -}}
   <img
     src="{{ $src | absURL }}"
     alt="{{ $alt }}"

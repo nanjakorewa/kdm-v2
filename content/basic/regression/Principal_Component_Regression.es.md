@@ -71,7 +71,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01.svg)
+![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01_es.png)
 
 ### Interpretación de los resultados
 - Al aumentar los componentes, el ajuste sobre el entrenamiento mejora, pero el MSE de validación cruzada alcanza un mínimo intermedio.

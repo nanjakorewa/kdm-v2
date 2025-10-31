@@ -75,7 +75,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01.svg)
+![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01_en.png)
 
 ### Reading the results
 - Plain linear regression misses the curvature, especially near the center, while the cubic polynomial follows the true curve closely.

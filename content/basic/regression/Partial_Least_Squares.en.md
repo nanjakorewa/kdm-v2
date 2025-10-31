@@ -74,7 +74,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01.svg)
+![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01_en.png)
 
 ### Reading the results
 - Cross-validated MSE decreases as factors are added, reaches a minimum, and then worsens if you keep adding more.

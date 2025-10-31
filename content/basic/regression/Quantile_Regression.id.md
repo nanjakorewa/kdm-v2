@@ -80,7 +80,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![quantile-regression block 1](/images/basic/regression/quantile-regression_block01.svg)
+![quantile-regression block 1](/images/basic/regression/quantile-regression_block01_id.png)
 
 ### Cara membaca hasil
 - Setiap kuantil menghasilkan garis berbeda yang menggambarkan sebaran vertikal data.

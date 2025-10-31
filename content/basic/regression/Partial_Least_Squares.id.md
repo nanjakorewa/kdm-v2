@@ -74,7 +74,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01.svg)
+![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01_id.png)
 
 ### Cara membaca hasil
 - MSE hasil cross-validation menurun seiring penambahan faktor, mencapai minimum, lalu memburuk jika faktor ditambah terus.

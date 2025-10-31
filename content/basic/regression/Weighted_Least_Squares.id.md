@@ -67,7 +67,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![weighted-least-squares block 1](/images/basic/regression/weighted-least-squares_block01.svg)
+![weighted-least-squares block 1](/images/basic/regression/weighted-least-squares_block01_id.png)
 
 ### Cara membaca hasil
 - Pemberian bobot menarik garis hasil fitting ke wilayah dengan noise rendah sehingga mendekati garis sebenarnya.

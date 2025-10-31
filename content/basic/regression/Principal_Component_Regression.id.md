@@ -71,7 +71,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01.svg)
+![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01_id.png)
 
 ### Cara membaca hasil
 - Semakin banyak komponen, kecocokan terhadap data latih meningkat, tetapi MSE validasi silang mencapai minimum pada jumlah menengah.

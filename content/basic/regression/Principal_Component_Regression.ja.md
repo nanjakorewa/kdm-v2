@@ -71,7 +71,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01.svg)
+![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01_ja.png)
 
 ### 実行結果の読み方
 - 主成分数を増やすと訓練データへの適合が上がるが、交差検証 MSE が最小となるポイントがある。

@@ -80,7 +80,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![quantile-regression block 1](/images/basic/regression/quantile-regression_block01.svg)
+![quantile-regression block 1](/images/basic/regression/quantile-regression_block01_en.png)
 
 ### Reading the results
 - Each quantile produces a different line, capturing the vertical spread of the data.

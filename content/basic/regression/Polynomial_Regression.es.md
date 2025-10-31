@@ -75,7 +75,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01.svg)
+![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01_es.png)
 
 ### Interpretación de los resultados
 - La regresión lineal simple falla en reproducir la curvatura, especialmente cerca del centro, mientras que el modelo cúbico sigue la curva verdadera.

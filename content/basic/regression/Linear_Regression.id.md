@@ -67,7 +67,7 @@ plt.legend()
 plt.show()
 ```
 
-![linear-regression block 1](/images/basic/regression/linear-regression_block01.svg)
+![linear-regression block 1](/images/basic/regression/linear-regression_block01_id.png)
 
 ### Membaca hasil
 - **Kemiringan \(w\)**: menunjukkan seberapa besar keluaran naik atau turun ketika masukan bertambah satu satuan; estimasinya seharusnya mendekati nilai sebenarnya.

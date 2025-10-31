@@ -42,8 +42,10 @@ SCRIPT_DETAILS: dict[str, str] = {
           scikit-learn is not installed.
         * Scans Markdown recursively, orders multilingual variants with a
           language priority, and executes fenced ```python``` blocks one by one.
-        * Captures any new figures opened during a block, saves them to SVG
-          files named `<slug>_blockXX[_figYY].svg`, then closes the figures.
+        * Captures any new figures opened during a block, saves them to PNG
+          files named `<slug>_blockXX[_figYY]_lang.png` (例:
+          `_ja`, `_en`, `_es`, `_id`) under `static/images/basic/...`, then
+          closes the figures.
 
     Typical usage
         python scripts/generate_basic_assets.py
@@ -105,4 +107,3 @@ SCRIPT_DETAILS: dict[str, str] = {
 
 # The module is intended as human-readable documentation. Importing it gives
 # access to SCRIPT_DETAILS for programmatic inspection if desired.
-

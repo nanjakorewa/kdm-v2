@@ -75,7 +75,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01.svg)
+![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01_id.png)
 
 ### Membaca hasil
 - Regresi linear biasa gagal mengikuti kelengkungan (terutama di tengah), sedangkan model kubik mengikuti kurva sebenarnya dengan baik.

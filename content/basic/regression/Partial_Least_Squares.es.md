@@ -74,7 +74,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01.svg)
+![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01_es.png)
 
 ### Interpretación de los resultados
 - El MSE de validación cruzada desciende al añadir factores, alcanza un mínimo y luego empeora si seguimos agregando más.

@@ -78,7 +78,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01.svg)
+![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01_id.png)
 
 ### Cara membaca hasil
 - OLS mudah terpengaruh oleh outlier, sedangkan regresi Bayesian menjaga prediksi rata-rata tetap stabil.

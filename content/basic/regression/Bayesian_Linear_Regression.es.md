@@ -78,7 +78,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01.svg)
+![bayesian-linear-regression block 1](/images/basic/regression/bayesian-linear-regression_block01_es.png)
 
 ### Interpretación de los resultados
 - OLS se ve arrastrado por los outliers, mientras que la regresión bayesiana mantiene más estable la predicción media.

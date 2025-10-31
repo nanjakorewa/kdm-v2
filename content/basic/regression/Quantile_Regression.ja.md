@@ -80,7 +80,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![quantile-regression block 1](/images/basic/regression/quantile-regression_block01.svg)
+![quantile-regression block 1](/images/basic/regression/quantile-regression_block01_ja.png)
 
 ### 実行結果の読み方
 - 分位点ごとに異なる直線が得られ、データの上下方向のばらつきを表現できる。
