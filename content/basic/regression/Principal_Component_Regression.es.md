@@ -28,47 +28,98 @@ se ajusta a los datos. Los coeficientes en el espacio original se recuperan medi
 Evaluamos la regresión PCR en el conjunto de datos de diabetes variando el número de componentes y midiendo el desempeño con validación cruzada.
 
 ```python
+from __future__ import annotations
+
+import japanize_matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from sklearn.datasets import load_diabetes
 from sklearn.decomposition import PCA
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import cross_val_score
-import matplotlib.pyplot as plt
-import japanize_matplotlib
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
-X, y = load_diabetes(return_X_y=True)
 
-def build_pcr(n_components):
-    return Pipeline([
-        ("scale", StandardScaler()),
-        ("pca", PCA(n_components=n_components, random_state=0)),
-        ("reg", LinearRegression()),
-    ])
+def evaluate_pcr_components(
+    cv_folds: int = 5,
+    xlabel: str = "Number of components k",
+    ylabel: str = "CV MSE (lower is better)",
+    title: str | None = None,
+    label_best: str = "best={k}",
+) -> dict[str, float]:
+    """Cross-validate PCR with varying component counts and plot the curve.
 
-components = range(1, X.shape[1] + 1)
-cv_scores = []
-for k in components:
-    model = build_pcr(k)
-    score = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
-    cv_scores.append(score.mean())
+    Args:
+        cv_folds: Number of folds for cross-validation.
+        xlabel: Label for the component-count axis.
+        ylabel: Label for the error axis.
+        title: Optional title for the plot.
+        label_best: Format string for highlighting the best component count.
 
-best_k = components[int(np.argmax(cv_scores))]
-print("Número óptimo de componentes:", best_k)
+    Returns:
+        Dictionary containing the best component count and its CV score.
+    """
+    japanize_matplotlib.japanize()
+    X, y = load_diabetes(return_X_y=True)
 
-best_model = build_pcr(best_k).fit(X, y)
-print("Proporción de varianza explicada:", best_model["pca"].explained_variance_ratio_)
+    def build_pcr(n_components: int) -> Pipeline:
+        return Pipeline([
+            ("scale", StandardScaler()),
+            ("pca", PCA(n_components=n_components, random_state=0)),
+            ("reg", LinearRegression()),
+        ])
 
-plt.figure(figsize=(8, 4))
-plt.plot(components, [-s for s in cv_scores], marker="o")
-plt.axvline(best_k, color="red", linestyle="--", label=f"mejor={best_k}")
-plt.xlabel("Número de componentes k")
-plt.ylabel("CV MSE (más bajo es mejor)")
-plt.legend()
-plt.tight_layout()
-plt.show()
+    components = np.arange(1, X.shape[1] + 1)
+    cv_scores = []
+    for k in components:
+        model = build_pcr(int(k))
+        score = cross_val_score(
+            model,
+            X,
+            y,
+            cv=cv_folds,
+            scoring="neg_mean_squared_error",
+        )
+        cv_scores.append(score.mean())
+
+    cv_scores_arr = np.array(cv_scores)
+    best_idx = int(np.argmax(cv_scores_arr))
+    best_k = int(components[best_idx])
+    best_mse = float(-cv_scores_arr[best_idx])
+
+    best_model = build_pcr(best_k).fit(X, y)
+    explained = best_model["pca"].explained_variance_ratio_
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.plot(components, -cv_scores_arr, marker="o")
+    ax.axvline(best_k, color="red", linestyle="--", label=label_best.format(k=best_k))
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    if title:
+        ax.set_title(title)
+    ax.legend()
+    fig.tight_layout()
+    plt.show()
+
+    return {
+        "best_k": best_k,
+        "best_mse": best_mse,
+        "explained_variance_ratio": explained,
+    }
+
+
+
+metrics = evaluate_pcr_components(
+    xlabel="Número de componentes k",
+    ylabel="MSE de CV (más bajo es mejor)",
+    title="PCR y número de componentes",
+    label_best="mejor k={k}",
+)
+print(f"Mejor número de componentes: {metrics['best_k']}")
+print(f"Mejor MSE de CV: {metrics['best_mse']:.3f}")
+print("Proporción de varianza explicada:", metrics['explained_variance_ratio'])
+
 ```
 
 ![principal-component-regression block 1](/images/basic/regression/principal-component-regression_block01_es.png)

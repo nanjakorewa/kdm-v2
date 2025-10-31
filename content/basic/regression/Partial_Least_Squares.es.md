@@ -28,50 +28,105 @@ El número de factores \(k\) suele elegirse mediante validación cruzada.
 Comparamos el desempeño de PLS para distintos números de factores latentes con el conjunto de datos de acondicionamiento físico de Linnerud.
 
 ```python
-import numpy as np
-import pandas as pd
-from sklearn.cross_decomposition import PLSRegression
-from sklearn.model_selection import cross_val_score, KFold
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
-from sklearn.datasets import load_linnerud
-import matplotlib.pyplot as plt
+from __future__ import annotations
+
 import japanize_matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.cross_decomposition import PLSRegression
+from sklearn.datasets import load_linnerud
+from sklearn.model_selection import KFold, cross_val_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
-data = load_linnerud()
-X = data["data"]          # Rutinas de entrenamiento y medidas corporales
-y = data["target"][:, 0]  # Aquí predecimos únicamente el número de dominadas
 
-components = range(1, min(X.shape[1], 6) + 1)
-cv = KFold(n_splits=5, shuffle=True, random_state=0)
+def evaluate_pls_latent_factors(
+    cv_splits: int = 5,
+    xlabel: str = "Number of latent factors",
+    ylabel: str = "CV MSE (lower is better)",
+    label_best: str = "best={k}",
+    title: str | None = None,
+) -> dict[str, object]:
+    """Cross-validate PLS regression for different latent factor counts.
 
-scores = []
-for k in components:
-    model = Pipeline([
-        ("scale", StandardScaler()),
-        ("pls", PLSRegression(n_components=k)),
-    ])
-    score = cross_val_score(model, X, y, cv=cv, scoring="neg_mean_squared_error").mean()
-    scores.append(score)
+    Args:
+        cv_splits: Number of folds for cross-validation.
+        xlabel: Label for the number-of-factors axis.
+        ylabel: Label for the cross-validation error axis.
+        label_best: Format string for the best-factor annotation.
+        title: Optional plot title.
 
-best_k = components[int(np.argmax(scores))]
-print("Número óptimo de factores latentes:", best_k)
+    Returns:
+        Dictionary with the selected factor count, CV score, and loadings.
+    """
+    japanize_matplotlib.japanize()
+    data = load_linnerud()
+    X = data["data"]
+    y = data["target"][:, 0]
 
-best_model = Pipeline([
-    ("scale", StandardScaler()),
-    ("pls", PLSRegression(n_components=best_k)),
-]).fit(X, y)
+    max_components = min(X.shape[1], 6)
+    components = np.arange(1, max_components + 1)
+    cv = KFold(n_splits=cv_splits, shuffle=True, random_state=0)
 
-print("Loadings de X:\n", best_model["pls"].x_loadings_)
-print("Loadings de Y:\n", best_model["pls"].y_loadings_)
+    scores = []
+    pipelines = []
+    for k in components:
+        model = Pipeline([
+            ("scale", StandardScaler()),
+            ("pls", PLSRegression(n_components=int(k))),
+        ])
+        cv_score = cross_val_score(
+            model,
+            X,
+            y,
+            cv=cv,
+            scoring="neg_mean_squared_error",
+        ).mean()
+        scores.append(cv_score)
+        pipelines.append(model)
 
-plt.figure(figsize=(8, 4))
-plt.plot(components, [-s for s in scores], marker="o")
-plt.axvline(best_k, color="red", linestyle="--")
-plt.xlabel("Número de factores latentes")
-plt.ylabel("CV MSE (más bajo es mejor)")
-plt.tight_layout()
-plt.show()
+    scores_arr = np.array(scores)
+    best_idx = int(np.argmax(scores_arr))
+    best_k = int(components[best_idx])
+    best_mse = float(-scores_arr[best_idx])
+
+    best_model = pipelines[best_idx].fit(X, y)
+    x_loadings = best_model["pls"].x_loadings_
+    y_loadings = best_model["pls"].y_loadings_
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.plot(components, -scores_arr, marker="o")
+    ax.axvline(best_k, color="red", linestyle="--", label=label_best.format(k=best_k))
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    if title:
+        ax.set_title(title)
+    ax.legend()
+    fig.tight_layout()
+    plt.show()
+
+    return {
+        "best_k": best_k,
+        "best_mse": best_mse,
+        "x_loadings": x_loadings,
+        "y_loadings": y_loadings,
+    }
+
+
+
+metrics = evaluate_pls_latent_factors(
+    xlabel="Número de factores latentes",
+    ylabel="MSE de CV (más bajo es mejor)",
+    label_best="mejor k={k}",
+    title="Selección de factores en PLS",
+)
+print(f"Mejor número de factores: {metrics['best_k']}")
+print(f"Mejor MSE de CV: {metrics['best_mse']:.3f}")
+print("Cargas de X:
+", metrics['x_loadings'])
+print("Cargas de Y:
+", metrics['y_loadings'])
+
 ```
 
 ![partial-least-squares block 1](/images/basic/regression/partial-least-squares_block01_es.png)

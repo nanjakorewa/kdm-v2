@@ -29,36 +29,98 @@ title_suffix: "疎な係数を貪欲に選ぶ線形回帰"
 疎な真の係数を持つデータで OMP とラッソを比較します。
 
 ```python
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+from __future__ import annotations
+
 import japanize_matplotlib
-from sklearn.linear_model import OrthogonalMatchingPursuit, Lasso
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.linear_model import Lasso, OrthogonalMatchingPursuit
 from sklearn.metrics import mean_squared_error
 
-rng = np.random.default_rng(0)
-n_samples, n_features = 200, 40
-X = rng.normal(size=(n_samples, n_features))
-true_coef = np.zeros(n_features)
-true_support = [1, 5, 12, 33]
-true_coef[true_support] = [2.5, -1.5, 3.0, 1.0]
-y = X @ true_coef + rng.normal(scale=0.5, size=n_samples)
 
-omp = OrthogonalMatchingPursuit(n_nonzero_coefs=4).fit(X, y)
-lasso = Lasso(alpha=0.05).fit(X, y)
+def run_omp_vs_lasso(
+    n_samples: int = 200,
+    n_features: int = 40,
+    sparsity: int = 4,
+    noise_scale: float = 0.5,
+    xlabel: str = "feature index",
+    ylabel: str = "coefficient",
+    label_true: str = "true",
+    label_omp: str = "OMP",
+    label_lasso: str = "Lasso",
+    title: str | None = None,
+) -> dict[str, object]:
+    """Compare OMP and lasso on synthetic sparse regression data.
 
-print("OMP 係数の非ゼロ位置:", np.flatnonzero(omp.coef_))
-print("Lasso 係数の非ゼロ位置:", np.flatnonzero(np.abs(lasso.coef_) > 1e-6))
+    Args:
+        n_samples: Number of training samples to generate.
+        n_features: Total number of features in the dictionary.
+        sparsity: Count of non-zero coefficients in the ground truth.
+        noise_scale: Standard deviation of Gaussian noise added to targets.
+        xlabel: Label for the coefficient plot x-axis.
+        ylabel: Label for the coefficient plot y-axis.
+        label_true: Legend label for the ground-truth bars.
+        label_omp: Legend label for the OMP bars.
+        label_lasso: Legend label for the lasso bars.
+        title: Optional title for the bar chart.
 
-print("OMP MSE:", mean_squared_error(y, omp.predict(X)))
-print("Lasso MSE:", mean_squared_error(y, lasso.predict(X)))
+    Returns:
+        Dictionary containing recovered supports and MSE values.
+    """
+    japanize_matplotlib.japanize()
+    rng = np.random.default_rng(0)
 
-coef_df = pd.DataFrame({
-    "true": true_coef,
-    "omp": omp.coef_,
-    "lasso": lasso.coef_,
-})
-print(coef_df.head(10))
+    X = rng.normal(size=(n_samples, n_features))
+    true_coef = np.zeros(n_features)
+    true_support = rng.choice(n_features, size=sparsity, replace=False)
+    true_coef[true_support] = rng.normal(loc=0.0, scale=3.0, size=sparsity)
+    y = X @ true_coef + rng.normal(scale=noise_scale, size=n_samples)
+
+    omp = OrthogonalMatchingPursuit(n_nonzero_coefs=sparsity)
+    omp.fit(X, y)
+    lasso = Lasso(alpha=0.05)
+    lasso.fit(X, y)
+
+    omp_pred = omp.predict(X)
+    lasso_pred = lasso.predict(X)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    indices = np.arange(n_features)
+    ax.bar(indices - 0.3, true_coef, width=0.2, label=label_true, color="#2ca02c")
+    ax.bar(indices, omp.coef_, width=0.2, label=label_omp, color="#1f77b4")
+    ax.bar(indices + 0.3, lasso.coef_, width=0.2, label=label_lasso, color="#d62728")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    if title:
+        ax.set_title(title)
+    ax.legend()
+    fig.tight_layout()
+    plt.show()
+
+    return {
+        "true_support": np.flatnonzero(true_coef),
+        "omp_support": np.flatnonzero(omp.coef_),
+        "lasso_support": np.flatnonzero(np.abs(lasso.coef_) > 1e-6),
+        "omp_mse": float(mean_squared_error(y, omp_pred)),
+        "lasso_mse": float(mean_squared_error(y, lasso_pred)),
+    }
+
+
+
+metrics = run_omp_vs_lasso(
+    xlabel="特徴量インデックス",
+    ylabel="係数",
+    label_true="真の係数",
+    label_omp="OMP",
+    label_lasso="Lasso",
+    title="OMP と Lasso の係数比較",
+)
+print("真のサポート:", metrics['true_support'])
+print("OMP のサポート:", metrics['omp_support'])
+print("Lasso のサポート:", metrics['lasso_support'])
+print(f"OMP の MSE: {metrics['omp_mse']:.4f}")
+print(f"Lasso の MSE: {metrics['lasso_mse']:.4f}")
+
 ```
 
 ### 実行結果の読み方
