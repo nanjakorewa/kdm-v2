@@ -12,8 +12,6 @@ import sys
 import types
 from pathlib import Path
 from textwrap import dedent
-from sklearn.linear_model import *
-
 import matplotlib
 
 matplotlib.use("Agg")
@@ -76,6 +74,7 @@ def install_sklearn_stub() -> None:
     pipeline_module = types.ModuleType("sklearn.pipeline")
     metrics_module = types.ModuleType("sklearn.metrics")
     tree_module = types.ModuleType("sklearn.tree")
+    neighbors_module = types.ModuleType("sklearn.neighbors")
 
     class LinearRegression:
         def __init__(self) -> None:
@@ -193,6 +192,13 @@ def install_sklearn_stub() -> None:
                 return final.predict(Xt)  # type: ignore[return-value]
             raise RuntimeError("Final pipeline step does not implement predict().")
 
+        def score(self, X: np.ndarray, y: np.ndarray) -> float:
+            predictions = self.predict(X)
+            y_arr = np.asarray(y)
+            if predictions.shape != y_arr.shape:
+                y_arr = y_arr.reshape(predictions.shape)
+            return float(np.mean(predictions == y_arr))
+
     def make_pipeline(*steps: object) -> SimplePipeline:
         return SimplePipeline(list(steps))
 
@@ -219,6 +225,47 @@ def install_sklearn_stub() -> None:
         if noise:
             y += rng.normal(scale=noise, size=n_samples)
         return X, y
+
+    def make_blobs(
+        *,
+        n_samples: int = 100,
+        centers: int | list[tuple[float, ...]] | np.ndarray = 3,
+        cluster_std: float | list[float] | tuple[float, ...] | np.ndarray = 1.0,
+        random_state: int | None = None,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        rng = np.random.default_rng(random_state)
+        if isinstance(centers, int):
+            centers_array = rng.uniform(-5.0, 5.0, size=(centers, 2))
+        else:
+            centers_array = np.asarray(centers, dtype=float)
+        centers_array = centers_array.reshape(centers_array.shape[0], -1)
+        n_features = centers_array.shape[1]
+
+        if isinstance(cluster_std, (list, tuple, np.ndarray)):
+            std_array = np.asarray(cluster_std, dtype=float)
+            if std_array.size == 1:
+                std_array = np.full(centers_array.shape[0], float(std_array[0]))
+            elif std_array.size != centers_array.shape[0]:
+                std_array = np.resize(std_array, centers_array.shape[0])
+        else:
+            std_array = np.full(centers_array.shape[0], float(cluster_std))
+
+        counts = np.full(centers_array.shape[0], n_samples // centers_array.shape[0])
+        counts[: n_samples % centers_array.shape[0]] += 1
+
+        X_parts: list[np.ndarray] = []
+        y_parts: list[np.ndarray] = []
+        for idx, (center, std, count) in enumerate(zip(centers_array, std_array, counts)):
+            if count <= 0:
+                continue
+            cov = np.eye(n_features) * float(std) ** 2
+            samples = rng.multivariate_normal(center, cov, size=int(count))
+            X_parts.append(samples)
+            y_parts.append(np.full(int(count), idx))
+
+        X_all = np.vstack(X_parts)
+        y_all = np.concatenate(y_parts)
+        return X_all, y_all
 
     class DecisionTreeRegressor:
         def __init__(self, **params: object) -> None:
@@ -248,13 +295,72 @@ def install_sklearn_stub() -> None:
             n_samples = X_arr.shape[0]
             return np.full(n_samples, getattr(self, "_target_mean", 0.0), dtype=float)
 
+    class KNeighborsClassifier:
+        def __init__(self, n_neighbors: int = 5, *, weights: str = "uniform") -> None:
+            self.n_neighbors = max(1, int(n_neighbors))
+            self.weights = weights
+            self._X: np.ndarray | None = None
+            self._y: np.ndarray | None = None
+
+        def fit(self, X: np.ndarray, y: np.ndarray) -> "KNeighborsClassifier":
+            X_arr = np.asarray(X, dtype=float)
+            if X_arr.ndim == 1:
+                X_arr = X_arr[:, np.newaxis]
+            y_arr = np.asarray(y)
+            if X_arr.shape[0] != y_arr.shape[0]:
+                raise ValueError("X and y have inconsistent lengths.")
+            self._X = X_arr
+            self._y = y_arr
+            return self
+
+        def predict(self, X: np.ndarray) -> np.ndarray:
+            if self._X is None or self._y is None:
+                raise RuntimeError("KNeighborsClassifier is not fitted yet.")
+            X_arr = np.asarray(X, dtype=float)
+            if X_arr.ndim == 1:
+                X_arr = X_arr[:, np.newaxis]
+
+            train_X = self._X
+            if train_X.ndim == 1:
+                train_X = train_X[:, np.newaxis]
+
+            distances = np.linalg.norm(train_X[None, :, :] - X_arr[:, None, :], axis=2)
+            predictions: list[object] = []
+            neighbor_count = min(self.n_neighbors, train_X.shape[0])
+
+            for row_idx in range(distances.shape[0]):
+                row = distances[row_idx]
+                neighbor_idx = np.argsort(row)[:neighbor_count]
+                neighbor_labels = self._y[neighbor_idx]
+                if self.weights == "distance":
+                    neighbor_distances = row[neighbor_idx]
+                    weights = 1.0 / np.maximum(neighbor_distances, 1e-12)
+                else:
+                    weights = np.ones_like(neighbor_labels, dtype=float)
+                class_votes: dict[object, float] = {}
+                for label, weight in zip(neighbor_labels, weights):
+                    class_votes[label] = class_votes.get(label, 0.0) + float(weight)
+                best_label = max(class_votes.items(), key=lambda item: (item[1], item[0]))[0]
+                predictions.append(best_label)
+
+            return np.asarray(predictions, dtype=self._y.dtype)
+
+        def score(self, X: np.ndarray, y: np.ndarray) -> float:
+            preds = self.predict(X)
+            y_arr = np.asarray(y)
+            if preds.shape != y_arr.shape:
+                y_arr = y_arr.reshape(preds.shape)
+            return float(np.mean(preds == y_arr))
+
     linear_model_module.LinearRegression = LinearRegression
     preprocessing_module.StandardScaler = StandardScaler
     preprocessing_module.PolynomialFeatures = PolynomialFeatures
     pipeline_module.make_pipeline = make_pipeline
     metrics_module.mean_squared_error = mean_squared_error
     datasets_module.make_regression = make_regression
+    datasets_module.make_blobs = make_blobs
     tree_module.DecisionTreeRegressor = DecisionTreeRegressor
+    neighbors_module.KNeighborsClassifier = KNeighborsClassifier
 
     sys.modules["sklearn"] = sklearn_module
     sklearn_module.linear_model = linear_model_module  # type: ignore[attr-defined]
@@ -263,6 +369,7 @@ def install_sklearn_stub() -> None:
     sklearn_module.pipeline = pipeline_module  # type: ignore[attr-defined]
     sklearn_module.metrics = metrics_module  # type: ignore[attr-defined]
     sklearn_module.tree = tree_module  # type: ignore[attr-defined]
+    sklearn_module.neighbors = neighbors_module  # type: ignore[attr-defined]
 
     sys.modules["sklearn.linear_model"] = linear_model_module
     sys.modules["sklearn.preprocessing"] = preprocessing_module
@@ -270,6 +377,7 @@ def install_sklearn_stub() -> None:
     sys.modules["sklearn.pipeline"] = pipeline_module
     sys.modules["sklearn.metrics"] = metrics_module
     sys.modules["sklearn.tree"] = tree_module
+    sys.modules["sklearn.neighbors"] = neighbors_module
 
     if "dtreeviz" not in sys.modules:
         dtreeviz_module = types.ModuleType("dtreeviz")
