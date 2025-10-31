@@ -6,17 +6,17 @@ title_suffix: "多クラスの確率を同時に推定する"
 ---
 
 {{% summary %}}
-- ソフトマックス回帰はロジスティック回帰を多クラスへ拡張し、全クラスの出現確率を同時に推定する。
-- 出力が 0〜1 の確率で合計が 1 になるため、意思決定のしきい値やコスト計算にそのまま利用できる。
-- 学習はクロスエントロピー損失を最小化することで行い、確率分布としての歪みを直接補正できる。
-- scikit-learn では `LogisticRegression(multi_class="multinomial")` で簡単に扱え、L1/L2 正則化にも対応している。
+- ソフトマックス回帰はロジスティック回帰を多クラスへ拡張し、すべてのクラスの出現確率を同時に推定します。
+- 出力は 0 以上 1 以下で総和が 1 になるため、しきい値設定やコスト計算にそのまま利用できます。
+- 学習はクロスエントロピー損失を最小化することで行い、予測確率と真の分布のずれを直接補正します。
+- scikit-learn では `LogisticRegression(multi_class="multinomial")` がソフトマックス回帰を実装し、L1/L2 正則化にも対応しています。
 {{% /summary %}}
 
 ## 直感
-二値分類ではシグモイド関数で一方のクラスの確率を求められますが、多クラスでは「各クラスの確率」を同時に知りたいことが多くあります。ソフトマックス回帰はクラスごとの線形スコアを指数関数で正規化し、確率分布へ変換します。指数を使うことで、スコアが高いクラスは強調され、低いクラスは抑えられます。
+二値分類ではシグモイド関数がクラス1の確率を返しますが、多クラス問題では「すべてのクラスの確率を同時に知りたい」ときが多くあります。ソフトマックス回帰はクラスごとの線形スコアを指数関数で変換し、それらを正規化して確率分布にします。スコアの高いクラスが強調され、低いクラスは抑えられます。
 
-## 具体的な数式
-クラス数を \\(K\\)、クラス \\(k\\) の重みベクトルを \\(\mathbf{w}_k\\)、バイアスを \\(b_k\\) とすると
+## 数式で見る
+クラス数を \\(K\\)、クラス \\(k\\) の重みベクトルとバイアスをそれぞれ \\(\mathbf{w}_k\\)、\\(b_k\\) とすると
 
 $$
 P(y = k \mid \mathbf{x}) =
@@ -24,16 +24,16 @@ P(y = k \mid \mathbf{x}) =
 {\sum_{j=1}^{K} \exp\left(\mathbf{w}_j^\top \mathbf{x} + b_j\right)}
 $$
 
-で確率が得られます。目的関数はクロスエントロピー
+で確率が得られます。目的関数はクロスエントロピー損失
 
 $$
 L = - \sum_{i=1}^{n} \sum_{k=1}^{K} \mathbb{1}(y_i = k) \log P(y = k \mid \mathbf{x}_i)
 $$
 
-です。確率の合計が常に 1 なので、確率的な解釈がしやすく、正則化を加えることで係数の暴れも抑えられます。
+です。重みに正則化項を加えると過学習を抑えられます。
 
-## Pythonを用いた実験や説明
-下記は 3 クラスの人工データにソフトマックス回帰を適用し、決定領域を描画した例です。`multi_class="multinomial"` を指定するとソフトマックス学習が有効になります。
+## Pythonによる実験
+下記は3クラスの人工データにソフトマックス回帰を適用し、決定領域を描画した例です。`multi_class="multinomial"` を指定するとソフトマックス学習が有効になります。
 
 ```python
 from __future__ import annotations
@@ -83,12 +83,19 @@ def run_softmax_regression_demo(
 
     cmap = ListedColormap(["#ff9896", "#98df8a", "#aec7e8", "#f7b6d2", "#c5b0d5"])
     fig, ax = plt.subplots(figsize=(7, 6))
-    ax.contourf(grid_x1, grid_x2, preds, alpha=0.3, cmap=cmap, levels=np.arange(-0.5, n_classes + 0.5, 1))
+    ax.contourf(
+        grid_x1,
+        grid_x2,
+        preds,
+        alpha=0.3,
+        cmap=cmap,
+        levels=np.arange(-0.5, n_classes + 0.5, 1),
+    )
     scatter = ax.scatter(X[:, 0], X[:, 1], c=y, edgecolor="k", cmap=cmap)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(label_title)
-    legend = ax.legend(*scatter.legend_elements(), title="classes", loc="best")
+    legend = ax.legend(*scatter.legend_elements(), title="class", loc="best")
     ax.add_artist(legend)
     fig.tight_layout()
     plt.show()
@@ -106,7 +113,7 @@ print(f"訓練精度: {metrics['accuracy']:.3f}")
 ```
 
 
-![softmax regression demo](/images/basic/classification/softmax_block01_ja.png)
+![ソフトマックス回帰の決定領域](/images/basic/classification/softmax_block01_ja.png)
 
 ## 参考文献
 {{% references %}}

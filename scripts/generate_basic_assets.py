@@ -7,6 +7,7 @@ Run:
 from __future__ import annotations
 
 import argparse
+import importlib
 import re
 import sys
 import types
@@ -65,6 +66,11 @@ def apply_font_settings() -> None:
 def install_sklearn_stub() -> None:
     if "sklearn" in sys.modules:
         return
+    try:
+        importlib.import_module("sklearn")
+        return
+    except ModuleNotFoundError:
+        pass
 
     sklearn_module = types.ModuleType("sklearn")
     sklearn_module.__path__ = []  # type: ignore[attr-defined]
