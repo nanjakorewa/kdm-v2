@@ -2,168 +2,305 @@
 title: "k-means"
 weight: 1
 pre: "2.5.1 "
-title_suffix: "クラスタの重心を反復更新する"
+title_suffix: "クラスタの“重心”を反復的に洗い出す"
 ---
 
 {{< katex />}}
 {{% youtube "ff9xjGcNKX0" %}}
 
 {{% summary %}}
-- k-means は「近いもの同士をまとめる」という直感に基づき、クラスタ中心（セントロイド）を繰り返し更新してデータを \\(k\\) 個に分割する。
-- 目的関数は各点と対応するセントロイドとの距離二乗和（クラスタ内平方和; WCSS）であり、これを最小化する。
-- `scikit-learn` の `KMeans` を使うと、初期値の設定や反復回数を調整しながらアルゴリズムの収束過程を確認できる。
-- クラスタ数 \\(k\\) の選択にはエルボー法やシルエット係数がよく用いられ、データの構造とビジネス要件を合わせて判断する。
+- k-means は「距離が近い点同士をまとめる」という素朴な直感をもとに、クラスタの代表点（セントロイド）を更新しながらデータを \\(k\\) 個に分割します。
+- 目的関数は各サンプルと所属クラスタのセントロイドとの距離二乗和（WCSS）で、これを最小にする配置を探します。
+- `scikit-learn` の `KMeans` を使えば、初期値や反復回数を変えつつ収束過程やクラスタ割り当ての変化を可視化できます。
+- クラスタ数 \\(k\\) の選択にはエルボー法やシルエット係数などの指標が使われ、データ構造とビジネス要件を踏まえて判断します。
 {{% /summary %}}
 
 ## 直感
-k-means は以下のステップを収束するまで繰り返します。
+k-means はセントロイドと呼ばれる代表点を動かしながら、次の手順を収束するまで繰り返します。
 
-1. クラスタ数 \\(k\\) をあらかじめ決め、初期セントロイド（クラスタの代表点）を設定する。
+1. クラスタ数 \\(k\\) を決め、初期セントロイドを設定する。
 2. 各サンプルを「最も近いセントロイド」に割り当てる。
-3. 割り当てられたサンプルの平均を取り、新しいセントロイドを再計算する。
-4. セントロイドがほとんど動かなくなるまで 2–3 を繰り返す。
+3. 割り当てられたサンプルの平均を取り、新しいセントロイドを計算する。
+4. セントロイドの移動が十分に小さくなるまで 2 E3 を繰り返す。
 
-セントロイドがクラスタの重心を表すため「重心を探すアルゴリズム」という感覚で捉えると理解しやすいです。  
-ただし初期値の設定や外れ値の影響を受けやすいため、複数回初期化したり前処理を丁寧に行うことが重要です。
+セントロイドはクラスタの“重心”と解釈できますが、初期値や外れ値に敏感なので複数回初期化したり前処理を丁寧に行ったりすることが大切です。
 
-## 具体的な数式
-データ集合 \\(\mathcal{X} = \{x_1, \dots, x_n\}\\) を \\(k\\) 個のクラスタ \\(\{C_1, \dots, C_k\}\\) に分割するとき、k-means はクラスタ内平方和（Within-Cluster Sum of Squares; WCSS）を最小化します。
+## 数式で理解する
+データ集合 \\(\mathcal{X} = \{x_1, \dots, x_n\}\\) を \\(k\\) 個のクラスタ \\(\{C_1, \dots, C_k\}\\) に分けるとき、k-means は次の目的関数を最小化します。
 
 $$
 \min_{C_1, \dots, C_k} \sum_{j=1}^k \sum_{x_i \in C_j} \lVert x_i - \mu_j \rVert^2,
 $$
 
-ここで \\(\mu_j = \frac{1}{|C_j|} \sum_{x_i \in C_j} x_i\\) はクラスタ \\(j\\) のセントロイドです。  
-直感的には「各点とクラスタの重心の距離二乗をできるだけ小さくする」ことに相当します。
+ここで \\(\mu_j = \frac{1}{|C_j|} \sum_{x_i \in C_j} x_i\\) はクラスタ \\(j\\) のセントロイドです。つまり「各サンプルから重心までの距離二乗をできるだけ小さくする」配置を探していることになります。
 
-## Pythonを用いた実験や説明
-以下では `scikit-learn` の `KMeans` を用いて、アルゴリズムの収束の様子やクラスタ数・分散の影響を確認します。
+## Pythonで確かめる
+以下では `scikit-learn` を使って収束の様子やクラスタ数の選び方を可視化します。
 
-### 収束の過程を可視化する
+### 1. データ生成と初期配置の確認
 ```python
-import numpy as np
-import matplotlib.pyplot as plt
+from __future__ import annotations
+
 import japanize_matplotlib
-from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.datasets import make_blobs
 
-n_samples = 1000
-random_state = 117117
-n_clusters = 4
-X, y = make_blobs(
-    n_samples=n_samples, random_state=random_state, cluster_std=1.5, centers=8
-)
 
-# 初期セントロイドを適当に選ぶ
-init = X[np.where(X[:, 1] < -8)][:n_clusters]
+def generate_dataset(
+    n_samples: int = 1000,
+    random_state: int = 117_117,
+    cluster_std: float = 1.5,
+    n_centers: int = 8,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Generate a synthetic dataset for k-means demonstrations.
 
-plt.figure(figsize=(8, 8))
-plt.scatter(X[:, 0], X[:, 1], c="k", marker="x", label="データ")
-plt.legend()
-plt.show()
-```
+    Args:
+        n_samples: Number of samples to draw.
+        random_state: Seed for reproducibility.
+        cluster_std: Standard deviation of each blob.
+        n_centers: Number of latent blobs to create.
 
-![k-means1 block 1](/images/basic/clustering/k-means1_block01.svg)
-
-```python
-# 反復回数を変えてセントロイドが収束する様子を見る
-plt.figure(figsize=(12, 12))
-for i in range(4):
-    plt.subplot(2, 2, i + 1)
-    max_iter = 1 + i
-    km = KMeans(
-        n_clusters=n_clusters, init=init, max_iter=max_iter, n_init=1, random_state=1
-    ).fit(X)
-    cluster_centers = km.cluster_centers_
-    y_pred = km.predict(X)
-
-    plt.title(f"max_iter={max_iter}")
-    plt.scatter(X[:, 0], X[:, 1], c=y_pred, marker="x")
-    plt.scatter(
-        cluster_centers[:, 0],
-        cluster_centers[:, 1],
-        c="r", marker="o", label="セントロイド"
+    Returns:
+        Tuple containing features and their latent labels.
+    """
+    return make_blobs(
+        n_samples=n_samples,
+        random_state=random_state,
+        cluster_std=cluster_std,
+        centers=n_centers,
     )
-plt.tight_layout()
-plt.show()
-```
 
-![k-means1 block 2](/images/basic/clustering/k-means1_block02.svg)
 
-### クラスタ間の重なりや \\(k\\) の影響
-```python
-# クラスタ分散を徐々に大きくしてみる
-plt.figure(figsize=(8, 8))
-for i in range(4):
-    cluster_std = (i + 1) * 1.5
-    X, y = make_blobs(
-        n_samples=n_samples, random_state=random_state, cluster_std=cluster_std
+def choose_initial_centroids(
+    data: np.ndarray,
+    n_clusters: int,
+    threshold: float = -8.0,
+) -> np.ndarray:
+    """Pick deterministic initial centroids from the lower region of the space.
+
+    Args:
+        data: Feature matrix.
+        n_clusters: Number of centroids to select.
+        threshold: Y-axis threshold used to filter candidates.
+
+    Returns:
+        Array of initial centroid locations.
+    """
+    mask = data[:, 1] < threshold
+    candidates = data[mask]
+    if len(candidates) < n_clusters:
+        raise ValueError("Not enough candidates below the threshold.")
+    return candidates[:n_clusters]
+
+
+def plot_initial_configuration(
+    data: np.ndarray,
+    centroids: np.ndarray,
+    figsize: tuple[float, float] = (7.5, 7.5),
+) -> None:
+    """Visualise the raw dataset and highlight the chosen initial centroids."""
+    japanize_matplotlib.japanize()
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.scatter(data[:, 0], data[:, 1], c="#4b5563", marker="x", label="データ点")
+    ax.scatter(
+        centroids[:, 0],
+        centroids[:, 1],
+        c="#ef4444",
+        marker="o",
+        s=80,
+        label="初期セントロイド",
     )
-    y_pred = KMeans(n_clusters=2, random_state=random_state, init="random").fit_predict(X)
-    plt.subplot(2, 2, i + 1)
-    plt.title(f"cluster_std={cluster_std}")
-    plt.scatter(X[:, 0], X[:, 1], c=y_pred, marker="x")
-plt.tight_layout()
-plt.show()
+    ax.set_title("初期データとセントロイドの配置")
+    ax.legend(loc="best")
+    ax.grid(alpha=0.2)
+    fig.tight_layout()
+    plt.show()
+
+
+DATASET_X, DATASET_Y = generate_dataset()
+INITIAL_CENTROIDS = choose_initial_centroids(DATASET_X, n_clusters=4)
+plot_initial_configuration(DATASET_X, INITIAL_CENTROIDS)
 ```
 
-![k-means1 block 3](/images/basic/clustering/k-means1_block03.svg)
 
+![初期配置の可視化](/images/basic/clustering/k-means1_block01_ja.png)
+
+### 2. 反復回数と収束の様子
 ```python
-# クラスタ数 k を変えると割り当てがどう変わるか
-plt.figure(figsize=(8, 8))
-for i in range(4):
-    n_clusters = (i + 1) * 2
-    X, y = make_blobs(
-        n_samples=n_samples, random_state=random_state, cluster_std=1, centers=5
-    )
-    y_pred = KMeans(
-        n_clusters=n_clusters, random_state=random_state, init="random"
-    ).fit_predict(X)
-    plt.subplot(2, 2, i + 1)
-    plt.title(f"#cluster={n_clusters}")
-    plt.scatter(X[:, 0], X[:, 1], c=y_pred, marker="x")
-plt.tight_layout()
-plt.show()
+from typing import Sequence
+
+from sklearn.cluster import KMeans
+
+
+def plot_kmeans_convergence(
+    data: np.ndarray,
+    init_centroids: np.ndarray,
+    max_iters: Sequence[int] = (1, 2, 3, 10),
+    random_state: int = 1,
+) -> dict[int, float]:
+    """Run k-means with varying max_iter and plot the centroids after each run.
+
+    Args:
+        data: Feature matrix.
+        init_centroids: Initial centroids reused across runs.
+        max_iters: Sequence of iteration counts to visualise.
+        random_state: Seed for reproducibility.
+
+    Returns:
+        Dictionary mapping max_iter to the resulting inertia value.
+    """
+    japanize_matplotlib.japanize()
+    fig, axes = plt.subplots(2, 2, figsize=(10, 10), sharex=True, sharey=True)
+    inertia_by_iter: dict[int, float] = {}
+
+    for ax, max_iter in zip(axes.ravel(), max_iters, strict=False):
+        model = KMeans(
+            n_clusters=len(init_centroids),
+            init=init_centroids,
+            max_iter=max_iter,
+            n_init=1,
+            random_state=random_state,
+        )
+        model.fit(data)
+        labels = model.predict(data)
+        ax.scatter(data[:, 0], data[:, 1], c=labels, cmap="tab10", s=10)
+        ax.scatter(
+            model.cluster_centers_[:, 0],
+            model.cluster_centers_[:, 1],
+            c="#dc2626",
+            marker="o",
+            s=80,
+            label="セントロイド",
+        )
+        ax.set_title(f"max_iter = {max_iter}")
+        ax.legend(loc="best")
+        ax.grid(alpha=0.2)
+        inertia_by_iter[max_iter] = float(model.inertia_)
+
+    fig.suptitle("反復回数によるセントロイドの収束")
+    fig.tight_layout()
+    plt.show()
+    return inertia_by_iter
+
+
+CONVERGENCE_STATS = plot_kmeans_convergence(DATASET_X, INITIAL_CENTROIDS)
+for iteration, inertia in CONVERGENCE_STATS.items():
+    print(f"max_iter={iteration}: inertia={inertia:,.1f}")
 ```
 
-![k-means1 block 4](/images/basic/clustering/k-means1_block04.svg)
 
-### \\(k\\) の選び方
+![収束の比較](/images/basic/clustering/k-means1_block02_ja.png)
+
+### 3. クラスタの重なり具合と割り当て
+```python
+def plot_cluster_overlap_effect(
+    base_random_state: int = 117_117,
+    cluster_stds: Sequence[float] = (1.0, 2.0, 3.0, 4.5),
+) -> None:
+    """Show how increased overlap makes assignments harder.
+
+    Args:
+        base_random_state: Seed used for blob generation.
+        cluster_stds: Standard deviations tested for the blobs.
+    """
+    japanize_matplotlib.japanize()
+    fig, axes = plt.subplots(2, 2, figsize=(10, 10), sharex=True, sharey=True)
+
+    for ax, std in zip(axes.ravel(), cluster_stds, strict=False):
+        features, _ = make_blobs(
+            n_samples=1_000,
+            random_state=base_random_state,
+            cluster_std=std,
+        )
+        assignments = KMeans(n_clusters=2, random_state=base_random_state).fit_predict(
+            features
+        )
+        ax.scatter(features[:, 0], features[:, 1], c=assignments, cmap="tab10", s=10)
+        ax.set_title(f"cluster_std = {std}")
+        ax.grid(alpha=0.2)
+
+    fig.suptitle("クラスタの重なり具合と割り当て")
+    fig.tight_layout()
+    plt.show()
+
+
+plot_cluster_overlap_effect()
+```
+
+
+![重なり具合の比較](/images/basic/clustering/k-means1_block03_ja.png)
+
+### 4. \\(k\\) の選択を指標で比較する
 ```python
 from sklearn.metrics import silhouette_score
 
-K = range(1, 11)
-wcss = []
-for k in K:
-    km = KMeans(n_clusters=k, random_state=117117).fit(X)
-    wcss.append(km.inertia_)  # WCSS に対応
 
-plt.plot(K, wcss, marker="o")
-plt.xlabel("クラスタ数 k")
-plt.ylabel("WCSS")
-plt.title("エルボー法")
-plt.show()
+def analyse_cluster_counts(
+    data: np.ndarray,
+    k_range: Sequence[int] = range(2, 11),
+) -> dict[str, list[float]]:
+    """Compute WCSS and silhouette scores for different cluster counts.
+
+    Args:
+        data: Feature matrix.
+        k_range: Iterable of cluster counts to evaluate.
+
+    Returns:
+        Dictionary containing the evaluated metrics.
+    """
+    inertias: list[float] = []
+    silhouettes: list[float] = []
+
+    for k in k_range:
+        model = KMeans(n_clusters=k, random_state=117_117).fit(data)
+        inertias.append(float(model.inertia_))
+        silhouettes.append(float(silhouette_score(data, model.labels_)))
+
+    return {"inertia": inertias, "silhouette": silhouettes}
+
+
+def plot_cluster_count_metrics(
+    metrics: dict[str, list[float]],
+    k_range: Sequence[int],
+) -> None:
+    """Plot the elbow curve and silhouette scores side by side."""
+    japanize_matplotlib.japanize()
+    ks = list(k_range)
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    axes[0].plot(ks, metrics["inertia"], marker="o")
+    axes[0].set_title("エルボー法 (WCSS)")
+    axes[0].set_xlabel("クラスタ数 k")
+    axes[0].set_ylabel("WCSS")
+    axes[0].grid(alpha=0.2)
+
+    axes[1].plot(ks, metrics["silhouette"], marker="o", color="#ea580c")
+    axes[1].set_title("シルエット係数")
+    axes[1].set_xlabel("クラスタ数 k")
+    axes[1].set_ylabel("スコア")
+    axes[1].grid(alpha=0.2)
+
+    fig.tight_layout()
+    plt.show()
+
+
+ELBOW_METRICS = analyse_cluster_counts(DATASET_X, range(2, 11))
+plot_cluster_count_metrics(ELBOW_METRICS, range(2, 11))
+
+best_k = int(
+    range(2, 11)[
+        max(
+            range(len(ELBOW_METRICS["silhouette"])),
+            key=ELBOW_METRICS["silhouette"].__getitem__,
+        )
+    ]
+)
+print(f"シルエット係数が最大となるクラスタ数: k={best_k}")
 ```
 
-![k-means1 block 5](/images/basic/clustering/k-means1_block05.svg)
 
-```python
-scores = []
-K = range(2, 11)  # k=1 ではシルエット係数が定義できない
-for k in K:
-    km = KMeans(n_clusters=k, random_state=117117).fit(X)
-    labels = km.labels_
-    scores.append(silhouette_score(X, labels))
-
-plt.plot(K, scores, marker="o")
-plt.xlabel("クラスタ数 k")
-plt.ylabel("シルエットスコア")
-plt.title("シルエット分析")
-plt.show()
-```
-
-![k-means1 block 6](/images/basic/clustering/k-means1_block06.svg)
+![エルボー法とシルエット係数](/images/basic/clustering/k-means1_block04_ja.png)
 
 ## 参考文献
 {{% references %}}
