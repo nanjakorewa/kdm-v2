@@ -1,4 +1,4 @@
----
+﻿---
 title: "Naive Bayes"
 pre: "2.2.6 "
 weight: 6
@@ -13,7 +13,7 @@ title_suffix: "Inferensi cepat dengan asumsi independensi"
 {{% /summary %}}
 
 ## Intuisi
-Teorema Bayes menyatakan bahwa “prior × likelihood ∝ posterior”. Jika fitur independen secara kondisional, likelihood dapat dipisah menjadi hasil kali probabilitas per fitur. Naive Bayes memanfaatkan pendekatan ini sehingga tetap stabil meski data latih sedikit.
+Teorema Bayes menyatakan bahwa 窶徘rior ﾃ・likelihood 竏・posterior窶・ Jika fitur independen secara kondisional, likelihood dapat dipisah menjadi hasil kali probabilitas per fitur. Naive Bayes memanfaatkan pendekatan ini sehingga tetap stabil meski data latih sedikit.
 
 ## Formulasi matematis
 Untuk kelas \\(y\\) dan vektor fitur \\(\mathbf{x} = (x_1, \ldots, x_d)\\),
@@ -28,27 +28,75 @@ Model likelihood berbeda cocok untuk jenis data berbeda: multinomial untuk freku
 Contoh berikut melatih Naive Bayes multinomial pada subset data 20 Newsgroups dengan fitur TF-IDF. Walaupun jumlah fiturnya besar, pelatihan tetap cepat dan laporan klasifikasi merangkum performanya.
 
 ```python
+from __future__ import annotations
+
+import japanize_matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-from sklearn.datasets import fetch_20newsgroups
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.pipeline import make_pipeline
-from sklearn.metrics import classification_report
+from sklearn.datasets import make_classification
+from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.naive_bayes import GaussianNB
 
-categories = ["rec.autos", "sci.space", "talk.politics.guns"]
-train = fetch_20newsgroups(subset="train", categories=categories, remove=("headers", "footers", "quotes"))
-test = fetch_20newsgroups(subset="test", categories=categories, remove=("headers", "footers", "quotes"))
 
-model = make_pipeline(TfidfVectorizer(max_features=5000), MultinomialNB(alpha=0.5))
-model.fit(train.data, train.target)
-pred = model.predict(test.data)
+def run_naive_bayes_demo(
+    n_samples: int = 600,
+    n_classes: int = 3,
+    random_state: int = 0,
+    title: str = "Wilayah keputusan Naive Bayes Gaussian",
+    xlabel: str = "fitur 1",
+    ylabel: str = "fitur 2",
+) -> dict[str, float]:
+    """Train Gaussian Naive Bayes on synthetic data and plot decision regions."""
+    japanize_matplotlib.japanize()
+    X, y = make_classification(
+        n_samples=n_samples,
+        n_features=2,
+        n_informative=2,
+        n_redundant=0,
+        n_clusters_per_class=1,
+        n_classes=n_classes,
+        random_state=random_state,
+    )
 
-print(classification_report(test.target, pred, target_names=categories))
+    clf = GaussianNB()
+    clf.fit(X, y)
+
+    accuracy = float(accuracy_score(y, clf.predict(X)))
+    conf = confusion_matrix(y, clf.predict(X))
+
+    x_min, x_max = X[:, 0].min() - 1.0, X[:, 0].max() + 1.0
+    y_min, y_max = X[:, 1].min() - 1.0, X[:, 1].max() + 1.0
+    grid_x, grid_y = np.meshgrid(np.linspace(x_min, x_max, 400), np.linspace(y_min, y_max, 400))
+    grid = np.c_[grid_x.ravel(), grid_y.ravel()]
+    preds = clf.predict(grid).reshape(grid_x.shape)
+
+    fig, ax = plt.subplots(figsize=(7, 6))
+    ax.contourf(grid_x, grid_y, preds, alpha=0.25, cmap="coolwarm", levels=np.arange(-0.5, n_classes + 0.5, 1))
+    ax.scatter(X[:, 0], X[:, 1], c=y, cmap="coolwarm", edgecolor="k", s=25)
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    fig.tight_layout()
+    plt.show()
+
+    return {"accuracy": accuracy, "confusion": conf}
+
+
+metrics = run_naive_bayes_demo(
+    title="Wilayah keputusan Naive Bayes Gaussian",
+    xlabel="fitur 1",
+    ylabel="fitur 2",
+)
+print(f"Akurasi pelatihan: {metrics['accuracy']:.3f}")
+print("Matriks kebingungan:")
+print(metrics['confusion'])
+
 ```
+
 
 ## Referensi
 {{% references %}}
-<li>Manning, C. D., Raghavan, P., &amp; Schütze, H. (2008). <i>Introduction to Information Retrieval</i>. Cambridge University Press.</li>
+<li>Manning, C. D., Raghavan, P., &amp; Schﾃｼtze, H. (2008). <i>Introduction to Information Retrieval</i>. Cambridge University Press.</li>
 <li>Murphy, K. P. (2012). <i>Machine Learning: A Probabilistic Perspective</i>. MIT Press.</li>
 {{% /references %}}
+
