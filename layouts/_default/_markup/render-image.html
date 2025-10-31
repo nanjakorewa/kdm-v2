@@ -26,13 +26,19 @@
   {{- $langMap := dict "ja" "_ja" "en" "_en" "es" "_es" "id" "_id" -}}
   {{- $langSuffix := default "_ja" (index $langMap $lang) -}}
   {{- $ext := path.Ext $src -}}
-  {{- $preferredExt := cond (ne $ext "") $ext ".png" -}}
   {{- $base := cond (ne $ext "") (strings.TrimSuffix $src $ext) $src -}}
-  {{- if not (strings.HasSuffix $base $langSuffix) -}}
-    {{- $candidate := printf "%s%s%s" $base $langSuffix $preferredExt -}}
-    {{- $candidateRel := strings.TrimPrefix $candidate "/" -}}
+  {{- $baseNoSuffix := cond (strings.HasSuffix $base $langSuffix) (strings.TrimSuffix $base $langSuffix) $base -}}
+  {{- if eq $baseNoSuffix "" -}}
+    {{- $baseNoSuffix = $base -}}
+  {{- end -}}
+  {{- $candidates := slice $src -}}
+  {{- $candidates = $candidates | append (printf "%s%s.png" $baseNoSuffix $langSuffix) -}}
+  {{- $candidates = $candidates | append (printf "%s.png" $baseNoSuffix) -}}
+  {{- range $candidates -}}
+    {{- $candidateRel := strings.TrimPrefix . "/" -}}
     {{- if fileExists (printf "static/%s" $candidateRel) -}}
-      {{- $src = $candidate -}}
+      {{- $src = . -}}
+      {{- break -}}
     {{- end -}}
   {{- end -}}
   <img
