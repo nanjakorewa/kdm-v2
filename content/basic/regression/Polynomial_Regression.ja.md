@@ -34,51 +34,121 @@ $$
 以下は 3 次の多項式特徴量を追加した線形回帰モデルで、曲線的なデータを学習する例です。
 
 ```python
-import numpy as np
+from __future__ import annotations
+
+import japanize_matplotlib
 import matplotlib.pyplot as plt
-import japanize_matplotlib  # 日本語ラベルを楽に描画できる
+import numpy as np
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
-from sklearn.metrics import mean_squared_error
 
-# データ生成：次の真の関数 + ノイズ
-rng = np.random.default_rng(42)
-X = np.linspace(-3, 3, 200)
-y_true = 0.5 * X**3 - 1.2 * X**2 + 2.0 * X + 1.5
-y = y_true + rng.normal(scale=2.0, size=X.shape)
 
-# sklearn は (n_samples, n_features) 形状を期待するので 2 次元配列に変換
-X = X[:, None]
+def compare_polynomial_regression(
+    n_samples: int = 200,
+    degree: int = 3,
+    noise_scale: float = 2.0,
+    label_observations: str = "observations",
+    label_true_curve: str = "true curve",
+    label_linear: str = "linear regression",
+    label_poly_template: str = "degree-{degree} polynomial",
+) -> tuple[float, float]:
+    """Fit linear vs. polynomial regression to a cubic trend and plot the results.
 
-# 1 次の通常の線形回帰と 3 次のモデルを比較
-linear_model = LinearRegression().fit(X, y)
-poly_model = make_pipeline(
-    PolynomialFeatures(degree=3, include_bias=False),
-    LinearRegression()
-).fit(X, y)
+    Args:
+        n_samples: Number of synthetic samples generated along the curve.
+        degree: Polynomial degree used in the feature expansion.
+        noise_scale: Standard deviation of the Gaussian noise added to targets.
+        label_observations: Legend label for scatter observations.
+        label_true_curve: Legend label for the underlying true curve.
+        label_linear: Legend label for the linear regression fit.
+        label_poly_template: Format string for the polynomial label.
 
-# 予測用の細かいグリッド
-grid = np.linspace(-3.5, 3.5, 300)[:, None]
-linear_pred = linear_model.predict(grid)
-poly_pred = poly_model.predict(grid)
-true_curve = 0.5 * grid.ravel()**3 - 1.2 * grid.ravel()**2 + 2.0 * grid.ravel() + 1.5
+    Returns:
+        A tuple containing the mean-squared errors of (linear, polynomial) models.
+    """
+    japanize_matplotlib.japanize()
+    rng = np.random.default_rng(seed=42)
 
-print("線形回帰 MSE:", mean_squared_error(y, linear_model.predict(X)))
-print("3次多項式回帰 MSE:", mean_squared_error(y, poly_model.predict(X)))
+    x: np.ndarray = np.linspace(-3.0, 3.0, n_samples, dtype=float)
+    y_true: np.ndarray = 0.5 * x**3 - 1.2 * x**2 + 2.0 * x + 1.5
+    y_noisy: np.ndarray = y_true + rng.normal(scale=noise_scale, size=x.shape)
 
-# 可視化（あとで高解像度で描き直す前提）
-plt.figure(figsize=(10, 5))
-plt.scatter(X, y, s=20, color="#ff7f0e", alpha=0.6, label="観測値")
-plt.plot(grid, true_curve, color="#2ca02c", linewidth=2, label="真の関数")
-plt.plot(grid, linear_pred, color="#1f77b4", linestyle="--", linewidth=2, label="線形回帰")
-plt.plot(grid, poly_pred, color="#d62728", linewidth=2, label="3次多項式回帰")
-plt.xlabel("入力 $x$")
-plt.ylabel("出力 $y$")
-plt.legend()
-plt.tight_layout()
-plt.show()
+    X: np.ndarray = x[:, np.newaxis]
+
+    linear_model = LinearRegression()
+    linear_model.fit(X, y_noisy)
+    poly_model = make_pipeline(
+        PolynomialFeatures(degree=degree, include_bias=False),
+        LinearRegression(),
+    )
+    poly_model.fit(X, y_noisy)
+
+    grid: np.ndarray = np.linspace(-3.5, 3.5, 300, dtype=float)[:, np.newaxis]
+    linear_pred: np.ndarray = linear_model.predict(grid)
+    poly_pred: np.ndarray = poly_model.predict(grid)
+    true_curve: np.ndarray = (
+        0.5 * grid.ravel()**3 - 1.2 * grid.ravel()**2 + 2.0 * grid.ravel() + 1.5
+    )
+
+    linear_mse: float = float(mean_squared_error(y_noisy, linear_model.predict(X)))
+    poly_mse: float = float(mean_squared_error(y_noisy, poly_model.predict(X)))
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.scatter(
+        X,
+        y_noisy,
+        s=20,
+        color="#ff7f0e",
+        alpha=0.6,
+        label=label_observations,
+    )
+    ax.plot(
+        grid,
+        true_curve,
+        color="#2ca02c",
+        linewidth=2,
+        label=label_true_curve,
+    )
+    ax.plot(
+        grid,
+        linear_pred,
+        color="#1f77b4",
+        linestyle="--",
+        linewidth=2,
+        label=label_linear,
+    )
+    ax.plot(
+        grid,
+        poly_pred,
+        color="#d62728",
+        linewidth=2,
+        label=label_poly_template.format(degree=degree),
+    )
+    ax.set_xlabel("input $x$")
+    ax.set_ylabel("output $y$")
+    ax.legend()
+    fig.tight_layout()
+    plt.show()
+
+    return linear_mse, poly_mse
+
+
+
+degree = 3
+linear_mse, poly_mse = compare_polynomial_regression(
+    degree=degree,
+    label_observations="観測データ",
+    label_true_curve="真の曲線",
+    label_linear="線形回帰",
+    label_poly_template="次数{degree}の多項式",
+)
+print(f"線形回帰のMSE: {linear_mse:.3f}")
+print(f"次数{degree}の多項式回帰のMSE: {poly_mse:.3f}")
+
 ```
+
 
 ![polynomial-regression block 1](/images/basic/regression/polynomial-regression_block01_ja.png)
 
