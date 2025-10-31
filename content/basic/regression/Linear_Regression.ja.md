@@ -40,31 +40,43 @@ $$
 次のコードは `scikit-learn` を使って単回帰モデルを学習し、推定された直線と観測値を描画します。コード本体は既存のものをそのまま利用しています。
 
 ```python
-import numpy as np
-import matplotlib.pyplot as plt
+from __future__ import annotations
+
 import japanize_matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-# �f�[�^�쐬
-n_samples = 100
-X = np.linspace(-5, 5, n_samples)[:, np.newaxis]
-epsolon = np.random.normal(scale=2, size=n_samples)
-y = 2 * X.ravel() + 1 + epsolon  # �^�̊֌W y = 2x + 1 + �m�C�Y
 
-# ���f���w�K
-lin_r = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
-y_pred = lin_r.predict(X)
+def plot_simple_linear_regression(n_samples: int = 100) -> None:
+    """Plot a fitted linear regression model for synthetic data.
 
-# ����
-plt.figure(figsize=(10, 5))
-plt.scatter(X, y, marker="x", label="�ϑ��f�[�^", c="orange")
-plt.plot(X, y_pred, label="��A�����i�ŏ����@�j")
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.legend()
-plt.show()
+    Args:
+        n_samples: Number of synthetic samples to generate.
+    """
+    japanize_matplotlib.japanize()
+    rng = np.random.default_rng(seed=0)
+
+    X: np.ndarray = np.linspace(-5.0, 5.0, n_samples, dtype=float)[:, np.newaxis]
+    noise: np.ndarray = rng.normal(scale=2.0, size=n_samples)
+    y: np.ndarray = 2.0 * X.ravel() + 1.0 + noise
+
+    model = make_pipeline(StandardScaler(with_mean=False), LinearRegression())
+    model.fit(X, y)
+    y_pred: np.ndarray = model.predict(X)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.scatter(X, y, marker="x", label="Observed data", c="orange")
+    ax.plot(X, y_pred, label="Regression fit")
+    ax.set_xlabel("$x$")
+    ax.set_ylabel("$y$")
+    ax.legend()
+    fig.tight_layout()
+    plt.show()
+
+plot_simple_linear_regression()
 ```
 
 ![linear-regression block 1](/images/basic/regression/linear-regression_block01_ja.png)

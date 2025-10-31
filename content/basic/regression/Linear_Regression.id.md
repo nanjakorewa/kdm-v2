@@ -40,31 +40,43 @@ dengan \(\bar{x}\) dan \(\bar{y}\) adalah rata-rata \(x\) dan \(y\). Ide yang sa
 Contoh berikut menyesuaikan garis regresi menggunakan `scikit-learn` dan menampilkan hasilnya. Kodenya sama seperti versi bahasa Jepang sehingga gambar yang dihasilkan konsisten.
 
 ```python
-import numpy as np
+from __future__ import annotations
+
+import japanize_matplotlib
 import matplotlib.pyplot as plt
-import japanize_matplotlib  # opsional; tetap menampilkan label Jepang bila notebook dijalankan
+import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-# Membuat data
-n_samples = 100
-X = np.linspace(-5, 5, n_samples)[:, np.newaxis]
-epsilon = np.random.normal(scale=2, size=n_samples)
-y = 2 * X.ravel() + 1 + epsilon  # hubungan sebenarnya y = 2x + 1 + noise
 
-# Melatih model dengan standardisasi opsional
-lin_reg = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
-y_pred = lin_reg.predict(X)
+def plot_simple_linear_regression(n_samples: int = 100) -> None:
+    """Plot a fitted linear regression model for synthetic data.
 
-# Visualisasi
-plt.figure(figsize=(10, 5))
-plt.scatter(X, y, marker="x", label="observasi", c="orange")
-plt.plot(X, y_pred, label="regresi linear (OLS)")
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.legend()
-plt.show()
+    Args:
+        n_samples: Number of synthetic samples to generate.
+    """
+    japanize_matplotlib.japanize()
+    rng = np.random.default_rng(seed=0)
+
+    X: np.ndarray = np.linspace(-5.0, 5.0, n_samples, dtype=float)[:, np.newaxis]
+    noise: np.ndarray = rng.normal(scale=2.0, size=n_samples)
+    y: np.ndarray = 2.0 * X.ravel() + 1.0 + noise
+
+    model = make_pipeline(StandardScaler(with_mean=False), LinearRegression())
+    model.fit(X, y)
+    y_pred: np.ndarray = model.predict(X)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.scatter(X, y, marker="x", label="Observed data", c="orange")
+    ax.plot(X, y_pred, label="Regression fit")
+    ax.set_xlabel("$x$")
+    ax.set_ylabel("$y$")
+    ax.legend()
+    fig.tight_layout()
+    plt.show()
+
+plot_simple_linear_regression()
 ```
 
 ![linear-regression block 1](/images/basic/regression/linear-regression_block01_id.png)

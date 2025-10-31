@@ -12,6 +12,7 @@ import sys
 import types
 from pathlib import Path
 from textwrap import dedent
+from sklearn.linear_model import *
 
 import matplotlib
 
@@ -71,8 +72,10 @@ def install_sklearn_stub() -> None:
     sklearn_module.__path__ = []  # type: ignore[attr-defined]
     linear_model_module = types.ModuleType("sklearn.linear_model")
     preprocessing_module = types.ModuleType("sklearn.preprocessing")
+    datasets_module = types.ModuleType("sklearn.datasets")
     pipeline_module = types.ModuleType("sklearn.pipeline")
     metrics_module = types.ModuleType("sklearn.metrics")
+    tree_module = types.ModuleType("sklearn.tree")
 
     class LinearRegression:
         def __init__(self) -> None:
@@ -198,17 +201,127 @@ def install_sklearn_stub() -> None:
         y_pred_arr = np.asarray(y_pred, dtype=float)
         return float(np.mean((y_true_arr - y_pred_arr) ** 2))
 
+    def make_regression(
+        *,
+        n_samples: int = 100,
+        n_features: int = 1,
+        noise: float = 0.0,
+        random_state: int | None = None,
+        effective_rank: int | None = None,
+        **_: object,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        rng = np.random.default_rng(random_state)
+        X = rng.normal(size=(n_samples, n_features))
+        coef = rng.normal(size=n_features)
+        y = X @ coef
+        if effective_rank:
+            y += 0.1 * rng.normal(size=n_samples)
+        if noise:
+            y += rng.normal(scale=noise, size=n_samples)
+        return X, y
+
+    class DecisionTreeRegressor:
+        def __init__(self, **params: object) -> None:
+            self.params = params
+            self._is_fitted = False
+            self.n_features_in_: int | None = None
+            self.feature_importances_: np.ndarray | None = None
+
+        def fit(self, X: np.ndarray, y: np.ndarray) -> "DecisionTreeRegressor":
+            X_arr = np.asarray(X, dtype=float)
+            y_arr = np.asarray(y, dtype=float)
+            if X_arr.ndim == 1:
+                X_arr = X_arr[:, np.newaxis]
+            if y_arr.ndim > 1:
+                y_arr = np.mean(y_arr, axis=1)
+            self.n_features_in_ = X_arr.shape[1]
+            self.feature_importances_ = np.zeros(self.n_features_in_, dtype=float)
+            self._target_mean = float(np.mean(y_arr))
+            self._target_std = float(np.std(y_arr)) if y_arr.size else 0.0
+            self._is_fitted = True
+            return self
+
+        def predict(self, X: np.ndarray) -> np.ndarray:
+            if not self._is_fitted:
+                raise RuntimeError("DecisionTreeRegressor is not fitted yet.")
+            X_arr = np.asarray(X, dtype=float)
+            n_samples = X_arr.shape[0]
+            return np.full(n_samples, getattr(self, "_target_mean", 0.0), dtype=float)
+
     linear_model_module.LinearRegression = LinearRegression
     preprocessing_module.StandardScaler = StandardScaler
     preprocessing_module.PolynomialFeatures = PolynomialFeatures
     pipeline_module.make_pipeline = make_pipeline
     metrics_module.mean_squared_error = mean_squared_error
+    datasets_module.make_regression = make_regression
+    tree_module.DecisionTreeRegressor = DecisionTreeRegressor
 
     sys.modules["sklearn"] = sklearn_module
+    sklearn_module.linear_model = linear_model_module  # type: ignore[attr-defined]
+    sklearn_module.preprocessing = preprocessing_module  # type: ignore[attr-defined]
+    sklearn_module.datasets = datasets_module  # type: ignore[attr-defined]
+    sklearn_module.pipeline = pipeline_module  # type: ignore[attr-defined]
+    sklearn_module.metrics = metrics_module  # type: ignore[attr-defined]
+    sklearn_module.tree = tree_module  # type: ignore[attr-defined]
+
     sys.modules["sklearn.linear_model"] = linear_model_module
     sys.modules["sklearn.preprocessing"] = preprocessing_module
+    sys.modules["sklearn.datasets"] = datasets_module
     sys.modules["sklearn.pipeline"] = pipeline_module
     sys.modules["sklearn.metrics"] = metrics_module
+    sys.modules["sklearn.tree"] = tree_module
+
+    if "dtreeviz" not in sys.modules:
+        dtreeviz_module = types.ModuleType("dtreeviz")
+        dtreeviz_trees_module = types.ModuleType("dtreeviz.trees")
+
+        def _rtreeviz_bivar_3d(
+            estimator: object,
+            X: np.ndarray,
+            y: np.ndarray,
+            *,
+            ax: object | None = None,
+            feature_names: list[str] | None = None,
+            target_name: str = "",
+            **__: object,
+        ) -> object:
+            import matplotlib.pyplot as _plt  # noqa: WPS433
+
+            X_arr = np.asarray(X, dtype=float)
+            if X_arr.ndim == 1:
+                X_arr = X_arr[:, np.newaxis]
+            if X_arr.shape[1] == 1:
+                X_arr = np.column_stack([X_arr, np.zeros_like(X_arr[:, 0])])
+            y_arr = np.asarray(y, dtype=float).reshape(-1)
+
+            if ax is None:
+                fig = _plt.figure(figsize=(8, 6))
+                ax = fig.add_subplot(111, projection="3d")
+            scatter = ax.scatter(
+                X_arr[:, 0],
+                X_arr[:, 1],
+                y_arr,
+                c=y_arr,
+                cmap="viridis",
+                alpha=0.6,
+            )
+            ax.set_xlabel((feature_names or ["x1", "x2"])[0])
+            ax.set_ylabel((feature_names or ["x1", "x2"])[1])
+            ax.set_zlabel(target_name or "y")
+            ax.set_title(target_name or "Decision Tree")
+            if hasattr(ax, "figure"):
+                ax.figure.colorbar(scatter, ax=ax, shrink=0.6)
+            return ax
+
+        def _dtreeviz(*_: object, **__: object) -> None:
+            return None
+
+        dtreeviz_trees_module.dtreeviz = _dtreeviz  # type: ignore[attr-defined]
+        dtreeviz_trees_module.rtreeviz_bivar_3D = _rtreeviz_bivar_3d  # type: ignore[attr-defined]
+        dtreeviz_module.trees = dtreeviz_trees_module  # type: ignore[attr-defined]
+
+        sys.modules["dtreeviz"] = dtreeviz_module
+        sys.modules["dtreeviz.trees"] = dtreeviz_trees_module
 
 CODE_BLOCK_PATTERN = re.compile(r"```python\s*(.*?)```", re.DOTALL)
 
