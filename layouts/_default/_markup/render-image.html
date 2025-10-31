@@ -21,7 +21,6 @@
     width="{{ $main.Width }}" height="{{ $main.Height }}"
     loading="lazy" decoding="async" fetchpriority="low">
 {{- else -}}
-  {{/* static/ �z���Ȃǂ̐�΃p�X�摜 */}}
   {{- $lang := or .Page.Lang "ja" -}}
   {{- $langMap := dict "ja" "_ja" "en" "_en" "es" "_es" "id" "_id" -}}
   {{- $langSuffix := default "_ja" (index $langMap $lang) -}}
