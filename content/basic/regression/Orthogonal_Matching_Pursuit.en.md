@@ -16,12 +16,12 @@ title_suffix: "Greedy selection for sparse coefficients"
 When only a handful of features truly matter, OMP adds the one that most reduces the residual error at each iteration. It is a cornerstone of dictionary learning and sparse coding, producing compact coefficient vectors that highlight the most relevant predictors.
 
 ## Mathematical formulation
-Initialize the residual as \(\mathbf{r}^{(0)} = \mathbf{y}\). For each iteration \(t\):
+Initialize the residual as \\(\mathbf{r}^{(0)} = \mathbf{y}\\). For each iteration \\(t\\):
 
-1. Compute the inner product between every feature \(\mathbf{x}_j\) and the residual \(\mathbf{r}^{(t-1)}\), and pick the feature \(j\) with the largest absolute value.
-2. Add \(j\) to the active set \(\mathcal{A}_t\).
-3. Solve the least-squares problem restricted to \(\mathcal{A}_t\) to obtain \(\hat{\boldsymbol\beta}_{\mathcal{A}_t}\).
-4. Update the residual \(\mathbf{r}^{(t)} = \mathbf{y} - \mathbf{X}_{\mathcal{A}_t} \hat{\boldsymbol\beta}_{\mathcal{A}_t}\).
+1. Compute the inner product between every feature \\(\mathbf{x}_j\\) and the residual \\(\mathbf{r}^{(t-1)}\\), and pick the feature \\(j\\) with the largest absolute value.
+2. Add \\(j\\) to the active set \\(\mathcal{A}_t\\).
+3. Solve the least-squares problem restricted to \\(\mathcal{A}_t\\) to obtain \\(\hat{\boldsymbol\beta}_{\mathcal{A}_t}\\).
+4. Update the residual \\(\mathbf{r}^{(t)} = \mathbf{y} - \mathbf{X}_{\mathcal{A}_t} \hat{\boldsymbol\beta}_{\mathcal{A}_t}\\).
 
 Stop once you reach the desired sparsity or the residual is sufficiently small.
 

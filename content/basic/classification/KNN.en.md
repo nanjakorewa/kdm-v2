@@ -6,26 +6,26 @@ title_suffix: "Lazy learning based on distances"
 ---
 
 {{% summary %}}
-- k-NN stores the training data and predicts by majority vote among the \(k\) nearest neighbours of a query point.
-- The main hyperparameters are the number of neighbours \(k\) and the distance weighting scheme, which are easy to tune.
+- k-NN stores the training data and predicts by majority vote among the \\(k\\) nearest neighbours of a query point.
+- The main hyperparameters are the number of neighbours \\(k\\) and the distance weighting scheme, which are easy to tune.
 - It naturally models non-linear decision boundaries, but distance metrics become less informative in high dimensions (“the curse of dimensionality”).
 - Standardising features or selecting informative ones makes distance calculations more stable.
 {{% /summary %}}
 
 ## Intuition
-Under the assumption that “nearby samples share the same label”, k-NN finds the \(k\) closest training samples to a query point and predicts the label via majority vote (optionally weighted by distance). Because no explicit model is trained in advance, k-NN is known as a lazy learner.
+Under the assumption that “nearby samples share the same label”, k-NN finds the \\(k\\) closest training samples to a query point and predicts the label via majority vote (optionally weighted by distance). Because no explicit model is trained in advance, k-NN is known as a lazy learner.
 
 ## Mathematical formulation
-For a test point \(\mathbf{x}\), let \(\mathcal{N}_k(\mathbf{x})\) be the set of \(k\) nearest neighbours in the training set. The vote for class \(c\) is
+For a test point \\(\mathbf{x}\\), let \\(\mathcal{N}_k(\mathbf{x})\\) be the set of \\(k\\) nearest neighbours in the training set. The vote for class \\(c\\) is
 
 $$
 v_c = \sum_{i \in \mathcal{N}_k(\mathbf{x})} w_i \,\mathbb{1}(y_i = c),
 $$
 
-where the weights \(w_i\) can be uniform or a function of distance (e.g. inverse distance). The predicted class is the one with the highest vote.
+where the weights \\(w_i\\) can be uniform or a function of distance (e.g. inverse distance). The predicted class is the one with the highest vote.
 
 ## Experiments with Python
-The following code compares cross-validation accuracy for different values of \(k\) and visualises the decision boundary on a two-dimensional data set.
+The following code compares cross-validation accuracy for different values of \\(k\\) and visualises the decision boundary on a two-dimensional data set.
 
 ```python
 import numpy as np

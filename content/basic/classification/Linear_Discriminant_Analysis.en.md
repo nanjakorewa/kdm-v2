@@ -7,7 +7,7 @@ title_suffix: "Learn directions that separate classes"
 
 {{% summary %}}
 - LDA finds directions that maximize the ratio of between-class variance to within-class variance, serving both classification and dimensionality reduction.
-- The decision boundary takes the form \(\mathbf{w}^\top \mathbf{x} + b = 0\), which becomes a line in 2D or a plane in 3D, giving a clear geometric interpretation.
+- The decision boundary takes the form \\(\mathbf{w}^\top \mathbf{x} + b = 0\\), which becomes a line in 2D or a plane in 3D, giving a clear geometric interpretation.
 - Assuming each class is Gaussian with the same covariance matrix, LDA approaches the Bayes-optimal classifier.
 - scikit-learn’s `LinearDiscriminantAnalysis` makes it easy to visualise decision boundaries and to inspect the projected features.
 {{% /summary %}}
@@ -16,13 +16,13 @@ title_suffix: "Learn directions that separate classes"
 LDA searches for directions that keep samples of the same class close together while pushing samples from different classes far apart. Projecting the data onto that direction makes the classes easier to separate, so it can be used directly for classification or as a dimensionality-reduction step before another classifier.
 
 ## Mathematical formulation
-For the two-class case, the projection direction \(\mathbf{w}\) maximizes
+For the two-class case, the projection direction \\(\mathbf{w}\\) maximizes
 
 $$
 J(\mathbf{w}) = \frac{\mathbf{w}^\top \mathbf{S}_B \mathbf{w}}{\mathbf{w}^\top \mathbf{S}_W \mathbf{w}},
 $$
 
-where \(\mathbf{S}_B\) is the between-class scatter matrix and \(\mathbf{S}_W\) is the within-class scatter matrix. In the multi-class case we obtain up to \(K-1\) projection directions, which can be used for dimensionality reduction.
+where \\(\mathbf{S}_B\\) is the between-class scatter matrix and \\(\mathbf{S}_W\\) is the within-class scatter matrix. In the multi-class case we obtain up to \\(K-1\\) projection directions, which can be used for dimensionality reduction.
 
 ## Experiments with Python
 Below we apply LDA to a synthetic two-class data set, draw the decision boundary, and plot the projected 1D features. Calling `transform` returns the projected data directly.

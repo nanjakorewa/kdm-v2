@@ -6,26 +6,26 @@ title_suffix: "Aprendizaje perezoso basado en distancias"
 ---
 
 {{% summary %}}
-- k-NN almacena los datos de entrenamiento y predice por mayoría entre los \(k\) vecinos más cercanos del punto a clasificar.
-- Los principales hiperparámetros son el número de vecinos \(k\) y el esquema de ponderación de distancias, fáciles de explorar.
+- k-NN almacena los datos de entrenamiento y predice por mayoría entre los \\(k\\) vecinos más cercanos del punto a clasificar.
+- Los principales hiperparámetros son el número de vecinos \\(k\\) y el esquema de ponderación de distancias, fáciles de explorar.
 - Representa de forma natural fronteras de decisión no lineales, aunque las distancias pierden contraste en alta dimensión (“la maldición de la dimensionalidad”).
 - Estandarizar las características o seleccionar las más relevantes estabiliza los cálculos de distancia.
 {{% /summary %}}
 
 ## Intuición
-Bajo la idea de que “muestras cercanas comparten etiqueta”, k-NN busca los \(k\) ejemplos de entrenamiento más próximos al punto objetivo y decide la clase por mayoría (opcionalmente ponderada por la distancia). Como no entrena un modelo explícito de antemano, se le conoce como aprendizaje perezoso.
+Bajo la idea de que “muestras cercanas comparten etiqueta”, k-NN busca los \\(k\\) ejemplos de entrenamiento más próximos al punto objetivo y decide la clase por mayoría (opcionalmente ponderada por la distancia). Como no entrena un modelo explícito de antemano, se le conoce como aprendizaje perezoso.
 
 ## Formulación matemática
-Para un punto de prueba \(\mathbf{x}\), sea \(\mathcal{N}_k(\mathbf{x})\) el conjunto de los \(k\) vecinos más cercanos. El voto para la clase \(c\) es
+Para un punto de prueba \\(\mathbf{x}\\), sea \\(\mathcal{N}_k(\mathbf{x})\\) el conjunto de los \\(k\\) vecinos más cercanos. El voto para la clase \\(c\\) es
 
 $$
 v_c = \sum_{i \in \mathcal{N}_k(\mathbf{x})} w_i \,\mathbb{1}(y_i = c),
 $$
 
-donde los pesos \(w_i\) pueden ser uniformes o funciones de la distancia (inversa, gaussiana, etc.). La clase con mayor voto se predice como resultado.
+donde los pesos \\(w_i\\) pueden ser uniformes o funciones de la distancia (inversa, gaussiana, etc.). La clase con mayor voto se predice como resultado.
 
 ## Experimentos con Python
-El siguiente código compara la precisión en validación cruzada para distintos valores de \(k\) y visualiza la frontera de decisión en un conjunto bidimensional.
+El siguiente código compara la precisión en validación cruzada para distintos valores de \\(k\\) y visualiza la frontera de decisión en un conjunto bidimensional.
 
 ```python
 import numpy as np

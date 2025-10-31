@@ -7,7 +7,7 @@ title_suffix: "Memperkirakan probabilitas setiap kelas sekaligus"
 
 {{% summary %}}
 - Regresi softmax menggeneralisasi regresi logistik ke kasus multikelas dengan menghasilkan probabilitas untuk semua kelas secara bersamaan.
-- Keluaran berada di rentang \([0, 1]\) dan jumlahnya 1, sehingga mudah dipakai dalam penentuan ambang, aturan berbasis biaya, maupun pipeline lanjutan.
+- Keluaran berada di rentang \\([0, 1]\\) dan jumlahnya 1, sehingga mudah dipakai dalam penentuan ambang, aturan berbasis biaya, maupun pipeline lanjutan.
 - Pelatihan meminimalkan loss entropi silang, langsung mengoreksi perbedaan antara distribusi yang diprediksi dan distribusi sebenarnya.
 - Di scikit-learn, `LogisticRegression(multi_class="multinomial")` menyediakan implementasi regresi softmax dan mendukung regularisasi L1/L2.
 {{% /summary %}}
@@ -16,7 +16,7 @@ title_suffix: "Memperkirakan probabilitas setiap kelas sekaligus"
 Untuk klasifikasi biner, fungsi sigmoid memberikan probabilitas kelas 1. Pada multikelas kita membutuhkan probabilitas semua kelas sekaligus. Regresi softmax menghitung skor linear tiap kelas, mengeksponensialkannya, lalu menormalkan agar membentuk distribusi probabilitas. Skor tinggi diperbesar, skor rendah dikecilkan.
 
 ## Formulasi matematis
-Misalkan terdapat \(K\) kelas, dengan parameter \(\mathbf{w}_k\) dan \(b_k\) untuk kelas \(k\). Maka
+Misalkan terdapat \\(K\\) kelas, dengan parameter \\(\mathbf{w}_k\\) dan \\(b_k\\) untuk kelas \\(k\\). Maka
 
 $$
 P(y = k \mid \mathbf{x}) =

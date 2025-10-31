@@ -19,7 +19,7 @@ pre: "<b>2.1 </b>"
 Linear regression answers the simple question “If the input increases by 1, how much does the output change?” Because the coefficients are easy to interpret and the computations are fast, it is often the first model applied in machine learning projects.
 
 ## Mathematical formulation
-Ordinary least squares estimates the coefficients by minimizing the sum of squared errors between observations and predictions. For multiple features with matrix \(\mathbf{X}\) and target vector \(\mathbf{y}\),
+Ordinary least squares estimates the coefficients by minimizing the sum of squared errors between observations and predictions. For multiple features with matrix \\(\mathbf{X}\\) and target vector \\(\mathbf{y}\\),
 
 $$
 \hat{\boldsymbol\beta} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}.

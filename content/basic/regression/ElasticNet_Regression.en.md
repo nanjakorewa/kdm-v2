@@ -8,7 +8,7 @@ title_suffix: "Blend the strengths of L1 and L2"
 {{% summary %}}
 - Elastic Net mixes the L1 (lasso) and L2 (ridge) penalties to balance sparsity and stability.
 - It can retain groups of strongly correlated features while adjusting their importance collectively.
-- Tuning both \(\alpha\) and `l1_ratio` with cross-validation makes it easy to strike the bias–variance balance.
+- Tuning both \\(\alpha\\) and `l1_ratio` with cross-validation makes it easy to strike the bias–variance balance.
 - Standardizing features and allowing enough iterations improve numerical stability for the optimizer.
 {{% /summary %}}
 
@@ -22,10 +22,10 @@ $$
 \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left( y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b) \right)^2 + \alpha \left( \rho \lVert \boldsymbol\beta \rVert_1 + (1 - \rho) \lVert \boldsymbol\beta \rVert_2^2 \right),
 $$
 
-where \(\alpha > 0\) is the regularization strength and \(\rho \in [0,1]\) (`l1_ratio`) controls the L1/L2 trade-off. Moving \(\rho\) between 0 and 1 lets you explore the spectrum between ridge and lasso.
+where \\(\alpha > 0\\) is the regularization strength and \\(\rho \in [0,1]\\) (`l1_ratio`) controls the L1/L2 trade-off. Moving \\(\rho\\) between 0 and 1 lets you explore the spectrum between ridge and lasso.
 
 ## Experiments with Python
-Below we use `ElasticNetCV` to choose \(\alpha\) and `l1_ratio` simultaneously, then examine coefficients and performance.
+Below we use `ElasticNetCV` to choose \\(\alpha\\) and `l1_ratio` simultaneously, then examine coefficients and performance.
 
 ```python
 from __future__ import annotations

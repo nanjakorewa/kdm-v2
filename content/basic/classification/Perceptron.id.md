@@ -7,13 +7,13 @@ title_suffix: "Klasifikator linear paling sederhana"
 
 {{% summary %}}
 - Perceptron akan konvergen dalam jumlah pembaruan terbatas jika data dapat dipisahkan secara linear, menjadikannya salah satu algoritme klasifikasi tertua.
-- Prediksi menggunakan tanda \(\mathbf{w}^\top \mathbf{x} + b\); jika tanda salah, sampel tersebut memperbarui bobot.
+- Prediksi menggunakan tanda \\(\mathbf{w}^\top \mathbf{x} + b\\); jika tanda salah, sampel tersebut memperbarui bobot.
 - Aturan pembaruan—menambahkan sampel yang salah diklasifikasikan dikalikan laju belajar—memberikan intuisi awal untuk metode berbasis gradien.
 - Jika data tidak dapat dipisahkan secara linear, perluasan fitur atau kernel trick menjadi solusi.
 {{% /summary %}}
 
 ## Intuisi
-Perceptron menggeser batas keputusan setiap kali salah memprediksi, mendorongnya ke sisi yang benar. Vektor bobot \(\mathbf{w}\) tegak lurus terhadap batas, sedangkan bias \(b\) mengatur pergeseran. Laju belajar \(\eta\) mengontrol seberapa besar setiap pergeseran.
+Perceptron menggeser batas keputusan setiap kali salah memprediksi, mendorongnya ke sisi yang benar. Vektor bobot \\(\mathbf{w}\\) tegak lurus terhadap batas, sedangkan bias \\(b\\) mengatur pergeseran. Laju belajar \\(\eta\\) mengontrol seberapa besar setiap pergeseran.
 
 ## Formulasi matematis
 Prediksi dihitung sebagai
@@ -22,7 +22,7 @@ $$
 \hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b).
 $$
 
-Jika contoh \((\mathbf{x}_i, y_i)\) salah klasifikasi, perbarui parameter dengan
+Jika contoh \\((\mathbf{x}_i, y_i)\\) salah klasifikasi, perbarui parameter dengan
 
 $$
 \mathbf{w} \leftarrow \mathbf{w} + \eta\, y_i\, \mathbf{x}_i,\qquad

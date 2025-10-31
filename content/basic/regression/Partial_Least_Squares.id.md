@@ -16,13 +16,13 @@ title_suffix: "Faktor laten yang selaras dengan target"
 Regresi komponen utama hanya memperhatikan varians fitur sehingga arah yang penting bagi target bisa terbuang. PLS membangun faktor laten sambil mempertimbangkan prediktor dan respon secara bersamaan, sehingga informasi yang paling berguna untuk prediksi tetap dipertahankan. Dengan demikian kita dapat menggunakan representasi ringkas tanpa kehilangan akurasi.
 
 ## Formulasi matematis
-Dengan matriks prediktor \(\mathbf{X}\) dan vektor target \(\mathbf{y}\), PLS memperbarui skor laten \(\mathbf{t} = \mathbf{X} \mathbf{w}\) dan \(\mathbf{u} = \mathbf{y} c\) secara bergantian agar kovarians \(\mathbf{t}^\top \mathbf{u}\) maksimum. Pengulangan prosedur menghasilkan faktor laten tempat model linear
+Dengan matriks prediktor \\(\mathbf{X}\\) dan vektor target \\(\mathbf{y}\\), PLS memperbarui skor laten \\(\mathbf{t} = \mathbf{X} \mathbf{w}\\) dan \\(\mathbf{u} = \mathbf{y} c\\) secara bergantian agar kovarians \\(\mathbf{t}^\top \mathbf{u}\\) maksimum. Pengulangan prosedur menghasilkan faktor laten tempat model linear
 
 $$
 \hat{y} = \mathbf{t} \boldsymbol{b} + b_0
 $$
 
-dipasang. Jumlah faktor \(k\) biasanya dipilih melalui cross-validation.
+dipasang. Jumlah faktor \\(k\\) biasanya dipilih melalui cross-validation.
 
 ## Eksperimen dengan Python
 Berikut perbandingan kinerja PLS untuk berbagai jumlah faktor laten menggunakan dataset kebugaran Linnerud.

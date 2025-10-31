@@ -32,7 +32,7 @@ y_i - (\mathbf{w}^\top \phi(\mathbf{x}_i) + b) &\le \epsilon + \xi_i, \\
 \end{aligned}
 $$
 
-di mana \(\phi\) memetakan input ke ruang fitur melalui kernel yang dipilih. Menyelesaikan bentuk dual menghasilkan support vector dan koefisiennya.
+di mana \\(\phi\\) memetakan input ke ruang fitur melalui kernel yang dipilih. Menyelesaikan bentuk dual menghasilkan support vector dan koefisiennya.
 
 ## Eksperimen dengan Python
 Contoh berikut menunjukkan SVR yang dikombinasikan dengan `StandardScaler` dalam sebuah pipeline.

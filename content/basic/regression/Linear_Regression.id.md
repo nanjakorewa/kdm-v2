@@ -13,7 +13,7 @@ title_suffix: "Memahami dari prinsip dasar"
 {{% /summary %}}
 
 ## Intuisi
-Ketika plot sebar \((x_i, y_i)\) membentuk garis lurus, memperpanjang garis tersebut adalah cara alami untuk menginterpolasi masukan baru. Metode kuadrat terkecil menarik satu garis yang sedekat mungkin dengan seluruh titik dengan meminimalkan penyimpangan total antara observasi dan garis.
+Ketika plot sebar \\((x_i, y_i)\\) membentuk garis lurus, memperpanjang garis tersebut adalah cara alami untuk menginterpolasi masukan baru. Metode kuadrat terkecil menarik satu garis yang sedekat mungkin dengan seluruh titik dengan meminimalkan penyimpangan total antara observasi dan garis.
 
 ## Formulasi matematis
 Model linear satu variabel ditulis sebagai
@@ -22,7 +22,7 @@ $$
 y = w x + b.
 $$
 
-Dengan meminimalkan jumlah kuadrat residu \(\epsilon_i = y_i - (w x_i + b)\)
+Dengan meminimalkan jumlah kuadrat residu \\(\epsilon_i = y_i - (w x_i + b)\\)
 
 $$
 L(w, b) = \sum_{i=1}^{n} \big(y_i - (w x_i + b)\big)^2,
@@ -34,7 +34,7 @@ $$
 w = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}, \qquad b = \bar{y} - w \bar{x},
 $$
 
-dengan \(\bar{x}\) dan \(\bar{y}\) adalah rata-rata \(x\) dan \(y\). Ide yang sama berlaku untuk regresi multivariat menggunakan vektor dan matriks.
+dengan \\(\bar{x}\\) dan \\(\bar{y}\\) adalah rata-rata \\(x\\) dan \\(y\\). Ide yang sama berlaku untuk regresi multivariat menggunakan vektor dan matriks.
 
 ## Eksperimen dengan Python
 Contoh berikut menyesuaikan garis regresi menggunakan `scikit-learn` dan menampilkan hasilnya. Kodenya sama seperti versi bahasa Jepang sehingga gambar yang dihasilkan konsisten.
@@ -82,8 +82,8 @@ plot_simple_linear_regression()
 ![linear-regression block 1](/images/basic/regression/linear-regression_block01_id.png)
 
 ### Membaca hasil
-- **Kemiringan \(w\)**: menunjukkan seberapa besar keluaran naik atau turun ketika masukan bertambah satu satuan; estimasinya seharusnya mendekati nilai sebenarnya.
-- **Intercept \(b\)**: memberikan nilai harapan saat masukan bernilai 0 dan menggeser garis secara vertikal.
+- **Kemiringan \\(w\\)**: menunjukkan seberapa besar keluaran naik atau turun ketika masukan bertambah satu satuan; estimasinya seharusnya mendekati nilai sebenarnya.
+- **Intercept \\(b\\)**: memberikan nilai harapan saat masukan bernilai 0 dan menggeser garis secara vertikal.
 - Menstandardisasi fitur dengan `StandardScaler` membantu stabilitas ketika skala masukan berbeda-beda.
 
 ## Referensi

@@ -7,9 +7,9 @@ title_suffix: "Meningkatkan generalisasi dengan margin maksimum"
 
 {{% summary %}}
 - SVM mempelajari batas keputusan yang memaksimalkan margin antar kelas, sehingga menekankan kemampuan generalisasi.
-- Margin lunak memperkenalkan variabel slack; parameter \(C\) mengatur kompromi antara lebar margin dan jumlah kesalahan yang diizinkan.
+- Margin lunak memperkenalkan variabel slack; parameter \\(C\\) mengatur kompromi antara lebar margin dan jumlah kesalahan yang diizinkan.
 - Kernel trick mengganti hasil kali dalam dengan fungsi kernel, memungkinkan batas keputusan nonlinier tanpa ekspansi fitur eksplisit.
-- Penyetaraan fitur dan pencarian hiperparameter (\(C\), \(\gamma\), dsb.) penting untuk kinerja yang baik.
+- Penyetaraan fitur dan pencarian hiperparameter (\\(C\\), \\(\gamma\\), dsb.) penting untuk kinerja yang baik.
 {{% /summary %}}
 
 ## Intuisi
@@ -23,7 +23,7 @@ $$
 \quad \text{s.t.} \quad y_i(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1.
 $$
 
-Pada praktiknya digunakan SVM margin lunak dengan variabel slack \(\xi_i \ge 0\):
+Pada praktiknya digunakan SVM margin lunak dengan variabel slack \\(\xi_i \ge 0\\):
 
 $$
 \min_{\mathbf{w}, b, \boldsymbol{\xi}}
@@ -31,7 +31,7 @@ $$
 \quad \text{s.t.} \quad y_i(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1 - \xi_i.
 $$
 
-Mengganti hasil kali \(\mathbf{x}_i^\top \mathbf{x}_j\) dengan kernel \(K(\mathbf{x}_i, \mathbf{x}_j)\) memungkinkan batas keputusan nonlinier.
+Mengganti hasil kali \\(\mathbf{x}_i^\top \mathbf{x}_j\\) dengan kernel \\(K(\mathbf{x}_i, \mathbf{x}_j)\\) memungkinkan batas keputusan nonlinier.
 
 ## Eksperimen dengan Python
 Cuplikan berikut melatih SVM dengan kernel linear dan kernel RBF pada data `make_moons` yang tidak separabel secara linear. Kernel RBF jauh lebih mampu menangkap batas melengkung.

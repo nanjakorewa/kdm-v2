@@ -13,10 +13,10 @@ title_suffix: "Capturar patrones no lineales con un modelo lineal"
 {{% /summary %}}
 
 ## Intuición
-Una recta no puede describir curvas suaves o patrones en forma de colina. Al expandir la entrada con términos polinómicos—\(x, x^2, x^3, \dots\) en el caso univariado o potencias e interacciones en el multivariado—expresamos comportamientos no lineales sin abandonar el marco lineal.
+Una recta no puede describir curvas suaves o patrones en forma de colina. Al expandir la entrada con términos polinómicos—\\(x, x^2, x^3, \dots\\) en el caso univariado o potencias e interacciones en el multivariado—expresamos comportamientos no lineales sin abandonar el marco lineal.
 
 ## Formulación matemática
-Para \(\mathbf{x} = (x_1, \dots, x_m)\) generamos un vector de características polinómicas \(\phi(\mathbf{x})\) hasta el grado \(d\). Por ejemplo, si \(m = 2\) y \(d = 2\),
+Para \\(\mathbf{x} = (x_1, \dots, x_m)\\) generamos un vector de características polinómicas \\(\phi(\mathbf{x})\\) hasta el grado \\(d\\). Por ejemplo, si \\(m = 2\\) y \\(d = 2\\),
 
 $$
 \phi(\mathbf{x}) = (1, x_1, x_2, x_1^2, x_1 x_2, x_2^2),

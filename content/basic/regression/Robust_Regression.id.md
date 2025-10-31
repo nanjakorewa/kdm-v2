@@ -8,7 +8,7 @@ title_suffix: "Menangani outlier dengan loss Huber"
 {{% summary %}}
 - Metode kuadrat terkecil (OLS) sangat sensitif terhadap outlier karena residu dikuadratkan sehingga satu kesalahan besar dapat menyeret garis hasil.
 - Loss Huber mempertahankan loss kuadrat untuk residu kecil dan beralih ke penalti linear untuk residu besar sehingga pengaruh titik ekstrem berkurang.
-- Menyetel ambang \(\delta\) (epsilon di scikit-learn) serta penalti L2 opsional \(\alpha\) membantu menyeimbangkan ketahanan dan varians.
+- Menyetel ambang \\(\delta\\) (epsilon di scikit-learn) serta penalti L2 opsional \\(\alpha\\) membantu menyeimbangkan ketahanan dan varians.
 - Kombinasi penskalaan dan validasi silang menghasilkan model yang stabil pada data nyata yang sering mencampurkan titik normal dan anomali.
 {{% /summary %}}
 
@@ -16,7 +16,7 @@ title_suffix: "Menangani outlier dengan loss Huber"
 Outlier dapat muncul akibat gangguan sensor, kesalahan input, atau perubahan pola. Dalam OLS, residu outlier yang dikuadratkan menjadi sangat besar sehingga garis regresi tertarik ke arah titik tersebut. Regresi robust memperlakukan residu besar dengan lebih lunak agar model mengikuti tren utama sambil mengabaikan observasi yang meragukan. Loss Huber adalah pilihan klasik: perilakunya kuadrat di sekitar nol dan absolut pada ekor distribusi.
 
 ## Formulasi matematis
-Dengan residu \(r = y - \hat{y}\) dan ambang \(\delta > 0\), loss Huber didefinisikan sebagai
+Dengan residu \\(r = y - \hat{y}\\) dan ambang \\(\delta > 0\\), loss Huber didefinisikan sebagai
 
 $$
 \ell_\delta(r) =
@@ -36,7 +36,7 @@ r, & |r| \le \delta, \\
 \end{cases}
 $$
 
-Dalam scikit-learn parameter `epsilon` setara dengan \(\delta\). Kita juga dapat menambahkan penalti L2 \(\alpha \lVert \boldsymbol\beta \rVert_2^2\) untuk menstabilkan koefisien saat fitur saling berkorelasi.
+Dalam scikit-learn parameter `epsilon` setara dengan \\(\delta\\). Kita juga dapat menambahkan penalti L2 \\(\alpha \lVert \boldsymbol\beta \rVert_2^2\\) untuk menstabilkan koefisien saat fitur saling berkorelasi.
 
 ## Eksperimen dengan Python
 Berikut visualisasi bentuk loss serta perbandingan OLS, Ridge, dan Huber pada dataset kecil yang mengandung satu outlier ekstrem.

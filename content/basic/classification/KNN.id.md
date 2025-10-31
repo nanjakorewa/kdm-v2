@@ -6,26 +6,26 @@ title_suffix: "Pembelajaran malas berbasis jarak"
 ---
 
 {{% summary %}}
-- k-NN menyimpan data latih dan memprediksi lewat voting mayoritas di antara \(k\) tetangga terdekat dari titik uji.
-- Hiperparameter utamanya adalah jumlah tetangga \(k\) dan skema pembobotan jarak, yang relatif mudah ditelusuri.
+- k-NN menyimpan data latih dan memprediksi lewat voting mayoritas di antara \\(k\\) tetangga terdekat dari titik uji.
+- Hiperparameter utamanya adalah jumlah tetangga \\(k\\) dan skema pembobotan jarak, yang relatif mudah ditelusuri.
 - Secara alamiah mampu memodelkan batas keputusan nonlinier, tetapi kontras jarak menurun di dimensi tinggi (“kutukan dimensi”).
 - Menyetarakan fitur atau memilih fitur penting membuat perhitungan jarak lebih stabil.
 {{% /summary %}}
 
 ## Intuisi
-Dengan asumsi “sampel yang berdekatan cenderung berbagi label”, k-NN mencari \(k\) contoh latih terdekat dan memutuskan label melalui voting (dapat diberi bobot sesuai jarak). Karena tidak membangun model eksplisit sebelumnya, metode ini disebut pembelajaran malas.
+Dengan asumsi “sampel yang berdekatan cenderung berbagi label”, k-NN mencari \\(k\\) contoh latih terdekat dan memutuskan label melalui voting (dapat diberi bobot sesuai jarak). Karena tidak membangun model eksplisit sebelumnya, metode ini disebut pembelajaran malas.
 
 ## Formulasi matematis
-Untuk titik uji \(\mathbf{x}\), misalkan \(\mathcal{N}_k(\mathbf{x})\) adalah kumpulan \(k\) tetangga terdekat. Suara untuk kelas \(c\) dihitung sebagai
+Untuk titik uji \\(\mathbf{x}\\), misalkan \\(\mathcal{N}_k(\mathbf{x})\\) adalah kumpulan \\(k\\) tetangga terdekat. Suara untuk kelas \\(c\\) dihitung sebagai
 
 $$
 v_c = \sum_{i \in \mathcal{N}_k(\mathbf{x})} w_i \,\mathbb{1}(y_i = c),
 $$
 
-di mana bobot \(w_i\) bisa seragam atau bergantung pada jarak (misalnya kebalikan jarak). Kelas dengan suara terbanyak menjadi prediksi akhir.
+di mana bobot \\(w_i\\) bisa seragam atau bergantung pada jarak (misalnya kebalikan jarak). Kelas dengan suara terbanyak menjadi prediksi akhir.
 
 ## Eksperimen dengan Python
-Kode berikut membandingkan akurasi validasi silang untuk beberapa nilai \(k\) dan memvisualisasikan batas keputusan pada data dua dimensi.
+Kode berikut membandingkan akurasi validasi silang untuk beberapa nilai \\(k\\) dan memvisualisasikan batas keputusan pada data dua dimensi.
 
 ```python
 import numpy as np

@@ -7,13 +7,13 @@ title_suffix: "The simplest linear classifier"
 
 {{% summary %}}
 - The perceptron converges in a finite number of updates on linearly separable data, making it one of the oldest classification algorithms.
-- Predictions use the sign of a weighted sum \(\mathbf{w}^\top \mathbf{x} + b\); if the sign is wrong, the corresponding sample updates the weights.
+- Predictions use the sign of a weighted sum \\(\mathbf{w}^\top \mathbf{x} + b\\); if the sign is wrong, the corresponding sample updates the weights.
 - The update rule—adding the misclassified sample scaled by the learning rate—provides an intuitive introduction to gradient-based methods.
 - When data are not linearly separable, feature expansion or kernel tricks are needed.
 {{% /summary %}}
 
 ## Intuition
-The perceptron moves the decision boundary whenever it misclassifies a sample, nudging it toward the correct side. The weight vector \(\mathbf{w}\) is normal to the decision boundary, while the bias \(b\) controls the offset. A learning rate \(\eta\) determines how large each nudge should be.
+The perceptron moves the decision boundary whenever it misclassifies a sample, nudging it toward the correct side. The weight vector \\(\mathbf{w}\\) is normal to the decision boundary, while the bias \\(b\\) controls the offset. A learning rate \\(\eta\\) determines how large each nudge should be.
 
 ## Mathematical formulation
 Predictions are computed as
@@ -22,7 +22,7 @@ $$
 \hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b).
 $$
 
-If a sample \((\mathbf{x}_i, y_i)\) is misclassified, update the parameters via
+If a sample \\((\mathbf{x}_i, y_i)\\) is misclassified, update the parameters via
 
 $$
 \mathbf{w} \leftarrow \mathbf{w} + \eta\, y_i\, \mathbf{x}_i,\qquad

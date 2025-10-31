@@ -7,16 +7,16 @@ title_suffix: "Estimar probabilidades con la sigmoide"
 
 {{% summary %}}
 - La regresión logística aplica una combinación lineal de las entradas a la función sigmoide para predecir la probabilidad de que la etiqueta sea 1.
-- La salida está en \([0, 1]\), lo que permite fijar umbrales de decisión con flexibilidad y leer los coeficientes como contribuciones al logit.
+- La salida está en \\([0, 1]\\), lo que permite fijar umbrales de decisión con flexibilidad y leer los coeficientes como contribuciones al logit.
 - El entrenamiento minimiza la entropía cruzada (equivale a maximizar la verosimilitud); la regularización L1/L2 ayuda a evitar el sobreajuste.
 - Con `LogisticRegression` de scikit-learn se cubren el preprocesamiento, el ajuste y la visualización de la frontera de decisión en pocas líneas.
 {{% /summary %}}
 
 ## Intuición
-La regresión lineal produce valores reales, pero en clasificación suele interesar “¿cuál es la probabilidad de la clase 1?”. La regresión logística aborda el problema pasando el puntaje lineal \(z = \mathbf{w}^\top \mathbf{x} + b\) por la función sigmoide \(\sigma(z) = 1 / (1 + e^{-z})\), obteniendo valores con interpretación probabilística. Una regla simple, como “predecir 1 si \(P(y=1 \mid \mathbf{x}) > 0.5\)”, basta para clasificar.
+La regresión lineal produce valores reales, pero en clasificación suele interesar “¿cuál es la probabilidad de la clase 1?”. La regresión logística aborda el problema pasando el puntaje lineal \\(z = \mathbf{w}^\top \mathbf{x} + b\\) por la función sigmoide \\(\sigma(z) = 1 / (1 + e^{-z})\\), obteniendo valores con interpretación probabilística. Una regla simple, como “predecir 1 si \\(P(y=1 \mid \mathbf{x}) > 0.5\\)”, basta para clasificar.
 
 ## Formulación matemática
-La probabilidad de la clase 1 dada \(\mathbf{x}\) es
+La probabilidad de la clase 1 dada \\(\mathbf{x}\\) es
 
 $$
 P(y=1 \mid \mathbf{x}) = \sigma(\mathbf{w}^\top \mathbf{x} + b) = \frac{1}{1 + \exp\left(-(\mathbf{w}^\top \mathbf{x} + b)\right)}.

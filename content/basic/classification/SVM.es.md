@@ -7,9 +7,9 @@ title_suffix: "Mejorar la generalización maximizando el margen"
 
 {{% summary %}}
 - SVM aprende una frontera de decisión que maximiza el margen entre clases, priorizando la capacidad de generalización.
-- El margen blando introduce variables de holgura; el parámetro \(C\) controla el equilibrio entre anchura del margen y errores permitidos.
+- El margen blando introduce variables de holgura; el parámetro \\(C\\) controla el equilibrio entre anchura del margen y errores permitidos.
 - El truco del kernel reemplaza productos internos por funciones kernel, permitiendo fronteras no lineales sin expandir explícitamente las características.
-- La estandarización de características y la búsqueda de hiperparámetros (\(C\), \(\gamma\), etc.) son claves para un buen rendimiento.
+- La estandarización de características y la búsqueda de hiperparámetros (\\(C\\), \\(\gamma\\), etc.) son claves para un buen rendimiento.
 {{% /summary %}}
 
 ## Intuición
@@ -23,7 +23,7 @@ $$
 \quad \text{s.t.} \quad y_i(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1.
 $$
 
-En la práctica usamos la variante de margen blando con variables de holgura \(\xi_i \ge 0\):
+En la práctica usamos la variante de margen blando con variables de holgura \\(\xi_i \ge 0\\):
 
 $$
 \min_{\mathbf{w}, b, \boldsymbol{\xi}}
@@ -31,7 +31,7 @@ $$
 \quad \text{s.t.} \quad y_i(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1 - \xi_i.
 $$
 
-Sustituir los productos internos \(\mathbf{x}_i^\top \mathbf{x}_j\) por un kernel \(K(\mathbf{x}_i, \mathbf{x}_j)\) permite modelar fronteras no lineales.
+Sustituir los productos internos \\(\mathbf{x}_i^\top \mathbf{x}_j\\) por un kernel \\(K(\mathbf{x}_i, \mathbf{x}_j)\\) permite modelar fronteras no lineales.
 
 ## Experimentos con Python
 El código siguiente entrena SVM con kernel lineal y con kernel RBF sobre datos generados por `make_moons`, que no son separables linealmente. El kernel RBF captura la frontera curva con mayor precisión.

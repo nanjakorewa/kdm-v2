@@ -13,10 +13,10 @@ title_suffix: "Capture nonlinear patterns with a linear model"
 {{% /summary %}}
 
 ## Intuition
-A straight line cannot describe smooth curves or hill-shaped patterns. By expanding the input with polynomial terms—\(x, x^2, x^3, \dots\) for univariate regression, or powers and interaction terms for multivariate regression—we can express nonlinear behaviour while still using a linear model.
+A straight line cannot describe smooth curves or hill-shaped patterns. By expanding the input with polynomial terms—\\(x, x^2, x^3, \dots\\) for univariate regression, or powers and interaction terms for multivariate regression—we can express nonlinear behaviour while still using a linear model.
 
 ## Mathematical formulation
-Given \(\mathbf{x} = (x_1, \dots, x_m)\), we build a polynomial feature vector \(\phi(\mathbf{x})\) up to degree \(d\) and fit a linear regression on top of it. For \(m = 2\) and \(d = 2\),
+Given \\(\mathbf{x} = (x_1, \dots, x_m)\\), we build a polynomial feature vector \\(\phi(\mathbf{x})\\) up to degree \\(d\\) and fit a linear regression on top of it. For \\(m = 2\\) and \\(d = 2\\),
 
 $$
 \phi(\mathbf{x}) = (1, x_1, x_2, x_1^2, x_1 x_2, x_2^2),
@@ -28,7 +28,7 @@ $$
 y = \mathbf{w}^\top \phi(\mathbf{x}).
 $$
 
-As \(d\) grows, the number of terms increases rapidly, so in practice we start with degree 2 or 3 and pair it with regularization (e.g., Ridge) when necessary.
+As \\(d\\) grows, the number of terms increases rapidly, so in practice we start with degree 2 or 3 and pair it with regularization (e.g., Ridge) when necessary.
 
 ## Experiments with Python
 Below we add third-degree polynomial features and fit a curve to data generated from a cubic function plus noise.

@@ -7,7 +7,7 @@ title_suffix: "Predict all class probabilities at once"
 
 {{% summary %}}
 - Softmax regression generalises logistic regression to multiple classes, producing the probability of every class simultaneously.
-- Outputs lie in \([0, 1]\) and sum to 1, so they plug directly into decision thresholds, cost-sensitive rules, or downstream pipelines.
+- Outputs lie in \\([0, 1]\\) and sum to 1, so they plug directly into decision thresholds, cost-sensitive rules, or downstream pipelines.
 - Training minimises the cross-entropy loss, directly correcting discrepancies between predicted and true probability distributions.
 - In scikit-learn, `LogisticRegression(multi_class="multinomial")` implements softmax regression and supports L1/L2 regularisation.
 {{% /summary %}}
@@ -16,7 +16,7 @@ title_suffix: "Predict all class probabilities at once"
 In the binary case the sigmoid provides the probability of class 1. With multiple classes we want all probabilities together. Softmax regression takes a linear score for each class, exponentiates the scores, and normalises them so they form a valid probability distribution. Higher scores become emphasised while lower scores are suppressed.
 
 ## Mathematical formulation
-Let \(K\) be the number of classes, \(\mathbf{w}_k\) and \(b_k\) the parameters for class \(k\). Then
+Let \\(K\\) be the number of classes, \\(\mathbf{w}_k\\) and \\(b_k\\) the parameters for class \\(k\\). Then
 
 $$
 P(y = k \mid \mathbf{x}) =

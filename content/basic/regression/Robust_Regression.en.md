@@ -8,7 +8,7 @@ title_suffix: "Handle outliers with the Huber loss"
 {{% summary %}}
 - Ordinary least squares (OLS) reacts strongly to outliers because squared residuals explode, so a single erroneous measurement can distort the entire fit.
 - The Huber loss keeps squared loss for small residuals but switches to a linear penalty for large ones, reducing the influence of extreme points.
-- Tuning the threshold \(\delta\) (epsilon in scikit-learn) and the optional L2 penalty \(\alpha\) balances robustness against variance.
+- Tuning the threshold \\(\delta\\) (epsilon in scikit-learn) and the optional L2 penalty \\(\alpha\\) balances robustness against variance.
 - Combining scaling with cross-validation yields stable models on real-world data sets that often mix nominal points and anomalies.
 {{% /summary %}}
 
@@ -16,7 +16,7 @@ title_suffix: "Handle outliers with the Huber loss"
 Outliers arise from sensor glitches, data entry mistakes, or regime changes. In OLS the squared residual of an outlier is enormous, so the fitted line is pulled toward it. Robust regression deliberately treats large residuals more gently so that the model follows the dominant trend while discounting dubious observations. The Huber loss is a classic choice: it behaves like squared loss near zero and like absolute loss in the tails.
 
 ## Mathematical formulation
-Let the residual be \(r = y - \hat{y}\). For a chosen threshold \(\delta > 0\), the Huber loss is
+Let the residual be \\(r = y - \hat{y}\\). For a chosen threshold \\(\delta > 0\\), the Huber loss is
 
 $$
 \ell_\delta(r) =
@@ -36,7 +36,7 @@ r, & |r| \le \delta, \\
 \end{cases}
 $$
 
-In scikit-learn, the threshold corresponds to the parameter `epsilon`. Adding an L2 penalty \(\alpha \lVert \boldsymbol\beta \rVert_2^2\) further stabilizes the coefficients when features correlate.
+In scikit-learn, the threshold corresponds to the parameter `epsilon`. Adding an L2 penalty \\(\alpha \lVert \boldsymbol\beta \rVert_2^2\\) further stabilizes the coefficients when features correlate.
 
 ## Experiments with Python
 We visualize the loss shapes and compare OLS, Ridge, and Huber on a small synthetic data set that contains a single extreme outlier.

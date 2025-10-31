@@ -16,7 +16,7 @@ title_suffix: "予測の不確実性まで推論する"
 最小二乗法は「最もありそうな係数」を 1 組だけ推定しますが、現実のデータではその推定にも不確実性が残ります。ベイズ線形回帰では係数を確率分布として推論し、観測データと事前知識を組み合わせることで予測値の平均と幅の両方を得られます。データが少ない場面でも、モデルがどの程度自信を持っているのかを可視化できるのが強みです。
 
 ## 具体的な数式
-係数ベクトル \(\boldsymbol\beta\) に平均 0、分散 \(\tau^{-1}\) の多変量ガウス事前分布を置き、観測ノイズ \(\epsilon_i \sim \mathcal{N}(0, \alpha^{-1})\) を仮定すると、事後分布は
+係数ベクトル \\(\boldsymbol\beta\\) に平均 0、分散 \\(\tau^{-1}\\) の多変量ガウス事前分布を置き、観測ノイズ \\(\epsilon_i \sim \mathcal{N}(0, \alpha^{-1})\\) を仮定すると、事後分布は
 
 $$
 p(\boldsymbol\beta \mid \mathbf{X}, \mathbf{y}) = \mathcal{N}(\boldsymbol\beta \mid \boldsymbol\mu, \mathbf{\Sigma})
@@ -29,7 +29,7 @@ $$
 \boldsymbol\mu = \alpha \mathbf{\Sigma} \mathbf{X}^\top \mathbf{y}
 $$
 
-です。予測分布もガウス形となり、入力 \(\mathbf{x}_*\) に対して \(\mathcal{N}(\hat{y}_*, \sigma_*^2)\) が得られます。`scikit-learn` の `BayesianRidge` は \(\alpha\) と \(\tau\) もデータから推定してくれるため、手軽にこの枠組みを利用できます。
+です。予測分布もガウス形となり、入力 \\(\mathbf{x}_*\\) に対して \\(\mathcal{N}(\hat{y}_*, \sigma_*^2)\\) が得られます。`scikit-learn` の `BayesianRidge` は \\(\alpha\\) と \\(\tau\\) もデータから推定してくれるため、手軽にこの枠組みを利用できます。
 
 ## Pythonを用いた実験や説明
 外れ値を含む一次関数データで、最尤推定による線形回帰とベイズ線形回帰を比較します。

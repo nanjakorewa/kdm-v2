@@ -8,7 +8,7 @@ title_suffix: "Meningkatkan generalisasi dengan regularisasi"
 {{% summary %}}
 - Ridge mengecilkan koefisien secara halus dengan penalti L2 dan tetap stabil meskipun terjadi multikolinearitas.
 - Lasso menggunakan penalti L1 yang dapat membuat sebagian koefisien menjadi nol sehingga fitur penting tetap tersisa dan model mudah ditafsirkan.
-- Menyetel kekuatan regularisasi \(\alpha\) mengendalikan kompromi antara ketepatan pada data latih dan kemampuan generalisasi.
+- Menyetel kekuatan regularisasi \\(\alpha\\) mengendalikan kompromi antara ketepatan pada data latih dan kemampuan generalisasi.
 - Kombinasi standardisasi dan validasi silang membantu memilih hiperparameter yang mencegah overfitting tanpa mengorbankan kinerja.
 {{% /summary %}}
 
@@ -27,7 +27,7 @@ Kedua metode meminimalkan loss kuadrat biasa ditambah term regularisasi:
   \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2 + \alpha \lVert \boldsymbol\beta \rVert_1
   $$
 
-Semakin besar \(\alpha\), semakin kuat kontraksinya. Pada Lasso, jika \(\alpha\) melewati ambang tertentu maka beberapa koefisien menjadi nol sehingga model menjadi jarang (sparse).
+Semakin besar \\(\alpha\\), semakin kuat kontraksinya. Pada Lasso, jika \\(\alpha\\) melewati ambang tertentu maka beberapa koefisien menjadi nol sehingga model menjadi jarang (sparse).
 
 ## Eksperimen dengan Python
 Contoh berikut menerapkan ridge, lasso, dan regresi linier biasa pada dataset regresi sintetis yang sama serta membandingkan besar koefisien dan skor generalisasi.
@@ -93,7 +93,7 @@ for name, model in models.items():
 ### Membaca hasil
 - Ridge mengecilkan semua koefisien dan tetap stabil meski ada multikolinearitas.
 - Lasso membuat sebagian koefisien bernilai nol sehingga hanya fitur terpenting yang tersisa.
-- Pilih \(\alpha\) dengan validasi silang untuk menyeimbangkan bias dan varians, serta lakukan standardisasi agar tiap fitur berada pada skala yang sebanding.
+- Pilih \\(\alpha\\) dengan validasi silang untuk menyeimbangkan bias dan varians, serta lakukan standardisasi agar tiap fitur berada pada skala yang sebanding.
 
 ## Referensi
 {{% references %}}

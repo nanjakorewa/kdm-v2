@@ -16,13 +16,13 @@ title_suffix: "Mengurangi multikolinearitas lewat reduksi dimensi"
 Ketika prediktor saling berkorelasi kuat, metode kuadrat terkecil dapat menghasilkan koefisien yang sangat berfluktuasi. PCR terlebih dahulu melakukan PCA untuk menggabungkan arah yang berkorelasi, kemudian melakukan regresi pada komponen utama dengan urutan varians terbesar. Dengan fokus pada variasi dominan, koefisien yang diperoleh menjadi lebih stabil.
 
 ## Formulasi matematis
-PCA diterapkan pada matriks rancangan \(\mathbf{X}\) yang telah distandarkan, lalu \(k\) autovektor teratas dipertahankan. Dengan skor komponen utama \(\mathbf{Z} = \mathbf{X} \mathbf{W}_k\), model regresi
+PCA diterapkan pada matriks rancangan \\(\mathbf{X}\\) yang telah distandarkan, lalu \\(k\\) autovektor teratas dipertahankan. Dengan skor komponen utama \\(\mathbf{Z} = \mathbf{X} \mathbf{W}_k\\), model regresi
 
 $$
 y = \boldsymbol{\gamma}^\top \mathbf{Z} + b
 $$
 
-dipelajari. Koefisien dalam ruang fitur asli dipulihkan melalui \(\boldsymbol{\beta} = \mathbf{W}_k \boldsymbol{\gamma}\). Jumlah komponen \(k\) dipilih menggunakan varian kumulatif atau cross-validation.
+dipelajari. Koefisien dalam ruang fitur asli dipulihkan melalui \\(\boldsymbol{\beta} = \mathbf{W}_k \boldsymbol{\gamma}\\). Jumlah komponen \\(k\\) dipilih menggunakan varian kumulatif atau cross-validation.
 
 ## Eksperimen dengan Python
 Kami menghitung skor validasi silang PCR pada dataset diabetes sambil memvariasikan jumlah komponen.

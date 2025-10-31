@@ -16,13 +16,13 @@ title_suffix: "Mitigate multicollinearity via dimensionality reduction"
 When predictors are highly correlated, least squares can yield wildly varying coefficients. PCR first performs PCA to combine correlated directions, then regresses on the leading principal components ordered by explained variance. By focusing on dominant variation, the resulting coefficients become more stable.
 
 ## Mathematical formulation
-Apply PCA to the standardized design matrix \(\mathbf{X}\) and retain the top \(k\) eigenvectors. With principal component scores \(\mathbf{Z} = \mathbf{X} \mathbf{W}_k\), the regression model
+Apply PCA to the standardized design matrix \\(\mathbf{X}\\) and retain the top \\(k\\) eigenvectors. With principal component scores \\(\mathbf{Z} = \mathbf{X} \mathbf{W}_k\\), the regression model
 
 $$
 y = \boldsymbol{\gamma}^\top \mathbf{Z} + b
 $$
 
-is learned. Coefficients in the original feature space are recovered via \(\boldsymbol{\beta} = \mathbf{W}_k \boldsymbol{\gamma}\). The number of components \(k\) is selected using cumulative explained variance or cross-validation.
+is learned. Coefficients in the original feature space are recovered via \\(\boldsymbol{\beta} = \mathbf{W}_k \boldsymbol{\gamma}\\). The number of components \\(k\\) is selected using cumulative explained variance or cross-validation.
 
 ## Experiments with Python
 We evaluate cross-validation scores of PCR on the diabetes dataset as we vary the number of components.

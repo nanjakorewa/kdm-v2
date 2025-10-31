@@ -17,21 +17,21 @@ title_suffix: "確率的クラスタリングとソフト割り当て"
 k-means が「硬い割り当て（hard assignment）」を行うのに対し、GMM は点ごとに所属確率（責務）を出力する「ソフトクラスタリング」が可能です。
 
 ## 具体的な数式
-入力ベクトル \(\mathbf{x}\) の確率密度は
+入力ベクトル \\(\mathbf{x}\\) の確率密度は
 
 $$
 p(\mathbf{x}) = \sum_{k=1}^{K} \pi_k \, \mathcal{N}(\mathbf{x} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k),
 $$
 
-ここで \(\pi_k \ge 0\) は混合係数（\(\sum_k \pi_k = 1\)）、\(\boldsymbol{\mu}_k\) は平均ベクトル、\(\boldsymbol{\Sigma}_k\) は共分散行列です。  
+ここで \\(\pi_k \ge 0\\) は混合係数（\\(\sum_k \pi_k = 1\\)）、\\(\boldsymbol{\mu}_k\\) は平均ベクトル、\\(\boldsymbol{\Sigma}_k\\) は共分散行列です。  
 EM アルゴリズムでは以下を収束まで繰り返します。
 
-- **E-step**: クラスタ \(k\) がサンプル \(\mathbf{x}_i\) を生成した確率（責務）を計算。
+- **E-step**: クラスタ \\(k\\) がサンプル \\(\mathbf{x}_i\\) を生成した確率（責務）を計算。
   $$
   \gamma_{ik} = \frac{\pi_k \, \mathcal{N}(\mathbf{x}_i \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)}
   {\sum_{j=1}^K \pi_j \, \mathcal{N}(\mathbf{x}_i \mid \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)}
   $$
-- **M-step**: 責務を重みにして \(\pi_k, \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k\) を更新。
+- **M-step**: 責務を重みにして \\(\pi_k, \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k\\) を更新。
 
 この反復で対数尤度が単調に増加し、局所最大に収束します。
 

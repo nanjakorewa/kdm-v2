@@ -16,7 +16,7 @@ title_suffix: "Cuantificar la incertidumbre de predicción"
 Los mínimos cuadrados ordinarios buscan un único conjunto “óptimo” de coeficientes, pero en los datos reales esa estimación sigue siendo incierta. La regresión lineal bayesiana modela dicha incertidumbre tratando los coeficientes de forma probabilística y combinando el conocimiento previo con las observaciones. Incluso con pocas muestras obtenemos tanto la predicción esperada como la dispersión alrededor de ella.
 
 ## Formulación matemática
-Suponemos una distribución previa gaussiana multivariante de media 0 y varianza \(\tau^{-1}\) para el vector de coeficientes \(\boldsymbol\beta\), y ruido gaussiano \(\epsilon_i \sim \mathcal{N}(0, \alpha^{-1})\) en las observaciones. La posterior resulta ser
+Suponemos una distribución previa gaussiana multivariante de media 0 y varianza \\(\tau^{-1}\\) para el vector de coeficientes \\(\boldsymbol\beta\\), y ruido gaussiano \\(\epsilon_i \sim \mathcal{N}(0, \alpha^{-1})\\) en las observaciones. La posterior resulta ser
 
 $$
 p(\boldsymbol\beta \mid \mathbf{X}, \mathbf{y}) = \mathcal{N}(\boldsymbol\beta \mid \boldsymbol\mu, \mathbf{\Sigma})
@@ -29,7 +29,7 @@ $$
 \boldsymbol\mu = \alpha \mathbf{\Sigma} \mathbf{X}^\top \mathbf{y}.
 $$
 
-La distribución predictiva para una nueva entrada \(\mathbf{x}_*\) también es gaussiana, \(\mathcal{N}(\hat{y}_*, \sigma_*^2)\). `BayesianRidge` estima \(\alpha\) y \(\tau\) a partir de los datos, evitando un ajuste manual.
+La distribución predictiva para una nueva entrada \\(\mathbf{x}_*\\) también es gaussiana, \\(\mathcal{N}(\hat{y}_*, \sigma_*^2)\\). `BayesianRidge` estima \\(\alpha\\) y \\(\tau\\) a partir de los datos, evitando un ajuste manual.
 
 ## Experimentos con Python
 El ejemplo siguiente compara mínimos cuadrados ordinarios con la regresión lineal bayesiana en presencia de valores atípicos.

@@ -19,7 +19,7 @@ pre: "<b>2.1 </b>"
 La regresión lineal responde a la pregunta “¿cuánto cambia la salida cuando la entrada aumenta una unidad?” Gracias a que los coeficientes son fáciles de interpretar y el cálculo es rápido, suele ser el primer modelo que se prueba en un proyecto de aprendizaje automático.
 
 ## Formulación matemática
-El método de mínimos cuadrados ordinarios estima los coeficientes minimizando la suma de los errores al cuadrado entre observaciones y predicciones. Con matriz \(\mathbf{X}\) y vector \(\mathbf{y}\),
+El método de mínimos cuadrados ordinarios estima los coeficientes minimizando la suma de los errores al cuadrado entre observaciones y predicciones. Con matriz \\(\mathbf{X}\\) y vector \\(\mathbf{y}\\),
 
 $$
 \hat{\boldsymbol\beta} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}.

@@ -16,7 +16,7 @@ title_suffix: "Estimate conditional distribution contours"
 Whereas least squares focuses on average behavior, quantile regression asks “how often does the response fall below this value?” It is ideal for planning pessimistic, median, and optimistic scenarios in demand forecasting, or for estimating Value at Risk in finance—situations where the mean alone is insufficient.
 
 ## Mathematical formulation
-With residual \(r = y - \hat{y}\) and quantile level \(\tau \in (0, 1)\), the pinball loss is defined as
+With residual \\(r = y - \hat{y}\\) and quantile level \\(\tau \in (0, 1)\\), the pinball loss is defined as
 
 $$
 L_\tau(r) =
@@ -26,7 +26,7 @@ L_\tau(r) =
 \end{cases}
 $$
 
-Minimizing this loss yields a linear predictor for the \(\tau\)-quantile. Setting \(\tau = 0.5\) recovers the median and leads to the same solution as least absolute deviations regression.
+Minimizing this loss yields a linear predictor for the \\(\tau\\)-quantile. Setting \\(\tau = 0.5\\) recovers the median and leads to the same solution as least absolute deviations regression.
 
 ## Experiments with Python
 We use `QuantileRegressor` to estimate the 0.1, 0.5, and 0.9 quantiles and compare them with ordinary least squares.

@@ -8,7 +8,7 @@ title_suffix: "Fusionar las ventajas de L1 y L2"
 {{% summary %}}
 - Elastic Net combina las penalizaciones L1 (lasso) y L2 (ridge) para equilibrar esparsidad y estabilidad.
 - Permite que grupos de características fuertemente correlacionadas se conserven mientras ajusta su importancia de forma conjunta.
-- Ajustar \(\alpha\) y `l1_ratio` con validación cruzada facilita encontrar el equilibrio entre sesgo y varianza.
+- Ajustar \\(\alpha\\) y `l1_ratio` con validación cruzada facilita encontrar el equilibrio entre sesgo y varianza.
 - Estandarizar los datos y permitir suficientes iteraciones mejora la estabilidad numérica del optimizador.
 {{% /summary %}}
 
@@ -22,10 +22,10 @@ $$
 \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left( y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b) \right)^2 + \alpha \left( \rho \lVert \boldsymbol\beta \rVert_1 + (1 - \rho) \lVert \boldsymbol\beta \rVert_2^2 \right),
 $$
 
-donde \(\alpha > 0\) controla la fuerza de regularización y \(\rho \in [0,1]\) (`l1_ratio`) define la mezcla entre L1 y L2. Al variar \(\rho\) podemos transitar entre el comportamiento de ridge y lasso.
+donde \\(\alpha > 0\\) controla la fuerza de regularización y \\(\rho \in [0,1]\\) (`l1_ratio`) define la mezcla entre L1 y L2. Al variar \\(\rho\\) podemos transitar entre el comportamiento de ridge y lasso.
 
 ## Experimentos con Python
-Utilizamos `ElasticNetCV` para ajustar simultáneamente \(\alpha\) y `l1_ratio`, y luego inspeccionamos los coeficientes y el rendimiento.
+Utilizamos `ElasticNetCV` para ajustar simultáneamente \\(\alpha\\) y `l1_ratio`, y luego inspeccionamos los coeficientes y el rendimiento.
 
 ```python
 from __future__ import annotations

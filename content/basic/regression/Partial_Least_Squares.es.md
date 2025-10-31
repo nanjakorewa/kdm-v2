@@ -16,13 +16,13 @@ title_suffix: "Factores latentes alineados con la variable objetivo"
 La regresión por componentes principales solo considera la varianza de las características, por lo que puede descartar direcciones relevantes para el objetivo. PLS construye factores latentes considerando simultáneamente los predictores y la respuesta, conservando la información más útil para predecir. Así es posible trabajar con una representación compacta sin sacrificar precisión.
 
 ## Formulación matemática
-Dado un matriz de predictores \(\mathbf{X}\) y un vector objetivo \(\mathbf{y}\), PLS alterna las actualizaciones de las puntuaciones latentes \(\mathbf{t} = \mathbf{X} \mathbf{w}\) y \(\mathbf{u} = \mathbf{y} c\) de forma que la covarianza \(\mathbf{t}^\top \mathbf{u}\) sea máxima. Repetir el proceso produce un conjunto de factores latentes sobre el que se ajusta un modelo lineal
+Dado un matriz de predictores \\(\mathbf{X}\\) y un vector objetivo \\(\mathbf{y}\\), PLS alterna las actualizaciones de las puntuaciones latentes \\(\mathbf{t} = \mathbf{X} \mathbf{w}\\) y \\(\mathbf{u} = \mathbf{y} c\\) de forma que la covarianza \\(\mathbf{t}^\top \mathbf{u}\\) sea máxima. Repetir el proceso produce un conjunto de factores latentes sobre el que se ajusta un modelo lineal
 
 $$
 \hat{y} = \mathbf{t} \boldsymbol{b} + b_0.
 $$
 
-El número de factores \(k\) suele elegirse mediante validación cruzada.
+El número de factores \\(k\\) suele elegirse mediante validación cruzada.
 
 ## Experimentos con Python
 Comparamos el desempeño de PLS para distintos números de factores latentes con el conjunto de datos de acondicionamiento físico de Linnerud.

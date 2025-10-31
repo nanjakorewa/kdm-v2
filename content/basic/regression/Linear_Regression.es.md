@@ -13,7 +13,7 @@ title_suffix: "Comprender desde los primeros principios"
 {{% /summary %}}
 
 ## Intuición
-Cuando la nube de puntos \((x_i, y_i)\) forma aproximadamente una línea recta, prolongarla es una forma natural de interpolar nuevas entradas. Mínimos cuadrados ordinarios dibuja una recta que pasa lo más cerca posible de todos los puntos haciendo que la desviación total entre las observaciones y la recta sea mínima.
+Cuando la nube de puntos \\((x_i, y_i)\\) forma aproximadamente una línea recta, prolongarla es una forma natural de interpolar nuevas entradas. Mínimos cuadrados ordinarios dibuja una recta que pasa lo más cerca posible de todos los puntos haciendo que la desviación total entre las observaciones y la recta sea mínima.
 
 ## Formulación matemática
 Un modelo lineal univariado se expresa como
@@ -22,7 +22,7 @@ $$
 y = w x + b.
 $$
 
-Al minimizar la suma de cuadrados de los residuos \(\epsilon_i = y_i - (w x_i + b)\)
+Al minimizar la suma de cuadrados de los residuos \\(\epsilon_i = y_i - (w x_i + b)\\)
 
 $$
 L(w, b) = \sum_{i=1}^{n} \big(y_i - (w x_i + b)\big)^2,
@@ -34,7 +34,7 @@ $$
 w = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}, \qquad b = \bar{y} - w \bar{x},
 $$
 
-donde \(\bar{x}\) y \(\bar{y}\) son las medias de \(x\) y \(y\). La misma idea se extiende a la regresión multivariante usando vectores y matrices.
+donde \\(\bar{x}\\) y \\(\bar{y}\\) son las medias de \\(x\\) y \\(y\\). La misma idea se extiende a la regresión multivariante usando vectores y matrices.
 
 ## Experimentos con Python
 El siguiente ejemplo ajusta una recta con `scikit-learn` y dibuja el resultado. El código es el mismo que en la versión japonesa para mantener las figuras sincronizadas.
@@ -82,8 +82,8 @@ plot_simple_linear_regression()
 ![linear-regression block 1](/images/basic/regression/linear-regression_block01_es.png)
 
 ### Interpretación de los resultados
-- **Pendiente \(w\)**: muestra cuánto aumenta o disminuye la salida cuando la entrada crece una unidad; la estimación debería acercarse al valor real.
-- **Ordenada \(b\)**: representa el valor esperado cuando la entrada es 0 y ajusta la posición vertical de la recta.
+- **Pendiente \\(w\\)**: muestra cuánto aumenta o disminuye la salida cuando la entrada crece una unidad; la estimación debería acercarse al valor real.
+- **Ordenada \\(b\\)**: representa el valor esperado cuando la entrada es 0 y ajusta la posición vertical de la recta.
 - Estandarizar las características con `StandardScaler` estabiliza el aprendizaje cuando las escalas de entrada difieren.
 
 ## Referencias

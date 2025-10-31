@@ -19,7 +19,7 @@ pre: "<b>2.2 </b>"
 Linear classifiers place a hyperplane in feature space and assign labels depending on which side of the plane a sample falls. From the simple perceptron to probabilistic logistic regression and margin-based SVM, the key difference lies in how the hyperplane is chosen.
 
 ## Mathematical formulation
-A generic linear classifier predicts \(\hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b)\). Training methods differ in how they determine \(\mathbf{w}\); probabilistic variants pass the linear score through a sigmoid or softmax. Kernel tricks replace the dot product with a kernel function to obtain non-linear boundaries while keeping the same recipe.
+A generic linear classifier predicts \\(\hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b)\\). Training methods differ in how they determine \\(\mathbf{w}\\); probabilistic variants pass the linear score through a sigmoid or softmax. Kernel tricks replace the dot product with a kernel function to obtain non-linear boundaries while keeping the same recipe.
 
 ## Experiments with Python
 This chapter walks through hands-on examples in Python and scikit-learn:

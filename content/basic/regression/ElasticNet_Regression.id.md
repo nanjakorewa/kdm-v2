@@ -8,7 +8,7 @@ title_suffix: "Menggabungkan kekuatan L1 dan L2"
 {{% summary %}}
 - Elastic Net menggabungkan penalti L1 (lasso) dan L2 (ridge) untuk menyeimbangkan sparsitas dan stabilitas.
 - Kelompok fitur yang sangat berkorelasi dapat dipertahankan sekaligus menyesuaikan pentingnya secara kolektif.
-- Menyetel \(\alpha\) dan `l1_ratio` dengan cross-validation memudahkan pencarian keseimbangan bias–varian.
+- Menyetel \\(\alpha\\) dan `l1_ratio` dengan cross-validation memudahkan pencarian keseimbangan bias–varian.
 - Menstandarkan fitur dan memberi iterasi yang cukup meningkatkan stabilitas numerik optimisasi.
 {{% /summary %}}
 
@@ -22,10 +22,10 @@ $$
 \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left( y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b) \right)^2 + \alpha \left( \rho \lVert \boldsymbol\beta \rVert_1 + (1 - \rho) \lVert \boldsymbol\beta \rVert_2^2 \right),
 $$
 
-dengan \(\alpha > 0\) sebagai kekuatan regularisasi dan \(\rho \in [0,1]\) (`l1_ratio`) mengontrol perbandingan L1/L2. Mengubah \(\rho\) dari 0 ke 1 memungkinkan kita menelusuri spektrum antara ridge dan lasso.
+dengan \\(\alpha > 0\\) sebagai kekuatan regularisasi dan \\(\rho \in [0,1]\\) (`l1_ratio`) mengontrol perbandingan L1/L2. Mengubah \\(\rho\\) dari 0 ke 1 memungkinkan kita menelusuri spektrum antara ridge dan lasso.
 
 ## Eksperimen dengan Python
-Berikut penggunaan `ElasticNetCV` untuk memilih \(\alpha\) dan `l1_ratio` secara bersamaan, kemudian meninjau koefisien serta kinerjanya.
+Berikut penggunaan `ElasticNetCV` untuk memilih \\(\alpha\\) dan `l1_ratio` secara bersamaan, kemudian meninjau koefisien serta kinerjanya.
 
 ```python
 from __future__ import annotations

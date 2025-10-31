@@ -7,7 +7,7 @@ title_suffix: "Aprender direcciones que separan clases"
 
 {{% summary %}}
 - LDA busca direcciones que maximizan la razón entre la varianza entre clases y la varianza intraclase, por lo que sirve tanto para clasificar como para reducir la dimensionalidad.
-- La frontera de decisión es de la forma \(\mathbf{w}^\top \mathbf{x} + b = 0\); en 2D es una recta y en 3D un plano, lo que facilita su interpretación geométrica.
+- La frontera de decisión es de la forma \\(\mathbf{w}^\top \mathbf{x} + b = 0\\); en 2D es una recta y en 3D un plano, lo que facilita su interpretación geométrica.
 - Si cada clase sigue una distribución gaussiana con igual matriz de covarianza, LDA se aproxima al clasificador bayesiano óptimo.
 - Con `LinearDiscriminantAnalysis` de scikit-learn es sencillo visualizar la frontera de decisión y examinar las características proyectadas.
 {{% /summary %}}
@@ -16,13 +16,13 @@ title_suffix: "Aprender direcciones que separan clases"
 LDA busca direcciones que mantengan cerca a los puntos de la misma clase y separen a los de clases distintas. Al proyectar los datos sobre esa dirección, las clases se vuelven más distinguibles, por lo que LDA puede utilizarse directamente para clasificar o como paso previo de reducción de dimensionalidad.
 
 ## Formulación matemática
-Para dos clases, la dirección de proyección \(\mathbf{w}\) maximiza
+Para dos clases, la dirección de proyección \\(\mathbf{w}\\) maximiza
 
 $$
 J(\mathbf{w}) = \frac{\mathbf{w}^\top \mathbf{S}_B \mathbf{w}}{\mathbf{w}^\top \mathbf{S}_W \mathbf{w}},
 $$
 
-donde \(\mathbf{S}_B\) es la matriz de dispersión entre clases y \(\mathbf{S}_W\) la matriz de dispersión intraclase. En el caso multiclase se obtienen hasta \(K-1\) direcciones, útiles para reducir la dimensionalidad.
+donde \\(\mathbf{S}_B\\) es la matriz de dispersión entre clases y \\(\mathbf{S}_W\\) la matriz de dispersión intraclase. En el caso multiclase se obtienen hasta \\(K-1\\) direcciones, útiles para reducir la dimensionalidad.
 
 ## Experimentos con Python
 El código siguiente aplica LDA a un conjunto sintético de dos clases, dibuja la frontera de decisión y muestra la proyección a una dimensión. Con `transform` podemos obtener directamente los datos proyectados.

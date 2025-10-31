@@ -16,13 +16,13 @@ title_suffix: "Mitigar la multicolinealidad mediante reducción de dimensionalid
 Cuando los predictores están fuertemente correlacionados, los coeficientes de mínimos cuadrados pueden variar en exceso. PCR realiza primero PCA para combinar las direcciones correlacionadas y luego realiza la regresión sobre los componentes principales ordenados por la varianza explicada. Al centrarse en la variación dominante, los coeficientes resultantes son más estables.
 
 ## Formulación matemática
-Aplicamos PCA a la matriz de diseño estandarizada \(\mathbf{X}\) y conservamos los \(k\) autovectores principales. Con las puntuaciones \(\mathbf{Z} = \mathbf{X} \mathbf{W}_k\), el modelo de regresión
+Aplicamos PCA a la matriz de diseño estandarizada \\(\mathbf{X}\\) y conservamos los \\(k\\) autovectores principales. Con las puntuaciones \\(\mathbf{Z} = \mathbf{X} \mathbf{W}_k\\), el modelo de regresión
 
 $$
 y = \boldsymbol{\gamma}^\top \mathbf{Z} + b
 $$
 
-se ajusta a los datos. Los coeficientes en el espacio original se recuperan mediante \(\boldsymbol{\beta} = \mathbf{W}_k \boldsymbol{\gamma}\). El número de componentes \(k\) se elige usando la varianza explicada acumulada o validación cruzada.
+se ajusta a los datos. Los coeficientes en el espacio original se recuperan mediante \\(\boldsymbol{\beta} = \mathbf{W}_k \boldsymbol{\gamma}\\). El número de componentes \\(k\\) se elige usando la varianza explicada acumulada o validación cruzada.
 
 ## Experimentos con Python
 Evaluamos la regresión PCR en el conjunto de datos de diabetes variando el número de componentes y midiendo el desempeño con validación cruzada.

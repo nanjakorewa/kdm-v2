@@ -16,7 +16,7 @@ title_suffix: "Mengukur ketidakpastian prediksi"
 Mínim kuadrat biasa mencari satu set koefisien “terbaik”, tetapi pada data nyata estimasi tersebut tetap mengandung ketidakpastian. Regresi linear Bayesian memodelkan ketidakpastian itu dengan memperlakukan koefisien secara probabilistik dan menggabungkan pengetahuan awal dengan data yang diamati. Bahkan dengan sedikit observasi kita memperoleh prediksi yang diharapkan beserta sebarannya.
 
 ## Formulasi matematis
-Misalkan vektor koefisien \(\boldsymbol\beta\) memiliki prior Gaussian multivariat dengan mean 0 dan varians \(\tau^{-1}\), serta noise observasi \(\epsilon_i \sim \mathcal{N}(0, \alpha^{-1})\). Distribusi posteriornya adalah
+Misalkan vektor koefisien \\(\boldsymbol\beta\\) memiliki prior Gaussian multivariat dengan mean 0 dan varians \\(\tau^{-1}\\), serta noise observasi \\(\epsilon_i \sim \mathcal{N}(0, \alpha^{-1})\\). Distribusi posteriornya adalah
 
 $$
 p(\boldsymbol\beta \mid \mathbf{X}, \mathbf{y}) = \mathcal{N}(\boldsymbol\beta \mid \boldsymbol\mu, \mathbf{\Sigma})
@@ -29,7 +29,7 @@ $$
 \boldsymbol\mu = \alpha \mathbf{\Sigma} \mathbf{X}^\top \mathbf{y}.
 $$
 
-Distribusi prediktif untuk masukan baru \(\mathbf{x}_*\) juga Gaussian, \(\mathcal{N}(\hat{y}_*, \sigma_*^2)\). `BayesianRidge` mengestimasi \(\alpha\) dan \(\tau\) langsung dari data sehingga tidak perlu disetel manual.
+Distribusi prediktif untuk masukan baru \\(\mathbf{x}_*\\) juga Gaussian, \\(\mathcal{N}(\hat{y}_*, \sigma_*^2)\\). `BayesianRidge` mengestimasi \\(\alpha\\) dan \\(\tau\\) langsung dari data sehingga tidak perlu disetel manual.
 
 ## Eksperimen dengan Python
 Contoh berikut membandingkan mínimos kuadrat biasa dan regresi linear Bayesian pada data yang mengandung outlier.

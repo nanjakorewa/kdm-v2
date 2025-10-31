@@ -7,13 +7,13 @@ title_suffix: "Menghitung probabilitas dengan sigmoid"
 
 {{% summary %}}
 - Regresi logistik memasukkan kombinasi linear fitur ke fungsi sigmoid untuk memperkirakan probabilitas bahwa label bernilai 1.
-- Keluaran berada di rentang \([0, 1]\), sehingga ambang keputusan dapat diatur fleksibel dan koefisien dapat dibaca sebagai kontribusi terhadap log-odds.
+- Keluaran berada di rentang \\([0, 1]\\), sehingga ambang keputusan dapat diatur fleksibel dan koefisien dapat dibaca sebagai kontribusi terhadap log-odds.
 - Pelatihan meminimalkan loss entropi silang (sama dengan memaksimalkan log-likelihood); regularisasi L1/L2 membantu menekan overfitting.
 - Dengan `LogisticRegression` dari scikit-learn, pra-pemrosesan, pelatihan, hingga visualisasi garis keputusan dapat diselesaikan dalam beberapa baris kode.
 {{% /summary %}}
 
 ## Intuisi
-Regresi linear menghasilkan bilangan real, namun pada klasifikasi kita sering membutuhkan probabilitas “seberapa besar kemungkinan kelas 1?”. Regresi logistik menyelesaikannya dengan memasukkan skor linear \(z = \mathbf{w}^\top \mathbf{x} + b\) ke fungsi sigmoid \(\sigma(z) = 1 / (1 + e^{-z})\), sehingga keluar nilai yang dapat diinterpretasikan sebagai probabilitas. Dengan probabilitas tersebut, aturan sederhana seperti “prediksi 1 jika \(P(y=1 \mid \mathbf{x}) > 0.5\)” sudah cukup untuk mengklasifikasikan.
+Regresi linear menghasilkan bilangan real, namun pada klasifikasi kita sering membutuhkan probabilitas “seberapa besar kemungkinan kelas 1?”. Regresi logistik menyelesaikannya dengan memasukkan skor linear \\(z = \mathbf{w}^\top \mathbf{x} + b\\) ke fungsi sigmoid \\(\sigma(z) = 1 / (1 + e^{-z})\\), sehingga keluar nilai yang dapat diinterpretasikan sebagai probabilitas. Dengan probabilitas tersebut, aturan sederhana seperti “prediksi 1 jika \\(P(y=1 \mid \mathbf{x}) > 0.5\\)” sudah cukup untuk mengklasifikasikan.
 
 ## Formulasi matematis
 Probabilitas kelas 1 diberikan oleh

@@ -16,7 +16,7 @@ title_suffix: "Estimar los contornos de la distribución condicional"
 Mientras que mínimos cuadrados captura el comportamiento medio, la regresión por cuantiles responde a la pregunta “¿con qué frecuencia la respuesta cae por debajo de este valor?”. Resulta ideal para planificar escenarios pesimistas, centrales y optimistas en la demanda, o para estimar el Value at Risk en finanzas, donde la media no basta para decidir.
 
 ## Formulación matemática
-Con residuo \(r = y - \hat{y}\) y nivel de cuantil \(\tau \in (0, 1)\), la pérdida pinball se define como
+Con residuo \\(r = y - \hat{y}\\) y nivel de cuantil \\(\tau \in (0, 1)\\), la pérdida pinball se define como
 
 $$
 L_\tau(r) =
@@ -26,7 +26,7 @@ L_\tau(r) =
 \end{cases}
 $$
 
-Minimizar esta pérdida produce el predictor lineal del cuantil \(\tau\). Para \(\tau = 0.5\) se recupera la mediana, equivalente a la regresión por desviaciones absolutas.
+Minimizar esta pérdida produce el predictor lineal del cuantil \\(\tau\\). Para \\(\tau = 0.5\\) se recupera la mediana, equivalente a la regresión por desviaciones absolutas.
 
 ## Experimentos con Python
 Usamos `QuantileRegressor` para estimar los cuantiles 0.1, 0.5 y 0.9, y los comparamos con mínimos cuadrados ordinarios.

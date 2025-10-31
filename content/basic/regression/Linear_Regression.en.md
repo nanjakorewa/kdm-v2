@@ -13,7 +13,7 @@ title_suffix: "Understand from first principles"
 {{% /summary %}}
 
 ## Intuition
-When the scatter plot of observations \((x_i, y_i)\) roughly forms a straight line, extending that line is a natural way to interpolate unknown inputs. Ordinary least squares draws a single straight line that passes as close as possible to all points, by making the overall deviation between the observations and the line as small as it can be.
+When the scatter plot of observations \\((x_i, y_i)\\) roughly forms a straight line, extending that line is a natural way to interpolate unknown inputs. Ordinary least squares draws a single straight line that passes as close as possible to all points, by making the overall deviation between the observations and the line as small as it can be.
 
 ## Mathematical formulation
 A univariate linear model is written as
@@ -22,7 +22,7 @@ $$
 y = w x + b.
 $$
 
-By minimizing the sum of squared residuals \(\epsilon_i = y_i - (w x_i + b)\)
+By minimizing the sum of squared residuals \\(\epsilon_i = y_i - (w x_i + b)\\)
 
 $$
 L(w, b) = \sum_{i=1}^{n} \big(y_i - (w x_i + b)\big)^2,
@@ -34,7 +34,7 @@ $$
 w = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}, \qquad b = \bar{y} - w \bar{x},
 $$
 
-where \(\bar{x}\) and \(\bar{y}\) are the means of \(x\) and \(y\). The same idea extends to multivariate regression with vectors and matrices.
+where \\(\bar{x}\\) and \\(\bar{y}\\) are the means of \\(x\\) and \\(y\\). The same idea extends to multivariate regression with vectors and matrices.
 
 ## Experiments with Python
 The following code fits a simple regression line with `scikit-learn` and plots the result. The code is identical to the Japanese page so figures will match across languages.
@@ -82,8 +82,8 @@ plot_simple_linear_regression()
 ![linear-regression block 1](/images/basic/regression/linear-regression_block01_en.png)
 
 ### Reading the results
-- **Slope \(w\)**: indicates how much the output increases or decreases when the input grows by one unit. The estimate should be close to the true slope.
-- **Intercept \(b\)**: shows the expected output when the input is 0, adjusting the vertical position of the line.
+- **Slope \\(w\\)**: indicates how much the output increases or decreases when the input grows by one unit. The estimate should be close to the true slope.
+- **Intercept \\(b\\)**: shows the expected output when the input is 0, adjusting the vertical position of the line.
 - Standardizing the features with `StandardScaler` stabilizes learning when inputs vary in scale.
 
 ## References

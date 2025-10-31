@@ -19,7 +19,7 @@ pre: "<b>2.2 </b>"
 Los clasificadores lineales colocan un hiperplano en el espacio de características y asignan etiquetas según el lado en el que caiga la muestra. Desde el perceptrón sencillo, pasando por la regresión logística probabilística, hasta las SVM basadas en márgenes, la diferencia clave reside en cómo se elige el hiperplano.
 
 ## Formulación matemática
-Un clasificador lineal genérico predice \(\hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b)\). Cada método entrena \(\mathbf{w}\) de forma distinta; las variantes probabilísticas aplican una sigmoide o un softmax al puntaje lineal. Con el truco del kernel basta con reemplazar el producto interno por un kernel para extender la idea a fronteras no lineales.
+Un clasificador lineal genérico predice \\(\hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b)\\). Cada método entrena \\(\mathbf{w}\\) de forma distinta; las variantes probabilísticas aplican una sigmoide o un softmax al puntaje lineal. Con el truco del kernel basta con reemplazar el producto interno por un kernel para extender la idea a fronteras no lineales.
 
 ## Experimentos con Python
 En este capítulo recorreremos ejemplos prácticos con Python y scikit-learn:

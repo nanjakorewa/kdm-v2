@@ -16,13 +16,13 @@ title_suffix: "Menangani observasi dengan varians berbeda"
 Kuadrat terkecil biasa mengasumsikan semua observasi sama reliabel, padahal sensor di dunia nyata sering memiliki ketelitian berbeda. WLS “mendengarkan” lebih banyak ke titik data yang dipercaya dengan menekankan kontribusinya saat fitting, sehingga regresi linear dapat menangani data heteroskedastik.
 
 ## Formulasi matematis
-Dengan bobot positif \(w_i\) kita meminimalkan
+Dengan bobot positif \\(w_i\\) kita meminimalkan
 
 $$
 L(\boldsymbol\beta, b) = \sum_{i=1}^{n} w_i \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2.
 $$
 
-Pilihan idealnya adalah \(w_i \propto 1/\sigma_i^2\) (kebalikan varians) sehingga observasi yang presisi memiliki pengaruh lebih besar.
+Pilihan idealnya adalah \\(w_i \propto 1/\sigma_i^2\\) (kebalikan varians) sehingga observasi yang presisi memiliki pengaruh lebih besar.
 
 ## Eksperimen dengan Python
 Kami membandingkan OLS dan WLS pada data dengan tingkat noise berbeda di setiap wilayah.

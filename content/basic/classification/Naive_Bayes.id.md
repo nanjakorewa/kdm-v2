@@ -16,7 +16,7 @@ title_suffix: "Inferensi cepat dengan asumsi independensi"
 Teorema Bayes menyatakan bahwa “prior × likelihood ∝ posterior”. Jika fitur independen secara kondisional, likelihood dapat dipisah menjadi hasil kali probabilitas per fitur. Naive Bayes memanfaatkan pendekatan ini sehingga tetap stabil meski data latih sedikit.
 
 ## Formulasi matematis
-Untuk kelas \(y\) dan vektor fitur \(\mathbf{x} = (x_1, \ldots, x_d)\),
+Untuk kelas \\(y\\) dan vektor fitur \\(\mathbf{x} = (x_1, \ldots, x_d)\\),
 
 $$
 P(y \mid \mathbf{x}) \propto P(y) \prod_{j=1}^{d} P(x_j \mid y).

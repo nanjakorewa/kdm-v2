@@ -32,7 +32,7 @@ y_i - (\mathbf{w}^\top \phi(\mathbf{x}_i) + b) &\le \epsilon + \xi_i, \\
 \end{aligned}
 $$
 
-donde \(\phi\) es la transformación inducida por el kernel elegido. Resolver el dual revela los vectores de soporte y sus coeficientes.
+donde \\(\phi\\) es la transformación inducida por el kernel elegido. Resolver el dual revela los vectores de soporte y sus coeficientes.
 
 ## Experimentos con Python
 Ejemplo de SVR combinado con `StandardScaler` dentro de un pipeline.

@@ -19,7 +19,7 @@ pre: "<b>2.2 </b>"
 Klasifikator linear menempatkan hiperbidang di ruang fitur dan memberi label berdasarkan sisi mana sampel berada. Mulai dari perceptron sederhana, regresi logistik probabilistik, hingga SVM berbasis margin, perbedaannya terletak pada cara memilih hiperbidang.
 
 ## Formulasi matematis
-Klasifikator linear umumnya memprediksi \(\hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b)\). Setiap metode menentukan \(\mathbf{w}\) dengan pendekatan yang berbeda; versi probabilistik memakai sigmoid atau softmax. Kernel trick cukup mengganti hasil kali dalam dengan kernel untuk memperoleh batas nonlinier.
+Klasifikator linear umumnya memprediksi \\(\hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b)\\). Setiap metode menentukan \\(\mathbf{w}\\) dengan pendekatan yang berbeda; versi probabilistik memakai sigmoid atau softmax. Kernel trick cukup mengganti hasil kali dalam dengan kernel untuk memperoleh batas nonlinier.
 
 ## Experimen dengan Python
 Bab ini menyajikan contoh praktis dengan Python dan scikit-learn:

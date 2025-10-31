@@ -32,7 +32,7 @@ y_i - (\mathbf{w}^\top \phi(\mathbf{x}_i) + b) &\le \epsilon + \xi_i, \\
 \end{aligned}
 $$
 
-where \(\phi\) maps inputs into a feature space via the chosen kernel. Solving the dual yields the support vectors and coefficients.
+where \\(\phi\\) maps inputs into a feature space via the chosen kernel. Solving the dual yields the support vectors and coefficients.
 
 ## Experiments with Python
 This example demonstrates SVR combined with `StandardScaler` in a pipeline.

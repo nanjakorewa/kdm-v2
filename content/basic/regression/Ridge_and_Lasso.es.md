@@ -8,7 +8,7 @@ title_suffix: "Mejorar la generalización con regularización"
 {{% summary %}}
 - Ridge contrae suavemente los coeficientes mediante una penalización L2 y se mantiene estable incluso con multicolinealidad.
 - Lasso aplica una penalización L1 que puede llevar algunos coeficientes exactamente a cero, lo que incorpora selección de variables e interpretabilidad.
-- Ajustar la fuerza de regularización \(\alpha\) permite equilibrar el ajuste del conjunto de entrenamiento con la capacidad de generalizar.
+- Ajustar la fuerza de regularización \\(\alpha\\) permite equilibrar el ajuste del conjunto de entrenamiento con la capacidad de generalizar.
 - Combinar estandarización y validación cruzada ayuda a elegir hiperparámetros que evitan el sobreajuste sin perder rendimiento.
 {{% /summary %}}
 
@@ -27,7 +27,7 @@ Ambos métodos minimizan el error cuadrático habitual más un término de regul
   \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2 + \alpha \lVert \boldsymbol\beta \rVert_1
   $$
 
-Cuanto mayor sea \(\alpha\), más fuerte será la contracción. En el caso de Lasso, cuando \(\alpha\) supera cierto umbral algunos coeficientes se vuelven exactamente cero, generando modelos dispersos.
+Cuanto mayor sea \\(\alpha\\), más fuerte será la contracción. En el caso de Lasso, cuando \\(\alpha\\) supera cierto umbral algunos coeficientes se vuelven exactamente cero, generando modelos dispersos.
 
 ## Experimentos con Python
 El siguiente ejemplo aplica ridge, lasso y regresión lineal ordinaria al mismo problema sintético y compara la magnitud de los coeficientes y el desempeño de generalización.
@@ -93,7 +93,7 @@ for name, model in models.items():
 ### Interpretación de los resultados
 - Ridge reduce ligeramente todos los coeficientes y se mantiene estable incluso con multicolinealidad.
 - Lasso lleva algunos coeficientes a cero, conservando únicamente las características más informativas.
-- Seleccione \(\alpha\) mediante validación cruzada para equilibrar sesgo y varianza, y estandarice las características para compararlas en la misma escala.
+- Seleccione \\(\alpha\\) mediante validación cruzada para equilibrar sesgo y varianza, y estandarice las características para compararlas en la misma escala.
 
 ## Referencias
 {{% references %}}

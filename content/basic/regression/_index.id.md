@@ -19,7 +19,7 @@ pre: "<b>2.1 </b>"
 Regresi linear menjawab pertanyaan “berapa banyak keluaran berubah ketika masukan bertambah satu satuan?” Koefisiennya mudah ditafsirkan dan perhitungannya cepat, sehingga sering menjadi model pertama yang dicoba pada proyek pembelajaran mesin.
 
 ## Formulasi matematis
-Metode kuadrat terkecil ordinari menghitung koefisien dengan meminimalkan jumlah kuadrat kesalahan antara observasi dan prediksi. Untuk matriks \(\mathbf{X}\) dan vektor \(\mathbf{y}\),
+Metode kuadrat terkecil ordinari menghitung koefisien dengan meminimalkan jumlah kuadrat kesalahan antara observasi dan prediksi. Untuk matriks \\(\mathbf{X}\\) dan vektor \\(\mathbf{y}\\),
 
 $$
 \hat{\boldsymbol\beta} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{y}.

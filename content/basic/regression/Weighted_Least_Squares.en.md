@@ -16,13 +16,13 @@ title_suffix: "Handle observations with unequal variance"
 Ordinary least squares assumes every observation is equally reliable, yet real-world sensors often vary in precision. WLS “listens” more to the data points you trust by emphasizing them during fitting, allowing the familiar linear regression framework to handle heteroscedastic data.
 
 ## Mathematical formulation
-With positive weights \(w_i\), minimize
+With positive weights \\(w_i\\), minimize
 
 $$
 L(\boldsymbol\beta, b) = \sum_{i=1}^{n} w_i \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2.
 $$
 
-The optimal choice \(w_i \propto 1/\sigma_i^2\) (inverse variance) gives more influence to precise observations.
+The optimal choice \\(w_i \propto 1/\sigma_i^2\\) (inverse variance) gives more influence to precise observations.
 
 ## Experiments with Python
 We compare OLS and WLS on data whose noise level differs across regions.

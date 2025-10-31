@@ -16,13 +16,13 @@ title_suffix: "Learn latent factors aligned with the target"
 Principal component regression relies only on feature variance, so directions that matter for the target might be discarded. PLS builds latent factors while simultaneously considering predictors and response, retaining the information most useful for prediction. As a result you can work with a compact representation without sacrificing accuracy.
 
 ## Mathematical formulation
-Given a predictor matrix \(\mathbf{X}\) and response vector \(\mathbf{y}\), PLS alternates updates of latent scores \(\mathbf{t} = \mathbf{X} \mathbf{w}\) and \(\mathbf{u} = \mathbf{y} c\) so that their covariance \(\mathbf{t}^\top \mathbf{u}\) is maximized. Repeating this procedure yields a set of latent factors on which a linear regression model
+Given a predictor matrix \\(\mathbf{X}\\) and response vector \\(\mathbf{y}\\), PLS alternates updates of latent scores \\(\mathbf{t} = \mathbf{X} \mathbf{w}\\) and \\(\mathbf{u} = \mathbf{y} c\\) so that their covariance \\(\mathbf{t}^\top \mathbf{u}\\) is maximized. Repeating this procedure yields a set of latent factors on which a linear regression model
 
 $$
 \hat{y} = \mathbf{t} \boldsymbol{b} + b_0
 $$
 
-is fitted. The number of factors \(k\) is typically chosen via cross-validation.
+is fitted. The number of factors \\(k\\) is typically chosen via cross-validation.
 
 ## Experiments with Python
 We compare PLS performance for different numbers of latent factors on the Linnerud fitness dataset.

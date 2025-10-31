@@ -8,7 +8,7 @@ title_suffix: "L1とL2正則化の長所を融合する"
 {{% summary %}}
 - Elastic Net は L1 と L2 の正則化を組み合わせ、疎性と安定性の両立を図る回帰手法である。
 - 強く相関した特徴量をグループとして残しながら重要度を調整できるため、解釈しやすいモデルを得やすい。
-- ハイパーパラメータ \(\alpha\) と `l1_ratio` を交差検証で調整すると、汎化性能とバイアスのバランスを取りやすい。
+- ハイパーパラメータ \\(\alpha\\) と `l1_ratio` を交差検証で調整すると、汎化性能とバイアスのバランスを取りやすい。
 - 標準化や十分な反復回数の確保によって、数値最適化の安定性を高められる。
 {{% /summary %}}
 
@@ -22,10 +22,10 @@ $$
 \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left( y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b) \right)^2 + \alpha \left( \rho \lVert \boldsymbol\beta \rVert_1 + (1 - \rho) \lVert \boldsymbol\beta \rVert_2^2 \right)
 $$
 
-で、\(\alpha > 0\) が正則化の強さ、\(\rho \in [0,1]\) (`l1_ratio`) が L1 と L2 の混合比率です。リッジとラッソの中間を連続的に探索できる点が特徴です。
+で、\\(\alpha > 0\\) が正則化の強さ、\\(\rho \in [0,1]\\) (`l1_ratio`) が L1 と L2 の混合比率です。リッジとラッソの中間を連続的に探索できる点が特徴です。
 
 ## Pythonを用いた実験や説明
-`ElasticNetCV` を用いて \(\alpha\) と `l1_ratio` を同時にチューニングし、係数と性能を確認します。
+`ElasticNetCV` を用いて \\(\alpha\\) と `l1_ratio` を同時にチューニングし、係数と性能を確認します。
 
 ```python
 from __future__ import annotations

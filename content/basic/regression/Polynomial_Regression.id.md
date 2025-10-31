@@ -13,10 +13,10 @@ title_suffix: "Menangkap pola nonlinier dengan model linear"
 {{% /summary %}}
 
 ## Intuisi
-Garis lurus tidak mampu menggambarkan kurva halus atau pola berbukit. Dengan menambahkan istilah polinomial—\(x, x^2, x^3, \dots\) untuk kasus univariat atau pangkat dan interaksi pada kasus multivariat—kita dapat mengekspresikan perilaku nonlinier sambil tetap berada dalam kerangka model linear.
+Garis lurus tidak mampu menggambarkan kurva halus atau pola berbukit. Dengan menambahkan istilah polinomial—\\(x, x^2, x^3, \dots\\) untuk kasus univariat atau pangkat dan interaksi pada kasus multivariat—kita dapat mengekspresikan perilaku nonlinier sambil tetap berada dalam kerangka model linear.
 
 ## Formulasi matematis
-Untuk \(\mathbf{x} = (x_1, \dots, x_m)\) kita bentuk vektor fitur polinomial \(\phi(\mathbf{x})\) hingga derajat \(d\). Contohnya, jika \(m = 2\) dan \(d = 2\),
+Untuk \\(\mathbf{x} = (x_1, \dots, x_m)\\) kita bentuk vektor fitur polinomial \\(\phi(\mathbf{x})\\) hingga derajat \\(d\\). Contohnya, jika \\(m = 2\\) dan \\(d = 2\\),
 
 $$
 \phi(\mathbf{x}) = (1, x_1, x_2, x_1^2, x_1 x_2, x_2^2),

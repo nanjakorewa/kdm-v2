@@ -7,7 +7,7 @@ title_suffix: "Mencari arah yang memisahkan kelas"
 
 {{% summary %}}
 - LDA mencari arah yang memaksimalkan rasio antara variansi antar kelas dan variansi intra kelas, sehingga berguna untuk klasifikasi sekaligus reduksi dimensi.
-- Batas keputusan berbentuk \(\mathbf{w}^\top \mathbf{x} + b = 0\); di 2D berupa garis dan di 3D berupa bidang, mudah ditafsirkan secara geometris.
+- Batas keputusan berbentuk \\(\mathbf{w}^\top \mathbf{x} + b = 0\\); di 2D berupa garis dan di 3D berupa bidang, mudah ditafsirkan secara geometris.
 - Dengan asumsi tiap kelas berdistribusi Gaussian dan berbagi kovarians yang sama, LDA mendekati klasifikator Bayes optimal.
 - `LinearDiscriminantAnalysis` di scikit-learn memudahkan visualisasi batas keputusan dan inspeksi fitur hasil proyeksi.
 {{% /summary %}}
@@ -16,13 +16,13 @@ title_suffix: "Mencari arah yang memisahkan kelas"
 LDA mencari arah proyeksi yang membuat sampel dalam kelas yang sama tetap rapat, namun mendorong sampel dari kelas berbeda saling menjauh. Setelah diproyeksikan, kelas menjadi lebih mudah dipisahkan, sehingga LDA dapat dipakai langsung untuk klasifikasi atau sebagai langkah reduksi dimensi sebelum model lain.
 
 ## Formulasi matematis
-Untuk dua kelas, arah proyeksi \(\mathbf{w}\) memaksimalkan
+Untuk dua kelas, arah proyeksi \\(\mathbf{w}\\) memaksimalkan
 
 $$
 J(\mathbf{w}) = \frac{\mathbf{w}^\top \mathbf{S}_B \mathbf{w}}{\mathbf{w}^\top \mathbf{S}_W \mathbf{w}},
 $$
 
-di mana \(\mathbf{S}_B\) adalah matriks sebar antar kelas dan \(\mathbf{S}_W\) adalah matriks sebar intra kelas. Pada kasus multikelas diperoleh hingga \(K-1\) arah proyeksi yang berguna untuk reduksi dimensi.
+di mana \\(\mathbf{S}_B\\) adalah matriks sebar antar kelas dan \\(\mathbf{S}_W\\) adalah matriks sebar intra kelas. Pada kasus multikelas diperoleh hingga \\(K-1\\) arah proyeksi yang berguna untuk reduksi dimensi.
 
 ## Eksperimen dengan Python
 Contoh berikut menerapkan LDA pada data sintetis dua kelas, menggambar batas keputusan, dan menampilkan fitur hasil proyeksi 1D. Dengan `transform`, data hasil proyeksi dapat langsung diperoleh.

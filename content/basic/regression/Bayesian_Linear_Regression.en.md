@@ -16,7 +16,7 @@ title_suffix: "Quantify predictive uncertainty"
 Ordinary least squares searches for a single “best” set of coefficients, yet in real data the estimate itself remains uncertain. Bayesian linear regression models that uncertainty by treating the coefficients probabilistically and combining prior knowledge with observed data. Even with limited observations, you obtain both the expected prediction and the spread around it.
 
 ## Mathematical formulation
-Assume a multivariate Gaussian prior with mean 0 and variance \(\tau^{-1}\) for the coefficient vector \(\boldsymbol\beta\), and Gaussian noise \(\epsilon_i \sim \mathcal{N}(0, \alpha^{-1})\) on the observations. The posterior becomes
+Assume a multivariate Gaussian prior with mean 0 and variance \\(\tau^{-1}\\) for the coefficient vector \\(\boldsymbol\beta\\), and Gaussian noise \\(\epsilon_i \sim \mathcal{N}(0, \alpha^{-1})\\) on the observations. The posterior becomes
 
 $$
 p(\boldsymbol\beta \mid \mathbf{X}, \mathbf{y}) = \mathcal{N}(\boldsymbol\beta \mid \boldsymbol\mu, \mathbf{\Sigma})
@@ -29,7 +29,7 @@ $$
 \boldsymbol\mu = \alpha \mathbf{\Sigma} \mathbf{X}^\top \mathbf{y}.
 $$
 
-The predictive distribution for a new input \(\mathbf{x}_*\) is also Gaussian, \(\mathcal{N}(\hat{y}_*, \sigma_*^2)\). `BayesianRidge` estimates \(\alpha\) and \(\tau\) from data, so you can use the model without hand-tuning them.
+The predictive distribution for a new input \\(\mathbf{x}_*\\) is also Gaussian, \\(\mathcal{N}(\hat{y}_*, \sigma_*^2)\\). `BayesianRidge` estimates \\(\alpha\\) and \\(\tau\\) from data, so you can use the model without hand-tuning them.
 
 ## Experiments with Python
 The following example compares ordinary least squares with Bayesian linear regression on data containing outliers.

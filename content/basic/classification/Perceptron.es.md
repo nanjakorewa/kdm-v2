@@ -7,13 +7,13 @@ title_suffix: "El clasificador lineal más simple"
 
 {{% summary %}}
 - El perceptrón converge en un número finito de actualizaciones si los datos son linealmente separables, siendo uno de los algoritmos de clasificación más antiguos.
-- La predicción se basa en el signo de \(\mathbf{w}^\top \mathbf{x} + b\); cuando la señal es incorrecta, ese ejemplo actualiza los pesos.
+- La predicción se basa en el signo de \\(\mathbf{w}^\top \mathbf{x} + b\\); cuando la señal es incorrecta, ese ejemplo actualiza los pesos.
 - La regla de actualización —sumar el ejemplo mal clasificado escalado por la tasa de aprendizaje— ofrece una introducción intuitiva a los métodos basados en gradiente.
 - Si los datos no son separables linealmente, conviene ampliar características o recurrir a kernel tricks.
 {{% /summary %}}
 
 ## Intuición
-El perceptrón mueve la frontera de decisión cada vez que se equivoca, desplazándola hacia el lado correcto. El vector de pesos \(\mathbf{w}\) es normal a la frontera, mientras que el sesgo \(b\) ajusta el desplazamiento. La tasa de aprendizaje \(\eta\) controla la magnitud de cada movimiento.
+El perceptrón mueve la frontera de decisión cada vez que se equivoca, desplazándola hacia el lado correcto. El vector de pesos \\(\mathbf{w}\\) es normal a la frontera, mientras que el sesgo \\(b\\) ajusta el desplazamiento. La tasa de aprendizaje \\(\eta\\) controla la magnitud de cada movimiento.
 
 ## Formulación matemática
 La predicción se calcula como
@@ -22,7 +22,7 @@ $$
 \hat{y} = \operatorname{sign}(\mathbf{w}^\top \mathbf{x} + b).
 $$
 
-Si un ejemplo \((\mathbf{x}_i, y_i)\) queda mal clasificado, se actualiza mediante
+Si un ejemplo \\((\mathbf{x}_i, y_i)\\) queda mal clasificado, se actualiza mediante
 
 $$
 \mathbf{w} \leftarrow \mathbf{w} + \eta\, y_i\, \mathbf{x}_i,\qquad

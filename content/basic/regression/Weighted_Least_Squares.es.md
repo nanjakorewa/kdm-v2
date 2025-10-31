@@ -16,13 +16,13 @@ title_suffix: "Tratar observaciones con varianza desigual"
 Los mínimos cuadrados ordinarios suponen que todas las observaciones son igual de fiables, pero en la práctica la precisión de los sensores varía. WLS “escucha” más a los puntos de datos en los que confiamos al darles un peso mayor durante el ajuste, lo que permite manejar datos heterocedásticos dentro del marco lineal habitual.
 
 ## Formulación matemática
-Con pesos positivos \(w_i\) minimizamos
+Con pesos positivos \\(w_i\\) minimizamos
 
 $$
 L(\boldsymbol\beta, b) = \sum_{i=1}^{n} w_i \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2.
 $$
 
-La elección ideal es \(w_i \propto 1/\sigma_i^2\) (el inverso de la varianza), de modo que las observaciones más precisas aporten más.
+La elección ideal es \\(w_i \propto 1/\sigma_i^2\\) (el inverso de la varianza), de modo que las observaciones más precisas aporten más.
 
 ## Experimentos con Python
 Comparamos OLS y WLS en datos cuyo nivel de ruido cambia por regiones.

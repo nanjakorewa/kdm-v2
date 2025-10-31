@@ -16,7 +16,7 @@ title_suffix: "Inferencia rápida con independencia condicional"
 El teorema de Bayes afirma que “prior × verosimilitud ∝ posterior”. Si las características son condicionalmente independientes, la verosimilitud se factoriza como el producto de probabilidades individuales. Naive Bayes aprovecha esta aproximación y ofrece estimaciones sólidas incluso con pocos datos de entrenamiento.
 
 ## Formulación matemática
-Para una clase \(y\) y un vector de características \(\mathbf{x} = (x_1, \ldots, x_d)\),
+Para una clase \\(y\\) y un vector de características \\(\mathbf{x} = (x_1, \ldots, x_d)\\),
 
 $$
 P(y \mid \mathbf{x}) \propto P(y) \prod_{j=1}^{d} P(x_j \mid y).

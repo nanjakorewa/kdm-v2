@@ -16,7 +16,7 @@ title_suffix: "Memperkirakan kontur distribusi kondisional"
 Jika mínimos kuadrat memusatkan perhatian pada perilaku rata-rata, regresi kuantil bertanya “seberapa sering respons berada di bawah nilai ini?”. Pendekatan ini cocok untuk merencanakan skenario pesimistis, median, dan optimistis pada peramalan permintaan, atau menghitung Value at Risk, ketika rata-rata saja tidak cukup untuk mengambil keputusan.
 
 ## Formulasi matematis
-Dengan residual \(r = y - \hat{y}\) dan level kuantil \(\tau \in (0, 1)\), loss pinball didefinisikan sebagai
+Dengan residual \\(r = y - \hat{y}\\) dan level kuantil \\(\tau \in (0, 1)\\), loss pinball didefinisikan sebagai
 
 $$
 L_\tau(r) =
@@ -26,7 +26,7 @@ L_\tau(r) =
 \end{cases}
 $$
 
-Meminimalkan loss ini menghasilkan prediktor linear untuk kuantil \(\tau\). Ketika \(\tau = 0.5\) kita memperoleh median, identik dengan regresi deviasi absolut.
+Meminimalkan loss ini menghasilkan prediktor linear untuk kuantil \\(\tau\\). Ketika \\(\tau = 0.5\\) kita memperoleh median, identik dengan regresi deviasi absolut.
 
 ## Eksperimen dengan Python
 Kita menggunakan `QuantileRegressor` untuk mengestimasi kuantil 0.1, 0.5, dan 0.9, lalu membandingkannya dengan mínimos kuadrat biasa.

@@ -16,7 +16,7 @@ title_suffix: "Predecir todas las probabilidades a la vez"
 En el caso binario, la sigmoide entrega la probabilidad de la clase 1. Con varias clases necesitamos todas las probabilidades a la vez. La regresión softmax calcula un puntaje lineal por clase, lo exponentia y lo normaliza para obtener una verdadera distribución de probabilidad: puntajes altos se realzan y los bajos se atenúan.
 
 ## Formulación matemática
-Sea \(K\) el número de clases, \(\mathbf{w}_k\) y \(b_k\) los parámetros de la clase \(k\). Entonces
+Sea \\(K\\) el número de clases, \\(\mathbf{w}_k\\) y \\(b_k\\) los parámetros de la clase \\(k\\). Entonces
 
 $$
 P(y = k \mid \mathbf{x}) =

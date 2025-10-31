@@ -16,12 +16,12 @@ title_suffix: "Selección codiciosa de coeficientes dispersos"
 Cuando solo unas pocas características son realmente útiles, OMP añade en cada iteración la que más reduce el error residual. Es un algoritmo básico de aprendizaje de diccionarios y codificación dispersa, y produce vectores de coeficientes compactos que resaltan los predictores más relevantes.
 
 ## Formulación matemática
-Inicializamos el residuo como \(\mathbf{r}^{(0)} = \mathbf{y}\). Para cada iteración \(t\):
+Inicializamos el residuo como \\(\mathbf{r}^{(0)} = \mathbf{y}\\). Para cada iteración \\(t\\):
 
-1. Calculamos el producto interno entre cada característica \(\mathbf{x}_j\) y el residuo \(\mathbf{r}^{(t-1)}\), y elegimos la características \(j\) con mayor valor absoluto.
-2. Añadimos \(j\) al conjunto activo \(\mathcal{A}_t\).
-3. Resolvemos mínimos cuadrados restringidos a \(\mathcal{A}_t\) para obtener \(\hat{\boldsymbol\beta}_{\mathcal{A}_t}\).
-4. Actualizamos el residuo \(\mathbf{r}^{(t)} = \mathbf{y} - \mathbf{X}_{\mathcal{A}_t} \hat{\boldsymbol\beta}_{\mathcal{A}_t}\).
+1. Calculamos el producto interno entre cada característica \\(\mathbf{x}_j\\) y el residuo \\(\mathbf{r}^{(t-1)}\\), y elegimos la características \\(j\\) con mayor valor absoluto.
+2. Añadimos \\(j\\) al conjunto activo \\(\mathcal{A}_t\\).
+3. Resolvemos mínimos cuadrados restringidos a \\(\mathcal{A}_t\\) para obtener \\(\hat{\boldsymbol\beta}_{\mathcal{A}_t}\\).
+4. Actualizamos el residuo \\(\mathbf{r}^{(t)} = \mathbf{y} - \mathbf{X}_{\mathcal{A}_t} \hat{\boldsymbol\beta}_{\mathcal{A}_t}\\).
 
 El proceso se detiene al alcanzar la dispersión deseada o cuando el residuo es suficientemente pequeño.
 

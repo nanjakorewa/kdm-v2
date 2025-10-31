@@ -22,7 +22,7 @@ DBSCAN では「点の周囲に十分な仲間が存在するか」を基準に�
 コアポイントは同じ密度領域に属する点をつなぎ、密度領域ごとにクラスタを形成します。クラスタ形状が不規則でも分離できる一方、密度差が大きい場合にはパラメータ調整が必要です。
 
 ## 具体的な数式
-データ集合 \(\mathcal{X}\) の点 \(x_i\) に対し、`eps` の \(\varepsilon\)-近傍を
+データ集合 \\(\mathcal{X}\\) の点 \\(x_i\\) に対し、`eps` の \\(\varepsilon\\)-近傍を
 
 $$
 \mathcal{N}_\varepsilon(x_i) = \{x_j \in \mathcal{X} \mid \lVert x_i - x_j \rVert \le \varepsilon \}

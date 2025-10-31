@@ -28,13 +28,13 @@ title_suffix: "デンドログラムで構造を読み解く"
 - **Average**: 2 クラスタ間の平均距離。
 - **Single**: 2 クラスタ間の最小距離。
 
-例えば Ward 法では、クラスタ \(C_i, C_j\) を結合したときのコスト増分 \(\Delta\) を
+例えば Ward 法では、クラスタ \\(C_i, C_j\\) を結合したときのコスト増分 \\(\Delta\\) を
 
 $$
 \Delta = \frac{|C_i||C_j|}{|C_i| + |C_j|} \lVert \boldsymbol{\mu}_i - \boldsymbol{\mu}_j \rVert^2
 $$
 
-で評価します（\(\boldsymbol{\mu}_i\) はクラスタの重心）。このような距離関数を用いてクラスタを結合し、デンドログラムを構築します。
+で評価します（\\(\boldsymbol{\mu}_i\\) はクラスタの重心）。このような距離関数を用いてクラスタを結合し、デンドログラムを構築します。
 
 ## Pythonを用いた実験や説明
 `scipy` でデンドログラムを描画し、`AgglomerativeClustering` で実際のラベルを得る例を示します。

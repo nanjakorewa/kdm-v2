@@ -16,7 +16,7 @@ title_suffix: "Fast inference with conditional independence"
 Bayes’ rule states that “prior × likelihood ∝ posterior”. If features are conditionally independent, the likelihood factorises into a product of per-feature probabilities. Naive Bayes leverages this approximation, delivering robust estimates even with small training sets.
 
 ## Mathematical formulation
-For class \(y\) and features \(\mathbf{x} = (x_1, \ldots, x_d)\),
+For class \\(y\\) and features \\(\mathbf{x} = (x_1, \ldots, x_d)\\),
 
 $$
 P(y \mid \mathbf{x}) \propto P(y) \prod_{j=1}^{d} P(x_j \mid y).

@@ -16,12 +16,12 @@ title_suffix: "Pemilihan rakus untuk koefisien jarang"
 Ketika hanya sedikit fitur yang benar-benar penting, OMP menambahkan fitur yang paling banyak mengurangi error residual di tiap iterasi. Metode ini menjadi dasar pembelajaran kamus dan sparse coding, serta menghasilkan vektor koefisien ringkas yang menyoroti prediktor paling relevan.
 
 ## Formulasi matematis
-Inisialisasi residual dengan \(\mathbf{r}^{(0)} = \mathbf{y}\). Untuk setiap iterasi \(t\):
+Inisialisasi residual dengan \\(\mathbf{r}^{(0)} = \mathbf{y}\\). Untuk setiap iterasi \\(t\\):
 
-1. Hitung hasil kali dalam antara setiap fitur \(\mathbf{x}_j\) dan residual \(\mathbf{r}^{(t-1)}\), kemudian pilih fitur \(j\) dengan nilai absolut terbesar.
-2. Tambahkan \(j\) ke himpunan aktif \(\mathcal{A}_t\).
-3. Selesaikan masalah kuadrat terkecil terbatas pada \(\mathcal{A}_t\) untuk memperoleh \(\hat{\boldsymbol\beta}_{\mathcal{A}_t}\).
-4. Perbarui residual \(\mathbf{r}^{(t)} = \mathbf{y} - \mathbf{X}_{\mathcal{A}_t} \hat{\boldsymbol\beta}_{\mathcal{A}_t}\).
+1. Hitung hasil kali dalam antara setiap fitur \\(\mathbf{x}_j\\) dan residual \\(\mathbf{r}^{(t-1)}\\), kemudian pilih fitur \\(j\\) dengan nilai absolut terbesar.
+2. Tambahkan \\(j\\) ke himpunan aktif \\(\mathcal{A}_t\\).
+3. Selesaikan masalah kuadrat terkecil terbatas pada \\(\mathcal{A}_t\\) untuk memperoleh \\(\hat{\boldsymbol\beta}_{\mathcal{A}_t}\\).
+4. Perbarui residual \\(\mathbf{r}^{(t)} = \mathbf{y} - \mathbf{X}_{\mathcal{A}_t} \hat{\boldsymbol\beta}_{\mathcal{A}_t}\\).
 
 Berhenti ketika sparsitas yang diinginkan tercapai atau residual sudah cukup kecil.
 

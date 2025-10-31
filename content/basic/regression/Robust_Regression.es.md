@@ -8,7 +8,7 @@ title_suffix: "Controlar outliers con la pérdida de Huber"
 {{% summary %}}
 - Los mínimos cuadrados ordinarios (OLS) reaccionan con fuerza a los outliers porque los residuos al cuadrado crecen rápidamente y distorsionan el ajuste.
 - La pérdida de Huber mantiene la pérdida cuadrática para residuos pequeños y adopta una penalización lineal para residuos grandes, lo que reduce la influencia de valores extremos.
-- Ajustar el umbral \(\delta\) (epsilon en scikit-learn) y la penalización L2 opcional \(\alpha\) permite equilibrar robustez y varianza.
+- Ajustar el umbral \\(\delta\\) (epsilon en scikit-learn) y la penalización L2 opcional \\(\alpha\\) permite equilibrar robustez y varianza.
 - Combinar escalado con validación cruzada proporciona modelos estables incluso cuando los datos reales mezclan observaciones normales y anomalías.
 {{% /summary %}}
 
@@ -16,7 +16,7 @@ title_suffix: "Controlar outliers con la pérdida de Huber"
 Los outliers pueden surgir por fallos de sensores, errores de captura o cambios de régimen. En OLS el residuo de un outlier, al elevarse al cuadrado, domina el ajuste y la recta se desplaza hacia ese punto. La regresión robusta trata los residuos grandes con menos severidad para que el modelo siga la tendencia dominante mientras descuenta observaciones dudosas. La pérdida de Huber es un ejemplo clásico: se comporta como la pérdida cuadrática cerca de cero y como la absoluta en las colas.
 
 ## Formulación matemática
-Sea el residuo \(r = y - \hat{y}\). Para un umbral \(\delta > 0\), la pérdida de Huber se define como
+Sea el residuo \\(r = y - \hat{y}\\). Para un umbral \\(\delta > 0\\), la pérdida de Huber se define como
 
 $$
 \ell_\delta(r) =
@@ -36,7 +36,7 @@ r, & |r| \le \delta, \\
 \end{cases}
 $$
 
-En scikit-learn el parámetro `epsilon` corresponde a \(\delta\). También se puede añadir una penalización L2 \(\alpha \lVert \boldsymbol\beta \rVert_2^2\) para estabilizar los coeficientes cuando las variables están correlacionadas.
+En scikit-learn el parámetro `epsilon` corresponde a \\(\delta\\). También se puede añadir una penalización L2 \\(\alpha \lVert \boldsymbol\beta \rVert_2^2\\) para estabilizar los coeficientes cuando las variables están correlacionadas.
 
 ## Experimentos con Python
 Visualizamos las formas de las pérdidas y comparamos OLS, Ridge y Huber en un conjunto de datos sintético que incluye un outlier extremo.

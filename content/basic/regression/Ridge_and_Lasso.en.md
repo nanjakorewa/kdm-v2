@@ -8,7 +8,7 @@ title_suffix: "Improve generalization with regularization"
 {{% summary %}}
 - Ridge regression shrinks coefficients smoothly with an L2 penalty and remains stable even when features are highly correlated.
 - Lasso regression applies an L1 penalty that can drive some coefficients exactly to zero, providing built-in feature selection and interpretability.
-- Tuning the regularization strength \(\alpha\) controls the trade-off between fitting the training data and generalizing to unseen data.
+- Tuning the regularization strength \\(\alpha\\) controls the trade-off between fitting the training data and generalizing to unseen data.
 - Combining standardization with cross-validation helps choose hyperparameters that prevent overfitting while keeping performance strong.
 {{% /summary %}}
 
@@ -27,7 +27,7 @@ Both methods minimize the usual squared-error loss plus a regularization term:
   \min_{\boldsymbol\beta, b} \sum_{i=1}^{n} \left(y_i - (\boldsymbol\beta^\top \mathbf{x}_i + b)\right)^2 + \alpha \lVert \boldsymbol\beta \rVert_1
   $$
 
-Larger \(\alpha\) enforces stronger shrinkage. In the case of Lasso, when \(\alpha\) exceeds a threshold, some coefficients become exactly zero, yielding sparse models.
+Larger \\(\alpha\\) enforces stronger shrinkage. In the case of Lasso, when \\(\alpha\\) exceeds a threshold, some coefficients become exactly zero, yielding sparse models.
 
 ## Experiments with Python
 The example below applies ridge, lasso, and ordinary least squares to the same synthetic regression problem. We compare coefficient magnitudes and generalization scores.
@@ -93,7 +93,7 @@ for name, model in models.items():
 ### Reading the results
 - Ridge shrinks all coefficients slightly and remains stable even with multicollinearity.
 - Lasso pushes some coefficients to zero, keeping only the most important features.
-- Select \(\alpha\) via cross-validation to balance bias and variance, and standardize features to ensure fair comparison across dimensions.
+- Select \\(\alpha\\) via cross-validation to balance bias and variance, and standardize features to ensure fair comparison across dimensions.
 
 ## References
 {{% references %}}
