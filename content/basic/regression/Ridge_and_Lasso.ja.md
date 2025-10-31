@@ -42,22 +42,36 @@ from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-# �p�����[�^
+# パラメータ
 n_samples = 200
 n_features = 10
 n_informative = 3
 rng = np.random.default_rng(42)
 
-# �^�̌W���i�X�p�[�X�j
+# 真の重み（スパース）
 coef = np.zeros(n_features)
 coef[:n_informative] = rng.normal(loc=3.0, scale=1.0, size=n_informative)
 
+# 説明変数と目的変数を生成
 X = rng.normal(size=(n_samples, n_features))
 y = X @ coef + rng.normal(scale=5.0, size=n_samples)
 
-linear = make_pipeline(StandardScaler(with_mean=False), LinearRegression()).fit(X, y)
-ridge = make_pipeline(StandardScaler(with_mean=False), RidgeCV(alphas=np.logspace(-3, 3, 13), cv=5)).fit(X, y)
-lasso = make_pipeline(StandardScaler(with_mean=False), LassoCV(alphas=np.logspace(-3, 1, 9), cv=5, max_iter=50_000)).fit(X, y)
+# 各モデルを作成・学習
+# with_mean=False にしているのは疎行列対応の書き方の名残かも
+linear = make_pipeline(
+    StandardScaler(with_mean=False),
+    LinearRegression()
+).fit(X, y)
+
+ridge = make_pipeline(
+    StandardScaler(with_mean=False),
+    RidgeCV(alphas=np.logspace(-3, 3, 13), cv=5)
+).fit(X, y)
+
+lasso = make_pipeline(
+    StandardScaler(with_mean=False),
+    LassoCV(alphas=np.logspace(-3, 1, 9), cv=5, max_iter=50_000)
+).fit(X, y)
 
 models = {
     "Linear": linear,
@@ -65,24 +79,24 @@ models = {
     "Lasso": lasso,
 }
 
-# �W������
+# 係数の比較可視化
 indices = np.arange(n_features)
 width = 0.25
 plt.figure(figsize=(10, 4))
 plt.bar(indices - width, np.abs(linear[-1].coef_), width=width, label="Linear")
-plt.bar(indices, np.abs(ridge[-1].coef_), width=width, label="Ridge")
-plt.bar(indices + width, np.abs(lasso[-1].coef_), width=width, label="Lasso")
-plt.xlabel("�����ʃC���f�b�N�X")
-plt.ylabel("|�W��|")
+plt.bar(indices,         np.abs(ridge[-1].coef_),  width=width, label="Ridge")
+plt.bar(indices + width, np.abs(lasso[-1].coef_),  width=width, label="Lasso")
+plt.xlabel("特徴量インデックス")
+plt.ylabel("|係数|")
 plt.legend()
 plt.grid(alpha=0.3)
 plt.tight_layout()
 plt.show()
 
-# �������؃X�R�A
+# 汎化性能のスコア
 for name, model in models.items():
     scores = cross_val_score(model, X, y, cv=5, scoring="r2")
-    print(f"{name:>6}: R^2 = {scores.mean():.3f} �} {scores.std():.3f}")
+    print(f"{name:>6}: R^2 = {scores.mean():.3f} ± {scores.std():.3f}")
 ```
 
 ### 実行結果の読み方

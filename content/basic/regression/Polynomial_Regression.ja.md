@@ -42,35 +42,39 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import mean_squared_error
 
-# チE�Eタ生�E�E�E 次の真�E関数 + ノイズ�E�E
+# データ生成：次の真の関数 + ノイズ
 rng = np.random.default_rng(42)
 X = np.linspace(-3, 3, 200)
 y_true = 0.5 * X**3 - 1.2 * X**2 + 2.0 * X + 1.5
 y = y_true + rng.normal(scale=2.0, size=X.shape)
 
-X = X[:, None]  # 2 次允E�E列に変換
+# sklearn は (n_samples, n_features) 形状を期待するので 2 次元配列に変換
+X = X[:, None]
 
-# 1 次�E�通常の線形�E�と 3 次のモチE��を比輁E
+# 1 次の通常の線形回帰と 3 次のモデルを比較
 linear_model = LinearRegression().fit(X, y)
-poly_model = make_pipeline(PolynomialFeatures(degree=3, include_bias=False),
-                           LinearRegression()).fit(X, y)
+poly_model = make_pipeline(
+    PolynomialFeatures(degree=3, include_bias=False),
+    LinearRegression()
+).fit(X, y)
 
+# 予測用の細かいグリッド
 grid = np.linspace(-3.5, 3.5, 300)[:, None]
 linear_pred = linear_model.predict(grid)
 poly_pred = poly_model.predict(grid)
 true_curve = 0.5 * grid.ravel()**3 - 1.2 * grid.ravel()**2 + 2.0 * grid.ravel() + 1.5
 
 print("線形回帰 MSE:", mean_squared_error(y, linear_model.predict(X)))
-print("3次多頁E��回帰 MSE:", mean_squared_error(y, poly_model.predict(X)))
+print("3次多項式回帰 MSE:", mean_squared_error(y, poly_model.predict(X)))
 
-# 可視化�E�後で高解像度で描き直す前提！E
+# 可視化（あとで高解像度で描き直す前提）
 plt.figure(figsize=(10, 5))
 plt.scatter(X, y, s=20, color="#ff7f0e", alpha=0.6, label="観測値")
-plt.plot(grid, true_curve, color="#2ca02c", linewidth=2, label="真�E関数")
+plt.plot(grid, true_curve, color="#2ca02c", linewidth=2, label="真の関数")
 plt.plot(grid, linear_pred, color="#1f77b4", linestyle="--", linewidth=2, label="線形回帰")
-plt.plot(grid, poly_pred, color="#d62728", linewidth=2, label="3次多頁E��回帰")
-plt.xlabel("入劁E$x$")
-plt.ylabel("出劁E$y$")
+plt.plot(grid, poly_pred, color="#d62728", linewidth=2, label="3次多項式回帰")
+plt.xlabel("入力 $x$")
+plt.ylabel("出力 $y$")
 plt.legend()
 plt.tight_layout()
 plt.show()
