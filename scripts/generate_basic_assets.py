@@ -528,7 +528,7 @@ def save_figures(
 def main(_: argparse.Namespace) -> None:
     repo_root = Path(__file__).resolve().parents[1]
     content_root = repo_root / "content" / "basic"
-
+    np.random.seed(777)
     install_sklearn_stub()
 
     for md_path, blocks, rel_slugs, file_slug, lang in iter_targets(content_root):

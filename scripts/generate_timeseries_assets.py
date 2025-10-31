@@ -82,6 +82,7 @@ def main(_: argparse.Namespace) -> None:
 
         for idx, block in enumerate(code_blocks, start=1):
             jam.japanize()
+            np.random.seed(777)
             try:
                 run_snippet(block, md_path)
                 print(f"Executed block {idx} from {relative_path.as_posix()}")
