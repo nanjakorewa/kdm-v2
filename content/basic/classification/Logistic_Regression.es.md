@@ -34,46 +34,100 @@ o, de forma equivalente, minimiza la entropía cruzada negativa. Agregar regular
 El siguiente ejemplo ajusta la regresión logística a un conjunto sintético bidimensional y visualiza la frontera resultante. Gracias a scikit-learn, entrenar y trazar la frontera requiere pocas líneas.
 
 ```python
-import numpy as np
+from __future__ import annotations
+
+import japanize_matplotlib
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LogisticRegression
+import numpy as np
+from matplotlib.colors import ListedColormap
 from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 
-# Generar un conjunto de clasificación 2D
-X, y = make_classification(
-    n_samples=300,
-    n_features=2,
-    n_redundant=0,
-    n_informative=1,
-    random_state=2,
-    n_clusters_per_class=1,
+
+def run_logistic_regression_demo(
+    n_samples: int = 300,
+    random_state: int = 2,
+    label_class0: str = "clase 0",
+    label_class1: str = "clase 1",
+    label_boundary: str = "frontera de decisión",
+    title: str = "Frontera de la regresión logística",
+) -> dict[str, float]:
+    """Train logistic regression on a synthetic 2D dataset and visualise the boundary.
+
+    Args:
+        n_samples: Number of samples to generate.
+        random_state: Seed for reproducible sampling.
+        label_class0: Legend label for class 0.
+        label_class1: Legend label for class 1.
+        label_boundary: Legend label for the separating line.
+        title: Title for the plot.
+
+    Returns:
+        Dictionary containing training accuracy and coefficients.
+    """
+    japanize_matplotlib.japanize()
+    X, y = make_classification(
+        n_samples=n_samples,
+        n_features=2,
+        n_redundant=0,
+        n_informative=2,
+        random_state=random_state,
+        n_clusters_per_class=1,
+    )
+
+    clf = LogisticRegression()
+    clf.fit(X, y)
+
+    accuracy = float(accuracy_score(y, clf.predict(X)))
+    coef = clf.coef_[0]
+    intercept = float(clf.intercept_[0])
+
+    x1, x2 = X[:, 0], X[:, 1]
+    grid_x1, grid_x2 = np.meshgrid(
+        np.linspace(x1.min() - 1.0, x1.max() + 1.0, 200),
+        np.linspace(x2.min() - 1.0, x2.max() + 1.0, 200),
+    )
+    grid = np.c_[grid_x1.ravel(), grid_x2.ravel()]
+    probs = clf.predict_proba(grid)[:, 1].reshape(grid_x1.shape)
+
+    cmap = ListedColormap(["#aec7e8", "#ffbb78"])
+    fig, ax = plt.subplots(figsize=(7, 6))
+    contour = ax.contourf(grid_x1, grid_x2, probs, levels=20, cmap=cmap, alpha=0.4)
+    ax.contour(grid_x1, grid_x2, probs, levels=[0.5], colors="k", linewidths=1.5)
+    ax.scatter(x1[y == 0], x2[y == 0], marker="o", edgecolor="k", label=label_class0)
+    ax.scatter(x1[y == 1], x2[y == 1], marker="x", color="k", label=label_class1)
+    ax.set_xlabel("característica 1")
+    ax.set_ylabel("característica 2")
+    ax.set_title(title)
+    ax.legend(loc="best")
+    fig.colorbar(contour, ax=ax, label="P(class = 1)")
+    fig.tight_layout()
+    plt.show()
+
+    return {
+        "accuracy": accuracy,
+        "coef_0": float(coef[0]),
+        "coef_1": float(coef[1]),
+        "intercept": intercept,
+    }
+
+
+metrics = run_logistic_regression_demo(
+    label_class0="clase 0",
+    label_class1="clase 1",
+    label_boundary="frontera de decisión",
+    title="Frontera de la regresión logística",
 )
+print(f"Precisión de entrenamiento: {metrics['accuracy']:.3f}")
+print(f"Coeficiente de la característica 1: {metrics['coef_0']:.3f}")
+print(f"Coeficiente de la característica 2: {metrics['coef_1']:.3f}")
+print(f"Intercepto: {metrics['intercept']:.3f}")
 
-# Entrenar el modelo
-clf = LogisticRegression()
-clf.fit(X, y)
-
-# Calcular la frontera de decisión
-b = clf.intercept_[0]
-w1, w2 = clf.coef_.T
-slope = -w1 / w2
-intercept = -b / w2
-
-xmin, xmax = np.min(X[:, 0]), np.max(X[:, 0])
-xd = np.array([xmin, xmax])
-yd = slope * xd + intercept
-
-# Visualizar
-plt.figure(figsize=(8, 8))
-plt.plot(xd, yd, "k-", lw=1, label="frontera de decisión")
-plt.scatter(*X[y == 0].T, marker="o", label="clase 0")
-plt.scatter(*X[y == 1].T, marker="x", label="clase 1")
-plt.legend()
-plt.title("Frontera de la regresión logística")
-plt.show()
 ```
 
-![logistic-regression block 2](/images/basic/classification/logistic-regression_block02.svg)
+
+![logistic-regression demo](/images/basic/classification/logistic-regression_block01_es.png)
 
 ## Referencias
 {{% references %}}

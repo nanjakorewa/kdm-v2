@@ -36,46 +36,77 @@ dengan opsi menambahkan regularisasi untuk menekan overfitting.
 Cuplikan berikut melatih regresi softmax pada data sintetis tiga kelas dan memvisualisasikan wilayah keputusannya. Mengaktifkan parameter `multi_class="multinomial"` sudah cukup untuk memakai formulasi softmax.
 
 ```python
+from __future__ import annotations
+
+import japanize_matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.linear_model import LogisticRegression
+from matplotlib.colors import ListedColormap
 from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 
-# Membuat dataset 3 kelas
-X, y = make_classification(
-    n_samples=300,
-    n_features=2,
-    n_classes=3,
-    n_informative=2,
-    n_redundant=0,
-    n_clusters_per_class=1,
-    random_state=42,
+
+def run_softmax_regression_demo(
+    n_samples: int = 300,
+    n_classes: int = 3,
+    random_state: int = 42,
+    label_title: str = "Wilayah keputusan regresi softmax",
+    xlabel: str = "fitur 1",
+    ylabel: str = "fitur 2",
+) -> dict[str, float]:
+    """Train a softmax regression model and visualise decision regions."""
+    japanize_matplotlib.japanize()
+    X, y = make_classification(
+        n_samples=n_samples,
+        n_features=2,
+        n_informative=2,
+        n_redundant=0,
+        n_clusters_per_class=1,
+        n_classes=n_classes,
+        random_state=random_state,
+    )
+
+    clf = LogisticRegression(multi_class="multinomial", solver="lbfgs")
+    clf.fit(X, y)
+
+    accuracy = float(accuracy_score(y, clf.predict(X)))
+
+    x1_min, x1_max = X[:, 0].min() - 1.0, X[:, 0].max() + 1.0
+    x2_min, x2_max = X[:, 1].min() - 1.0, X[:, 1].max() + 1.0
+    grid_x1, grid_x2 = np.meshgrid(
+        np.linspace(x1_min, x1_max, 400),
+        np.linspace(x2_min, x2_max, 400),
+    )
+    grid_points = np.c_[grid_x1.ravel(), grid_x2.ravel()]
+    preds = clf.predict(grid_points).reshape(grid_x1.shape)
+
+    cmap = ListedColormap(["#ff9896", "#98df8a", "#aec7e8", "#f7b6d2", "#c5b0d5"])
+    fig, ax = plt.subplots(figsize=(7, 6))
+    ax.contourf(grid_x1, grid_x2, preds, alpha=0.3, cmap=cmap, levels=np.arange(-0.5, n_classes + 0.5, 1))
+    scatter = ax.scatter(X[:, 0], X[:, 1], c=y, edgecolor="k", cmap=cmap)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(label_title)
+    legend = ax.legend(*scatter.legend_elements(), title="classes", loc="best")
+    ax.add_artist(legend)
+    fig.tight_layout()
+    plt.show()
+
+    return {"accuracy": accuracy}
+
+
+metrics = run_softmax_regression_demo(
+    label_title="Wilayah keputusan regresi softmax",
+    xlabel="fitur 1",
+    ylabel="fitur 2",
 )
+print(f"Akurasi pelatihan: {metrics['accuracy']:.3f}")
 
-# Regresi softmax (regresi logistik multikelas)
-clf = LogisticRegression(multi_class="multinomial", solver="lbfgs")
-clf.fit(X, y)
-
-# Menyusun grid untuk visualisasi
-x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
-y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-xx, yy = np.meshgrid(
-    np.linspace(x_min, x_max, 200),
-    np.linspace(y_min, y_max, 200),
-)
-Z = clf.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
-
-# Visualisasi
-plt.figure(figsize=(8, 6))
-plt.contourf(xx, yy, Z, alpha=0.3, cmap=plt.cm.coolwarm)
-plt.scatter(X[:, 0], X[:, 1], c=y, edgecolor="k", cmap=plt.cm.coolwarm)
-plt.title("Wilayah keputusan regresi softmax")
-plt.xlabel("fitur 1")
-plt.ylabel("fitur 2")
-plt.show()
 ```
 
-![softmax block 1](/images/basic/classification/softmax_block01.svg)
+
+![softmax regression demo](/images/basic/classification/softmax_block01_id.png)
 
 ## Referensi
 {{% references %}}

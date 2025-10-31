@@ -34,46 +34,100 @@ atau, secara ekuivalen, meminimalkan entropi silang negatif. Regularisasi L2 men
 Contoh berikut menyesuaikan regresi logistik pada data sintetis dua dimensi dan memvisualisasikan garis keputusan yang dihasilkan. Berkat scikit-learn, seluruh proses pelatihan dan plotting hanya membutuhkan sedikit kode.
 
 ```python
-import numpy as np
+from __future__ import annotations
+
+import japanize_matplotlib
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LogisticRegression
+import numpy as np
+from matplotlib.colors import ListedColormap
 from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 
-# Membuat dataset klasifikasi 2D
-X, y = make_classification(
-    n_samples=300,
-    n_features=2,
-    n_redundant=0,
-    n_informative=1,
-    random_state=2,
-    n_clusters_per_class=1,
+
+def run_logistic_regression_demo(
+    n_samples: int = 300,
+    random_state: int = 2,
+    label_class0: str = "kelas 0",
+    label_class1: str = "kelas 1",
+    label_boundary: str = "batas keputusan",
+    title: str = "Batas regresi logistik",
+) -> dict[str, float]:
+    """Train logistic regression on a synthetic 2D dataset and visualise the boundary.
+
+    Args:
+        n_samples: Number of samples to generate.
+        random_state: Seed for reproducible sampling.
+        label_class0: Legend label for class 0.
+        label_class1: Legend label for class 1.
+        label_boundary: Legend label for the separating line.
+        title: Title for the plot.
+
+    Returns:
+        Dictionary containing training accuracy and coefficients.
+    """
+    japanize_matplotlib.japanize()
+    X, y = make_classification(
+        n_samples=n_samples,
+        n_features=2,
+        n_redundant=0,
+        n_informative=2,
+        random_state=random_state,
+        n_clusters_per_class=1,
+    )
+
+    clf = LogisticRegression()
+    clf.fit(X, y)
+
+    accuracy = float(accuracy_score(y, clf.predict(X)))
+    coef = clf.coef_[0]
+    intercept = float(clf.intercept_[0])
+
+    x1, x2 = X[:, 0], X[:, 1]
+    grid_x1, grid_x2 = np.meshgrid(
+        np.linspace(x1.min() - 1.0, x1.max() + 1.0, 200),
+        np.linspace(x2.min() - 1.0, x2.max() + 1.0, 200),
+    )
+    grid = np.c_[grid_x1.ravel(), grid_x2.ravel()]
+    probs = clf.predict_proba(grid)[:, 1].reshape(grid_x1.shape)
+
+    cmap = ListedColormap(["#aec7e8", "#ffbb78"])
+    fig, ax = plt.subplots(figsize=(7, 6))
+    contour = ax.contourf(grid_x1, grid_x2, probs, levels=20, cmap=cmap, alpha=0.4)
+    ax.contour(grid_x1, grid_x2, probs, levels=[0.5], colors="k", linewidths=1.5)
+    ax.scatter(x1[y == 0], x2[y == 0], marker="o", edgecolor="k", label=label_class0)
+    ax.scatter(x1[y == 1], x2[y == 1], marker="x", color="k", label=label_class1)
+    ax.set_xlabel("fitur 1")
+    ax.set_ylabel("fitur 2")
+    ax.set_title(title)
+    ax.legend(loc="best")
+    fig.colorbar(contour, ax=ax, label="P(class = 1)")
+    fig.tight_layout()
+    plt.show()
+
+    return {
+        "accuracy": accuracy,
+        "coef_0": float(coef[0]),
+        "coef_1": float(coef[1]),
+        "intercept": intercept,
+    }
+
+
+metrics = run_logistic_regression_demo(
+    label_class0="kelas 0",
+    label_class1="kelas 1",
+    label_boundary="batas keputusan",
+    title="Batas regresi logistik",
 )
+print(f"Akurasi pelatihan: {metrics['accuracy']:.3f}")
+print(f"Koefisien fitur 1: {metrics['coef_0']:.3f}")
+print(f"Koefisien fitur 2: {metrics['coef_1']:.3f}")
+print(f"Intersep: {metrics['intercept']:.3f}")
 
-# Melatih model
-clf = LogisticRegression()
-clf.fit(X, y)
-
-# Menghitung garis keputusan
-b = clf.intercept_[0]
-w1, w2 = clf.coef_.T
-slope = -w1 / w2
-intercept = -b / w2
-
-xmin, xmax = np.min(X[:, 0]), np.max(X[:, 0])
-xd = np.array([xmin, xmax])
-yd = slope * xd + intercept
-
-# Visualisasi
-plt.figure(figsize=(8, 8))
-plt.plot(xd, yd, "k-", lw=1, label="garis keputusan")
-plt.scatter(*X[y == 0].T, marker="o", label="kelas 0")
-plt.scatter(*X[y == 1].T, marker="x", label="kelas 1")
-plt.legend()
-plt.title("Garis keputusan regresi logistik")
-plt.show()
 ```
 
-![logistic-regression block 2](/images/basic/classification/logistic-regression_block02.svg)
+
+![logistic-regression demo](/images/basic/classification/logistic-regression_block01_id.png)
 
 ## Referensi
 {{% references %}}
