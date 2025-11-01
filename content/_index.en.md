@@ -1,6 +1,8 @@
-title: "Home"
 ---
-
+title: "K_DM Book | Data Analysis and Machine Learning Guide"
+linkTitle: "Home"
+seo_title: "K_DM Book | Data Analysis and Machine Learning Guide"
+---
 ## Welcome to K_DM Book
 K_DM Book is a hands-on reference that walks you from the fundamentals of data analysis and machine learning to production-ready workflows. Each section couples narrative guides with runnable notebooks and scripts so you can learn concepts and apply them immediately.
 

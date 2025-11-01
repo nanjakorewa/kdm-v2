@@ -1,5 +1,7 @@
 ---
-title: 機械学習
+title: "機械学習基礎ガイド | 代表的アルゴリズムと概念"
+linkTitle: "基礎"
+seo_title: "機械学習基礎ガイド | 代表的アルゴリズムと概念"
 weight: 2
 chapter: true
 not_use_colab: true
@@ -7,7 +9,6 @@ not_use_twitter: true
 pre: "<b>2. </b>"
 bookCollapseSection: true
 ---
-
 ### Section 2
 # 機械学習
 

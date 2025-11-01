@@ -1,12 +1,13 @@
 ---
-title: Introduction
+title: "Environment Setup | Preparing Python and Tooling"
+linkTitle: "Install"
+seo_title: "Environment Setup | Preparing Python and Tooling"
 weight: 1
 pre: "<b>1. </b>"
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 ---
-
 ### Section 1
 # What is this page?
 

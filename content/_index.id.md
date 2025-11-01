@@ -1,6 +1,8 @@
-title: "Halaman Utama"
 ---
-
+title: "K_DM Book | Panduan Lengkap Analisis Data dan Machine Learning"
+linkTitle: "Halaman Utama"
+seo_title: "K_DM Book | Panduan Lengkap Analisis Data dan Machine Learning"
+---
 ## Selamat datang di K_DM Book
 K_DM Book adalah panduan praktis yang membantu Anda mempelajari analisis data dan machine learning hingga tahap produksi. Setiap bab menggabungkan penjelasan konseptual dengan notebook serta script yang bisa dijalankan, sehingga Anda dapat belajar dan langsung mencoba.
 

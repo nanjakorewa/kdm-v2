@@ -1,12 +1,13 @@
 ---
-title: Preprocesamiento de Datos
+title: "Preparación de datos | Ingeniería de características y limpieza"
+linkTitle: "Preparación"
+seo_title: "Preparación de datos | Ingeniería de características y limpieza"
 weight: 3
 pre: "<b>3. </b>"
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 ---
-
 ### Sección 3
 
 # Preprocesamiento de Datos

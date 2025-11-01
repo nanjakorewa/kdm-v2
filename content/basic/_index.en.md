@@ -1,12 +1,13 @@
 ---
-title: Machine Learning
+title: "Machine Learning Foundations | Core Algorithms Explained"
+linkTitle: "Basics"
+seo_title: "Machine Learning Foundations | Core Algorithms Explained"
 weight: 2
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 pre: "<b>2. </b>"
 ---
-
 ### Section 2
 # Machine Learning
 

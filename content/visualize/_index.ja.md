@@ -1,5 +1,7 @@
 ---
-title: 可視化
+title: "可視化ハンドブック | グラフ設計と伝え方"
+linkTitle: "可視化"
+seo_title: "可視化ハンドブック | グラフ設計と伝え方"
 weight: 6
 pre: "<b>6. </b>"
 chapter: true
@@ -7,7 +9,6 @@ not_use_colab: true
 not_use_twitter: true
 bookCollapseSection: true
 ---
-
 ### Section 6
 
 # 可視化

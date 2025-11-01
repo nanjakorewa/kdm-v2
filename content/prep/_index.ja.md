@@ -1,5 +1,7 @@
 ---
-title: データ前処理
+title: "データ前処理ガイド | 特徴量設計とクレンジング"
+linkTitle: "データ前処理"
+seo_title: "データ前処理ガイド | 特徴量設計とクレンジング"
 weight: 3
 pre: "<b>3. </b>"
 chapter: true
@@ -7,7 +9,6 @@ not_use_colab: true
 not_use_twitter: true
 bookCollapseSection: true
 ---
-
 ### Section 3
 
 # データ前処理

@@ -45,3 +45,15 @@
 - `static/d1b9a2bd02724df09ee54c2277dd1834.txt` に API キーを配置済みです。ビルド後は `https://k-dm.work/d1b9a2bd02724df09ee54c2277dd1834.txt` で検証できます。
 - 更新した URL を通知するには `scripts/indexnow_submit.py` を使用します。例: `python scripts/indexnow_submit.py --sitemap public/sitemap.xml --dry-run` で送信内容を確認し、問題なければ `--dry-run` を外して実行してください。
 - 単一ページのみ通知する場合は `--url https://k-dm.work/path/` を複数回渡せます。エンドポイントは既定で `https://api.indexnow.org/indexnow` を使用しますが、`--endpoint` で変更できます。
+
+## ページタイトルの管理
+- SEO 用とナビゲーション用でタイトルを分ける場合は Front Matter に `title`（ロングタイトル）、`linkTitle`（サイドバー表示）、`seo_title`（`<title>` や OG タグ用）の 3 つを設定してください。
+- 例:
+  ```yaml
+  ---
+  title: "Machine Learning Foundations | Core Algorithms Explained"
+  linkTitle: "Basics"
+  seo_title: "Machine Learning Foundations | Core Algorithms Explained"
+  ---
+  ```
+- `linkTitle` が未指定の場合は `title` がサイドバーにも表示されます。`seo_title` を省略すると `title` が `<title>` として流用されます。

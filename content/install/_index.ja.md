@@ -1,5 +1,7 @@
 ---
-title: はじめに
+title: "環境構築ガイド | Python と開発環境の準備"
+linkTitle: "はじめに"
+seo_title: "環境構築ガイド | Python と開発環境の準備"
 weight: 1
 pre: "<b>1. </b>"
 chapter: true
@@ -7,7 +9,6 @@ not_use_colab: true
 not_use_twitter: true
 bookCollapseSection: true
 ---
-
 ## はじめに
 
 このセクションでは、Python 3.13 を前提にした開発環境の整え方をまとめています。お使いの OS に合わせて以下のページをご覧ください。

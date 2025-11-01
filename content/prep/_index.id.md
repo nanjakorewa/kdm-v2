@@ -1,12 +1,13 @@
 ---
-title: Prapemrosesan data
+title: "Persiapan Data | Rekayasa Fitur dan Pembersihan"
+linkTitle: "Persiapan"
+seo_title: "Persiapan Data | Rekayasa Fitur dan Pembersihan"
 weight: 3
 pre: "<b>3. </b>"
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 ---
-
 ### Bagian 3
 
 # Prapemrosesan data

@@ -1,7 +1,8 @@
 ---
-title: "Inicio"
+title: "K_DM Book | Guía integral de análisis de datos y aprendizaje automático"
+linkTitle: "Inicio"
+seo_title: "K_DM Book | Guía integral de análisis de datos y aprendizaje automático"
 ---
-
 ## Bienvenido a K_DM Book
 K_DM Book es una guía práctica que te acompaña desde los fundamentos del análisis de datos hasta la puesta en producción de modelos. Cada sección combina explicaciones con notebooks y scripts ejecutables para que puedas aprender los conceptos y aplicarlos de inmediato.
 

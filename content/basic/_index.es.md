@@ -1,12 +1,13 @@
 ---
-title: Aprendizaje automático
+title: "Fundamentos de aprendizaje automático | Algoritmos esenciales explicados"
+linkTitle: "Fundamentos"
+seo_title: "Fundamentos de aprendizaje automático | Algoritmos esenciales explicados"
 weight: 2
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 pre: "<b>2. </b>"
 ---
-
 ### Sección 2
 # Aprendizaje automático
 

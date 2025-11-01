@@ -1,5 +1,7 @@
 ---
-title: 経済データ
+title: "金融データ分析ガイド | 指標モデリングとリスク管理"
+linkTitle: "経済データ"
+seo_title: "金融データ分析ガイド | 指標モデリングとリスク管理"
 weight: 7
 pre: "<b>7. </b>"
 chapter: true
@@ -7,7 +9,6 @@ not_use_colab: true
 not_use_twitter: true
 bookCollapseSection: true
 ---
-
 ### Section 7
 
 # 経済データ

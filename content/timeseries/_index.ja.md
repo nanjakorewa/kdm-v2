@@ -1,5 +1,7 @@
 ---
-title: 時系列
+title: "時系列分析の実践ガイド | 予測と異常検知"
+linkTitle: "時系列"
+seo_title: "時系列分析の実践ガイド | 予測と異常検知"
 weight: 8
 chapter: true
 not_use_colab: true
@@ -7,7 +9,6 @@ not_use_twitter: true
 bookCollapseSection: true
 pre: "<b>2.8 </b>"
 ---
-
 ### Chapter 8
 
 # 時系列

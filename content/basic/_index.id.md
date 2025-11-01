@@ -1,12 +1,13 @@
 ---
-title: Pembelajaran mesin
+title: "Dasar Machine Learning | Penjelasan Algoritma Inti"
+linkTitle: "Dasar"
+seo_title: "Dasar Machine Learning | Penjelasan Algoritma Inti"
 weight: 2
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 pre: "<b>2. </b>"
 ---
-
 ### Bagian 2
 # pembelajaran mesin
 

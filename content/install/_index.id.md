@@ -1,12 +1,13 @@
 ---
-title: Pendahuluan
+title: "Panduan Penyiapan Lingkungan | Python dan Peralatan"
+linkTitle: "Penyiapan"
+seo_title: "Panduan Penyiapan Lingkungan | Python dan Peralatan"
 weight: 1
 pre: "<b>1. </b>"
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 ---
-
 # Bagian 1
 ## Pendahuluan
 

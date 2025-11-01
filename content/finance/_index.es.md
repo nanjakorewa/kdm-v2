@@ -1,12 +1,13 @@
 ---
-title: Datos económicosDatos económicos
+title: "Analítica financiera | Indicadores, modelado y gestión de riesgos"
+linkTitle: "Finanzas"
+seo_title: "Analítica financiera | Indicadores, modelado y gestión de riesgos"
 weight: 7
 pre: "<b>7. </b>"
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 ---
-
 ### Sección 7
 
 ## Datos económicos

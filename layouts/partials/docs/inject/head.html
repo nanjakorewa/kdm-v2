@@ -1,5 +1,5 @@
 ﻿{{- /* ======= SEO meta & structured data (enhanced) ======= */ -}}
-{{- $title := .Title -}}
+{{- $title := or .Params.seo_title .Title -}}
 {{- $desc  := cond (ne .Description "") .Description (.Summary | plainify | htmlUnescape | truncate 160) -}}
 {{- $url   := .Permalink -}}
 {{- $img   := (or (index .Params.images 0) (site.Params.ogImage)) | absURL -}}

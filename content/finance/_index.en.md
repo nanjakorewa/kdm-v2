@@ -1,12 +1,13 @@
 ---
-title: Economic Data
+title: "Financial Data Analytics | Indicators, Modeling, and Risk Management"
+linkTitle: "Finance"
+seo_title: "Financial Data Analytics | Indicators, Modeling, and Risk Management"
 weight: 7
 pre: "<b>7. </b>"
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 ---
-
 ### Section 7
 
 # Economic Data

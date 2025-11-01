@@ -1,12 +1,13 @@
 ---
-title: Introducción
+title: "Configuración del entorno | Preparar Python y herramientas"
+linkTitle: "Instalar"
+seo_title: "Configuración del entorno | Preparar Python y herramientas"
 weight: 1
 pre: "<b>1. </b>"
 chapter: true
 not_use_colab: true
 not_use_twitter: true
 ---
-
 ### Sección 1
 # ¿Qué es esta página?
 
