@@ -1,2 +1,15 @@
 {{ $_hugo_config := `{ "version": 1 }` }}
-<div class="mermaid" align="{{ if .Get "align" }}{{ .Get "align" }}{{ else }}center{{ end }}">{{ safeHTML .Inner }}</div>
+{{ if not (.Page.Scratch.Get "mermaid") }}
+  <script src="{{ "mermaid.min.js" | relURL }}"></script>
+  {{ with resources.Get "mermaid.json" }}
+    <script>
+      mermaid.initialize({{ .Content | safeJS }});
+    </script>
+  {{ end }}
+  {{ .Page.Scratch.Set "mermaid" true }}
+{{ end }}
+
+<div class="mermaid{{ with .Get "class" }} {{ . }}{{ end }}"
+     align="{{ if .Get "align" }}{{ .Get "align" }}{{ else }}center{{ end }}">
+  {{- .Inner | htmlEscape | safeHTML -}}
+</div>
