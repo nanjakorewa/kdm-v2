@@ -1,188 +1,191 @@
 ---
-title: X-means
+title: "X-means"
 weight: 3
 pre: "2.5.3 "
-searchtitle: "Explanation of how X-means works and execution in python"
+title_suffix: "Automatically estimating the number of clusters"
+searchtitle: "X-means clustering with Python"
 ---
 
-<div class="pagetop-box">
-    <p>X-means is a type of clustering algorithm that automatically determines the number of clusters as the clustering proceeds. This page compares the results of k-means++ and X-means.</p>
-</div>
+{{< katex />}}
+{{% youtube "2hkyJcWctUA" %}}
 
+{{% summary %}}
+- X-means extends k-means by choosing well-separated seeds and splitting clusters only when a model-selection criterion says it is worthwhile.
+- Each candidate split compares Bayesian Information Criterion (BIC) values; only splits that raise the score are accepted.
+- A lightweight implementation can be built entirely on top of scikit-learn by combining k-means with a small BIC utility.
+- The method is handy when you cannot guess \\(k\\) beforehand: the algorithm grows the number of clusters only when the data justify it.
+{{% /summary %}}
 
-{{% notice document %}}
-[pyclustering.cluster.xmeans.xmeans Class Reference](https://pyclustering.github.io/docs/0.9.0/html/dd/db4/classpyclustering_1_1cluster_1_1xmeans_1_1xmeans.html)
-{{% /notice %}}
+## Intuition
+Plain k-means requires a user-specified \\(k\\). If \\(k\\) is too small, clusters merge; if too large, clusters fragment. X-means tackles this by starting with a modest \\(k\\), running k-means, and then attempting to split each cluster. For every candidate split we compare BIC scores: if the split explains the data better, we keep it; otherwise we leave the cluster untouched. Iterating this procedure yields the number of clusters that best balances fit and complexity.
 
-{{% notice ref %}}
-Pelleg, Dan, and Andrew W. Moore. "X-means: Extending k-means with efficient estimation of the number of clusters." Icml. Vol. 1. 2000.
-{{% /notice %}}
+## Mathematical reminder
+For clusters \\(\{C_1, \dots, C_k\}\\) with centres \\(\{\mu_1, \dots, \mu_k\}\\), the BIC is
 
+$$
+\mathrm{BIC} = \ln L - \tfrac{p}{2} \ln n,
+$$
+
+where \\(L\\) is the model likelihood, \\(p\\) the number of free parameters, and \\(n\\) the number of samples. When a cluster is split into two, we compute the BIC for both models and keep whichever yields the higher value.
+
+## Python walkthrough
+Below we implement a compact X-means-style splitter and compare it with a fixed \\(k=4\\) k-means run.
 
 ```python
-import numpy as np
-import matplotlib.pyplot as plt
+from __future__ import annotations
 
+import matplotlib.pyplot as plt
+import numpy as np
+from numpy.typing import NDArray
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
-```
-## When k is pre-specified in k-means
 
 
-```python
-def plot_by_kmeans(X, k=5):
-    y_pred = KMeans(n_clusters=k, random_state=random_state, init="random").fit_predict(
-        X
-    )
-
-    plt.scatter(X[:, 0], X[:, 1], c=y_pred, marker="x")
-    plt.title(f"k-means, n_clusters={k}")
-
-
-# Create sample data
-n_samples = 1000
-random_state = 117117
-X, _ = make_blobs(
-    n_samples=n_samples, random_state=random_state, cluster_std=1, centers=10
-)
-
-# Run k-means++.
-plot_by_kmeans(X)
-```
-
-
-    
-![png](/images/basic/clustering/X-means_files/X-means_5_0.png)
-    
-
-
-## Run without specifying the number of clusters in x-mean
-### BIC(bayesian information criterion)
-
-
-```python
-from pyclustering.cluster.xmeans import xmeans
-from pyclustering.cluster.center_initializer import kmeans_plusplus_initializer
-
-BAYESIAN_INFORMATION_CRITERION = 0
-MINIMUM_NOISELESS_DESCRIPTION_LENGTH = 1
-
-
-def plot_by_xmeans(
-    X, c_min=3, c_max=10, criterion=BAYESIAN_INFORMATION_CRITERION, tolerance=0.025
-):
-    initial_centers = kmeans_plusplus_initializer(X, c_min).initialize()
-    xmeans_instance = xmeans(
-        X, initial_centers, c_max, criterion=criterion, tolerance=tolerance
-    )
-    xmeans_instance.process()
-
-    # Create data for plots
-    clusters = xmeans_instance.get_clusters()
-    n_samples = X.shape[0]
-    c = []
-    for i, cluster_i in enumerate(clusters):
-        X_ci = X[cluster_i]
-        color_ci = [i for _ in cluster_i]
-        plt.scatter(X_ci[:, 0], X_ci[:, 1], marker="x")
-    plt.title("x-means")
-
-
-# Run x-means
-plot_by_xmeans(X, c_min=3, c_max=10, criterion=BAYESIAN_INFORMATION_CRITERION)
-```
-
-
-    
-![png](/images/basic/clustering/X-means_files/X-means_7_0.png)
-    
-
-
-### MINIMUM_NOISELESS_DESCRIPTION_LENGTH
-
-
-```python
-plot_by_xmeans(X, c_min=3, c_max=10, criterion=MINIMUM_NOISELESS_DESCRIPTION_LENGTH)
-```
-
-
-    
-![png](/images/basic/clustering/X-means_files/X-means_9_0.png)
-    
-
-
-### Influence of tolerance parameter
-
-
-```python
-X, _ = make_blobs(
-    n_samples=2000,
-    random_state=random_state,
-    cluster_std=0.4,
-    centers=10,
-)
-
-plt.figure(figsize=(25, 5))
-for i, ti in enumerate(np.linspace(0.0001, 1, 5)):
-    ti = np.round(ti, 4)
-    plt.subplot(1, 10, i + 1)
-    plot_by_xmeans(
-        X, c_min=3, c_max=10, criterion=BAYESIAN_INFORMATION_CRITERION, tolerance=ti
-    )
-    plt.title(f"tol={ti}")
-```
-
-
-    
-![png](/images/basic/clustering/X-means_files/X-means_11_0.png)
-    
-
-
-### Compare k-means and x-means for various data
-
-
-```python
-for i in range(5):
-    X, _ = make_blobs(
+def generate_dataset(
+    n_samples: int = 1200,
+    n_centers: int = 9,
+    cluster_std: float = 1.1,
+    random_state: int = 1707,
+) -> NDArray[np.float64]:
+    """Generate synthetic blobs for clustering experiments."""
+    features, _ = make_blobs(
         n_samples=n_samples,
+        centers=n_centers,
+        cluster_std=cluster_std,
         random_state=random_state,
-        cluster_std=0.7,
-        centers=5 + i * 5,
     )
-    plt.figure(figsize=(10, 5))
-    plt.subplot(1, 2, 1)
-    plot_by_kmeans(X)
-    plt.subplot(1, 2, 2)
-    plot_by_xmeans(X, c_min=3, c_max=20)
+    return features
+
+
+def compute_bic(
+    data: NDArray[np.float64],
+    labels: NDArray[np.int64],
+    centers: NDArray[np.float64],
+) -> float:
+    """Compute a BIC score tailored to k-means clusters."""
+    n_samples, n_features = data.shape
+    n_clusters = centers.shape[0]
+    if n_clusters <= 0:
+        raise ValueError("Number of clusters must be positive.")
+
+    cluster_sizes = np.bincount(labels, minlength=n_clusters)
+    sse = 0.0
+    for idx, center in enumerate(centers):
+        if cluster_sizes[idx] == 0:
+            continue
+        diffs = data[labels == idx] - center
+        sse += float((diffs**2).sum())
+
+    variance = sse / max(n_samples - n_clusters, 1)
+    if variance <= 0:
+        variance = 1e-6
+
+    log_likelihood = 0.0
+    norm_const = -0.5 * n_features * np.log(2 * np.pi * variance)
+    for size in cluster_sizes:
+        if size > 0:
+            log_likelihood += size * norm_const - 0.5 * (size - 1)
+
+    n_params = n_clusters * (n_features + 1)
+    bic = log_likelihood - 0.5 * n_params * np.log(n_samples)
+    return float(bic)
+
+
+def xmeans_split(
+    data: NDArray[np.float64],
+    k_max: int = 20,
+    random_state: int = 42,
+) -> NDArray[np.int64]:
+    """Approximate X-means by recursively splitting clusters when BIC improves."""
+    rng = np.random.default_rng(random_state)
+    pending = [np.arange(len(data))]
+    accepted: list[NDArray[np.int64]] = []
+
+    while pending:
+        indices = pending.pop()
+        subset = data[indices]
+
+        if len(indices) <= 2:
+            accepted.append(indices)
+            continue
+
+        parent_labels = np.zeros(len(indices), dtype=int)
+        parent_center = subset.mean(axis=0, keepdims=True)
+        bic_parent = compute_bic(subset, parent_labels, parent_center)
+
+        split_model = KMeans(
+            n_clusters=2,
+            n_init=10,
+            max_iter=200,
+            random_state=rng.integers(0, 1_000_000),
+        ).fit(subset)
+        bic_children = compute_bic(
+            subset,
+            split_model.labels_,
+            split_model.cluster_centers_,
+        )
+
+        if bic_children > bic_parent and (len(accepted) + len(pending) + 1) < k_max:
+            pending.append(indices[split_model.labels_ == 0])
+            pending.append(indices[split_model.labels_ == 1])
+        else:
+            accepted.append(indices)
+
+    labels = np.empty(len(data), dtype=int)
+    for cluster_id, cluster_indices in enumerate(accepted):
+        labels[cluster_indices] = cluster_id
+    return labels
+
+
+def run_xmeans_demo(
+    random_state: int = 2024,
+    initial_k: int = 4,
+    k_max: int = 18,
+) -> dict[str, object]:
+    """Compare vanilla k-means and the simple X-means splitter."""
+    data = generate_dataset(random_state=random_state)
+
+    kmeans_labels = KMeans(
+        n_clusters=initial_k,
+        n_init=10,
+        random_state=random_state,
+    ).fit_predict(data)
+    xmeans_labels = xmeans_split(data, k_max=k_max, random_state=random_state + 99)
+
+    unique_xmeans = np.unique(xmeans_labels)
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharex=True, sharey=True)
+    axes[0].scatter(data[:, 0], data[:, 1], c=kmeans_labels, cmap="tab20", s=10)
+    axes[0].set_title(f"k-means (k={initial_k})")
+    axes[0].grid(alpha=0.2)
+
+    axes[1].scatter(data[:, 0], data[:, 1], c=xmeans_labels, cmap="tab20", s=10)
+    axes[1].set_title(f"X-means (k={len(unique_xmeans)})")
+    axes[1].grid(alpha=0.2)
+
+    fig.suptitle("k-means versus X-means cluster assignments")
+    fig.tight_layout()
     plt.show()
+
+    return {
+        "kmeans_clusters": int(initial_k),
+        "xmeans_clusters": int(len(unique_xmeans)),
+        "cluster_sizes": np.bincount(xmeans_labels).tolist(),
+    }
+
+
+metrics = run_xmeans_demo()
+print(f"Clusters requested by k-means: {metrics['kmeans_clusters']}")
+print(f"Clusters discovered by X-means: {metrics['xmeans_clusters']}")
+print(f"X-means cluster sizes: {metrics['cluster_sizes']}")
 ```
 
 
-    
-![png](/images/basic/clustering/X-means_files/X-means_13_0.png)
-    
+![k-means vs X-means](/images/basic/clustering/x-means_block01_en.png)
 
-
-
-    
-![png](/images/basic/clustering/X-means_files/X-means_13_1.png)
-    
-
-
-
-    
-![png](/images/basic/clustering/X-means_files/X-means_13_2.png)
-    
-
-
-
-    
-![png](/images/basic/clustering/X-means_files/X-means_13_3.png)
-    
-
-
-
-    
-![png](/images/basic/clustering/X-means_files/X-means_13_4.png)
-    
-
+## References
+{{% references %}}
+<li>Pelleg, D., &amp; Moore, A. W. (2000). X-means: Extending k-means with Efficient Estimation of the Number of Clusters. <i>ICML</i>.</li>
+<li>Bahmani, B., Moseley, B., Vattani, A., Kumar, R., &amp; Vassilvitskii, S. (2012). Scalable k-means++. <i>VLDB</i>.</li>
+<li>scikit-learn developers. (2024). <i>Clustering</i>. https://scikit-learn.org/stable/modules/clustering.html</li>
+{{% /references %}}
