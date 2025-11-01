@@ -75,13 +75,9 @@ flowchart TD
 
 図の順に読み進めると、モデル開発の全体像を俯瞰しながら必要な知識を埋めていけます。各ノードはサイト内のセクションに対応し、関連記事やNotebookへのリンクをまとめています。
 
-## 付属リソースとサポート
-- **Notebook / コード** — `scripts/` のユーティリティと `data/` のサンプルデータで記事をすぐに再現可能。
-- **更新情報** — 新着記事はトップタイムラインと RSS（`/index.xml`）で配信。
-- **フィードバック** — 誤記や改善点があれば [Issue受付フォーム](https://kdm.hatenablog.jp/entry/issue) や X / Twitter（下記）までお知らせください。
-
 ## 運営SNS
-- <a href="https://www.youtube.com/@K_DM" style="color:#FF0000;"><i class="fab fa-fw fa-youtube"></i> YouTube — 解説動画・ライブ講義</a>
-- <a href="https://twitter.com/_K_DM" style="color:#1DA1F2;"><i class="fab fa-fw fa-twitter"></i> X（旧Twitter） — 更新情報・短いTips</a>
 
-プライバシーポリシーは [こちら](https://kdm.hatenablog.jp/privacy-policy) をご確認ください。コンテンツを活用し、ぜひ自身のプロジェクトへ発展させてください。
+- <a href="https://www.youtube.com/@K_DM" style="color:#FF0000;"><i class="fab fa-fw fa-youtube"></i> YouTube — 解説動画</a>
+- <a href="https://x.com/_K_DM" style="color:#1DA1F2;"><i class="fab fa-fw fa-x"></i> X（旧Twitter） — 更新情報・短いTips配信</a>
+
+プライバシーポリシーは [こちら](./privacy/) をご確認ください。更新履歴は[こちら](./about/) を確認してください。コンテンツを活用し、ぜひ自身のプロジェクトへ発展させてください。
