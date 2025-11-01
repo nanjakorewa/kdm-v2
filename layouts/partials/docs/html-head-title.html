@@ -1,0 +1,7 @@
+{{- $seoTitle := .Params.seo_title | default "" -}}
+{{- $pageTitle := $seoTitle | default .Title -}}
+{{- if $pageTitle -}}
+  {{- $pageTitle -}}
+{{- else -}}
+  {{- partial "docs/title" . }} | {{ .Site.Title -}}
+{{- end -}}
