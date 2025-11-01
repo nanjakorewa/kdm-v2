@@ -40,3 +40,8 @@
 - 変更後は `hugo server` でローカル確認し、図版を更新した場合は生成したファイルもコミット対象に含めます。
 - Python スクリプトに依存する場合は、必要ライブラリと実行手順を PR やドキュメントに明記すると他メンバーが追従しやすくなります。
 - Hugo テンプレートを編集する際は、テーマアップデートによる差分に備えて変更箇所を最小限／コメント付きで管理することを推奨します。
+
+## IndexNow 連携
+- `static/d1b9a2bd02724df09ee54c2277dd1834.txt` に API キーを配置済みです。ビルド後は `https://k-dm.work/d1b9a2bd02724df09ee54c2277dd1834.txt` で検証できます。
+- 更新した URL を通知するには `scripts/indexnow_submit.py` を使用します。例: `python scripts/indexnow_submit.py --sitemap public/sitemap.xml --dry-run` で送信内容を確認し、問題なければ `--dry-run` を外して実行してください。
+- 単一ページのみ通知する場合は `--url https://k-dm.work/path/` を複数回渡せます。エンドポイントは既定で `https://api.indexnow.org/indexnow` を使用しますが、`--endpoint` で変更できます。
