@@ -341,9 +341,9 @@ div.notices.ref p     { border-top-color:#06b6d4; }
   box-shadow:var(--shadow-md);
   transition: transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
 }
-.share__btn svg{
-  width:1.25rem;
-  height:1.25rem;
+.share__btn i{
+  font-size:1.25rem;
+  line-height:1;
 }
 .share__btn:hover,
 .share__btn:focus-visible{
@@ -395,11 +395,32 @@ div.notices.ref p     { border-top-color:#06b6d4; }
 }
 @media (max-width:48rem){
   .share--floating{
-    bottom:1rem;
-    right:.9rem;
-    gap:.6rem;
+  bottom:1rem;
+  right:.9rem;
+  gap:.6rem;
   }
   .share__btn{
+    width:2.75rem;
+    height:2.75rem;
+  }
+}
+@media (min-width:62rem){
+  .book-toc-content{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding-bottom:4rem;
+  }
+  .share--floating.share--in-toc{
+    position:sticky;
+    bottom:auto;
+    top:calc(100vh - 4.5rem);
+    right:auto;
+    margin-left:auto;
+    margin-top:auto;
+  }
+  .share--floating.share--in-toc .share__btn{
     width:2.75rem;
     height:2.75rem;
   }
@@ -407,4 +428,3 @@ div.notices.ref p     { border-top-color:#06b6d4; }
 @media print{
   .share--floating{ display:none !important; }
 }
-
