@@ -317,34 +317,94 @@ div.notices.ref p     { border-top-color:#06b6d4; }
 .yt--full { --embed-max: 1400px; }
 
 /* --- Share bar ------------------------------------------------------- */
-.share{
-  display:flex; flex-wrap:wrap; align-items:center; gap:.5rem .5rem;
-  margin-top:2rem; padding:.6rem .75rem;
-  border:1px solid var(--border); border-radius: var(--radius); background: var(--surface);
-  box-shadow: var(--shadow-sm);
+.share--floating{
+  position:fixed;
+  bottom:1.4rem;
+  right:1.2rem;
+  display:flex;
+  flex-direction:column;
+  gap:.75rem;
+  z-index:80;
+  pointer-events:none;
 }
-.share__label{ margin-right:.25rem; color:var(--muted); font-size:.95rem; }
 .share__btn{
-  appearance:none; display:inline-flex; align-items:center; gap:.35rem;
-  padding:.4rem .7rem; border:1px solid var(--border); border-radius: 999px;
-  background:#fff; color:var(--text); text-decoration:none; font-size:.95rem; line-height:1;
-  transition: background-color .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+  pointer-events:auto;
+  width:3rem;
+  height:3rem;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid color-mix(in oklab, var(--border) 70%, transparent);
+  background: color-mix(in oklab, var(--surface) 90%, transparent);
+  color:var(--text);
+  box-shadow:var(--shadow-md);
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
 }
-.share__btn:hover{ transform: translateY(-1px); }
-
-/* ブランド色（hover時のみ色を出して落ち着いた印象に） */
-.share__btn.x:hover        { background:#000;        color:#fff; border-color:#000; }
-.share__btn.facebook:hover { background:#1877F2;     color:#fff; border-color:#1877F2; }
-.share__btn.linkedin:hover { background:#0A66C2;     color:#fff; border-color:#0A66C2; }
-.share__btn.reddit:hover   { background:#FF4500;     color:#fff; border-color:#FF4500; }
-.share__btn.hatena:hover   { background:#00A4DE;     color:#fff; border-color:#00A4DE; }
-.share__btn.line:hover     { background:#06C755;     color:#fff; border-color:#06C755; }
-.share__btn.whatsapp:hover { background:#25D366;     color:#fff; border-color:#25D366; }
-.share__btn.telegram:hover { background:#229ED9;     color:#fff; border-color:#229ED9; }
-
-.share__btn.copy.copied{ background: color-mix(in oklab, var(--link) 10%, #fff); border-color: var(--link); }
-
-/* ダーク */
-[data-theme="dark"] .share{ background: var(--surface); }
-[data-theme="dark"] .share__btn{ background: transparent; }
+.share__btn svg{
+  width:1.25rem;
+  height:1.25rem;
+}
+.share__btn:hover,
+.share__btn:focus-visible{
+  transform: translateY(-2px);
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
+}
+.share__btn:focus-visible{
+  outline:none;
+  border-color:var(--ring);
+  box-shadow:0 0 0 3px color-mix(in oklab, var(--ring) 28%, transparent);
+}
+.share__btn--x{
+  background:#000;
+  border-color:#000;
+  color:#fff;
+}
+.share__btn--facebook{
+  background:#1877F2;
+  border-color:#1877F2;
+  color:#fff;
+}
+.share__btn--copy{
+  background: color-mix(in oklab, var(--surface) 85%, #fff 15%);
+  border-color: color-mix(in oklab, var(--border) 80%, transparent);
+}
+.share__btn--copy.share__btn--copied{
+  background: color-mix(in oklab, var(--link) 20%, #fff 80%);
+  border-color: var(--link);
+  color: var(--link);
+}
+.share__btn--native{
+  background: var(--brand);
+  border-color: var(--brand);
+  color:#fff;
+}
+.share__btn.is-hidden{
+  display:none !important;
+}
+.sr-only{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  border:0;
+  white-space:nowrap;
+}
+@media (max-width:48rem){
+  .share--floating{
+    bottom:1rem;
+    right:.9rem;
+    gap:.6rem;
+  }
+  .share__btn{
+    width:2.75rem;
+    height:2.75rem;
+  }
+}
+@media print{
+  .share--floating{ display:none !important; }
+}
 
