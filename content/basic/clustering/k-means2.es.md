@@ -1,5 +1,7 @@
 ---
-title: "k-means++"
+title: "k-means++ | Inicialización inteligente para mejorar el clustering k-means"
+linkTitle: "k-means++"
+seo_title: "k-means++ | Inicialización inteligente para mejorar el clustering k-means"
 weight: 2
 pre: "2.5.2 "
 title_suffix: "Sembrar centroides con mayor criterio"

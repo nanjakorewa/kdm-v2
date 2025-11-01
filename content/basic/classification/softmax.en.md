@@ -1,5 +1,7 @@
 ---
-title: "Softmax Regression"
+title: "Softmax Regression | Multiclass Logistic Models with Cross-Entropy"
+linkTitle: "Softmax Regression"
+seo_title: "Softmax Regression | Multiclass Logistic Models with Cross-Entropy"
 pre: "2.2.2 "
 weight: 2
 title_suffix: "Predict all class probabilities at once"

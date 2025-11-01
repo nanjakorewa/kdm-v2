@@ -1,5 +1,7 @@
 ---
-title: "Ridge and Lasso Regression"
+title: "Ridge and Lasso Regression | Regularization Strategies for Linear Models"
+linkTitle: "Ridge & Lasso"
+seo_title: "Ridge and Lasso Regression | Regularization Strategies for Linear Models"
 pre: "2.1.2 "
 weight: 2
 title_suffix: "Improve generalization with regularization"

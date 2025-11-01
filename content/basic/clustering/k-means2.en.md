@@ -1,5 +1,7 @@
 ---
-title: "k-means++"
+title: "k-means++ | Smarter Seeding Strategies for k-means Clustering"
+linkTitle: "k-means++"
+seo_title: "k-means++ | Smarter Seeding Strategies for k-means Clustering"
 weight: 2
 pre: "2.5.2 "
 title_suffix: "Smarter centroid seeding for k-means"

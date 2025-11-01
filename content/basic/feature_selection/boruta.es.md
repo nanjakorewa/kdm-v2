@@ -1,5 +1,7 @@
 ---
-title: "Boruta"
+title: "Boruta | Seleccionar características relevantes con bosques aleatorios"
+linkTitle: "Boruta"
+seo_title: "Boruta | Seleccionar características relevantes con bosques aleatorios"
 pre: "2.7.2 "
 weight: 2
 searchtitle: "Ejecutar selección de características con Boruta"

@@ -1,5 +1,7 @@
 ---
-title: "Stacking"
+title: "Stacking | Menggabungkan beberapa model untuk ensemble yang kuat"
+linkTitle: "Stacking"
+seo_title: "Stacking | Menggabungkan beberapa model untuk ensemble yang kuat"
 pre: "2.4.2 "
 weight: 2
 searchtitle: "Stacking menggunakan scikit-learn dalam python"

@@ -1,5 +1,7 @@
 ---
-title: "SVD"
+title: "Singular Value Decomposition (SVD) | Faktorisasi matriks untuk kompresi"
+linkTitle: "SVD"
+seo_title: "Singular Value Decomposition (SVD) | Faktorisasi matriks untuk kompresi"
 pre: "2.6.2 "
 weight: 2
 title_suffix: "Penjelasan Mekanisme"

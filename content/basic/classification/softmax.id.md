@@ -1,5 +1,7 @@
 ---
-title: "Regresi Softmax"
+title: "Regresi softmax | Model logistik multikelas dengan cross-entropy"
+linkTitle: "Regresi softmax"
+seo_title: "Regresi softmax | Model logistik multikelas dengan cross-entropy"
 pre: "2.2.2 "
 weight: 2
 title_suffix: "Memperkirakan probabilitas setiap kelas sekaligus"

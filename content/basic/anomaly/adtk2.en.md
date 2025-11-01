@@ -1,5 +1,7 @@
 ---
-title: "Anomaly Detection②"
+title: "Anomaly Detection Toolkit (ADTK) Part 2 | Windowing and Seasonal Detectors"
+linkTitle: "ADTK advanced"
+seo_title: "Anomaly Detection Toolkit (ADTK) Part 2 | Windowing and Seasonal Detectors"
 pre: "2.9.2"
 weight: 2
 ---

@@ -1,5 +1,7 @@
 ---
-title: "k-means++"
+title: "k-means++ | Inisialisasi centroid cerdas untuk klastering k-means"
+linkTitle: "k-means++"
+seo_title: "k-means++ | Inisialisasi centroid cerdas untuk klastering k-means"
 weight: 2
 pre: "2.5.2 "
 title_suffix: "Memilih centroid awal secara cerdas"

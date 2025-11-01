@@ -1,5 +1,7 @@
----
-title: "Regresiones Ridge y Lasso"
+﻿---
+title: "Regresiones Ridge y Lasso | Regularización para estabilizar modelos lineales"
+linkTitle: "Ridge y Lasso"
+seo_title: "Regresiones Ridge y Lasso | Regularización para estabilizar modelos lineales"
 pre: "2.1.2 "
 weight: 2
 title_suffix: "Mejorar la generalización con regularización"

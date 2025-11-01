@@ -1,5 +1,7 @@
 ---
-title: "SVD"
+title: "特異値分解（SVD）| 行列を分解して情報を圧縮する"
+linkTitle: "SVD"
+seo_title: "特異値分解（SVD）| 行列を分解して情報を圧縮する"
 pre: "2.6.2 "
 weight: 2
 title_suffix: "の仕組みの説明"

@@ -1,5 +1,7 @@
----
-title: "Boruta"
+﻿---
+title: "Boruta | Memilih fitur penting dengan random forest"
+linkTitle: "Boruta"
+seo_title: "Boruta | Memilih fitur penting dengan random forest"
 pre: "2.7.2 "
 weight: 2
 searchtitle: "Melakukan Seleksi Fitur dengan Boruta"

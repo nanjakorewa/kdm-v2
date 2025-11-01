@@ -1,5 +1,7 @@
 ---
-title: "Stacking"
+title: "Stacking | Blending Multiple Models for Stronger Ensembles"
+linkTitle: "Stacking"
+seo_title: "Stacking | Blending Multiple Models for Stronger Ensembles"
 pre: "2.4.2 "
 weight: 2
 searchtitle: "Stacking using scikit-learn in python"

@@ -1,5 +1,7 @@
 ---
-title: "SVD"
+title: "Descomposición en valores singulares (SVD) | Factorizar matrices para comprimir información"
+linkTitle: "SVD"
+seo_title: "Descomposición en valores singulares (SVD) | Factorizar matrices para comprimir información"
 pre: "2.6.2 "
 weight: 2
 title_suffix: "Explicación del funcionamiento"

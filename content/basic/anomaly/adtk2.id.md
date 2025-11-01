@@ -1,5 +1,7 @@
 ---
-title: "Deteksi Anomali②"
+title: "Deteksi anomali dengan ADTK (Bagian 2) | Window, musiman, dan detektor kompleks"
+linkTitle: "ADTK lanjutan"
+seo_title: "Deteksi anomali dengan ADTK (Bagian 2) | Window, musiman, dan detektor kompleks"
 pre: "2.9.2 "
 weight: 2
 ---

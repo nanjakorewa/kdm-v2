@@ -1,5 +1,7 @@
 ---
-title: "Detección de anomalías②"
+title: "Detección de anomalías con ADTK (Parte 2) | Ventanas deslizantes y detectores estacionales"
+linkTitle: "ADTK avanzado"
+seo_title: "Detección de anomalías con ADTK (Parte 2) | Ventanas deslizantes y detectores estacionales"
 pre: "2.9.2 "
 weight: 2
 ---

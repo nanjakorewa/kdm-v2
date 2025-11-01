@@ -1,5 +1,7 @@
----
-title: "Boruta"
+﻿---
+title: "Boruta | ランダムフォレストで重要な特徴量を選び抜く"
+linkTitle: "Boruta"
+seo_title: "Boruta | ランダムフォレストで重要な特徴量を選び抜く"
 pre: "2.7.2 "
 weight: 2
 searchtitle: "Borutaを使い特徴選択を実行する"

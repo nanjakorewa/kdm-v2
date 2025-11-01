@@ -1,5 +1,7 @@
----
-title: "Regresi Ridge dan Lasso"
+﻿---
+title: "Regresi Ridge dan Lasso | Regularisasi untuk menstabilkan model linear"
+linkTitle: "Ridge & Lasso"
+seo_title: "Regresi Ridge dan Lasso | Regularisasi untuk menstabilkan model linear"
 pre: "2.1.2 "
 weight: 2
 title_suffix: "Meningkatkan generalisasi dengan regularisasi"

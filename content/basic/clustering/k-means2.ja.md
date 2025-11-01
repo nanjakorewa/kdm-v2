@@ -1,5 +1,7 @@
 ---
-title: "k-means++"
+title: "k-means++ | スマートな初期重心でk-meansを安定化する"
+linkTitle: "k-means++"
+seo_title: "k-means++ | スマートな初期重心でk-meansを安定化する"
 weight: 2
 pre: "2.5.2 "
 title_suffix: "初期セントロイドを賢く選ぶ"

@@ -1,5 +1,7 @@
 ---
-title: "Regresión softmax"
+title: "Regresión softmax | Modelos multiclase con entropía cruzada"
+linkTitle: "Regresión softmax"
+seo_title: "Regresión softmax | Modelos multiclase con entropía cruzada"
 pre: "2.2.2 "
 weight: 2
 title_suffix: "Predecir todas las probabilidades a la vez"

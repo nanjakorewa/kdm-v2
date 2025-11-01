@@ -1,5 +1,7 @@
 ---
-title: "SVD"
+title: "Singular Value Decomposition | Matrix Factorization for Compression"
+linkTitle: "SVD"
+seo_title: "Singular Value Decomposition | Matrix Factorization for Compression"
 pre: "2.6.2 "
 weight: 2
 title_suffix: "の仕組みの説明"

@@ -1,5 +1,7 @@
 ---
-title: "Stacking"
+title: "Stacking | Combinar modelos para un ensamble más potente"
+linkTitle: "Stacking"
+seo_title: "Stacking | Combinar modelos para un ensamble más potente"
 pre: "2.4.2"
 weight: 2
 title_suffix: "Explicación del Funcionamiento"
