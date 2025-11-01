@@ -1,71 +1,69 @@
----
-title: "平均適合率（Average Precision, AP）"
+﻿---
+title: "平均適合率（Average Precision, AP）| PR 曲線で見るモデル品質"
+linkTitle: "Average Precision"
+seo_title: "平均適合率（Average Precision, AP）| PR 曲線で見るモデル品質"
 pre: "4.3.9 "
 weight: 9
-title_suffix: "PR曲線の面積で確率順位を評価"
 ---
 
 {{< lead >}}
-平均適合率（Average Precision, AP）は、Precision-Recall 曲線の面積に相当する指標で、スコアの順位付けがどれだけ良いかを測ります。確率を出力するモデルやランキングモデルの評価に広く用いられます。
+Average Precision（AP）は Precision–Recall 曲線の下側面積を、再現率の変化量を重みとして積み上げた指標です。Python 3.13 のコードで算出し、F1 や ROC-AUC と並べてモデル品質を評価しましょう。
 {{< /lead >}}
 
 ---
 
 ## 1. 定義
 
-AP は離散的な再現率レベルでの適合率を積み上げた値として定義されます。
+PR 曲線上の各点を \((R_n, P_n)\) とすると、Average Precision は次のように表されます。
 
-$$
-\mathrm{AP} = \sum_n (R_n - R_{n-1}) P_n
-$$
 
-ここで \\(R_n\\) は再現率、\\(P_n\\) は対応する適合率です。再現率の差分を重みにして積分を近似するイメージです。
+\mathrm{AP} = \sum_{n}(R_n - R_{n-1}) P_n
+
+
+再現率（Recall）の増加分を重みとして適合率（Precision）を積み上げるため、閾値を下げていくときの平均的な精度を表現できます。
 
 ---
 
-## 2. Python で計算
+## 2. Python 3.13 での計算
 
-```python
+`ash
+python --version        # 例: Python 3.13.0
+pip install scikit-learn matplotlib
+`
+
+Precision-Recall の記事で生成した確率出力 proba を再利用し、precision_recall_curve と verage_precision_score で AP を計算します。
+
+`python
 from sklearn.metrics import precision_recall_curve, average_precision_score
 
-precision, recall, thresholds = precision_recall_curve(y_test, y_score)
-ap = average_precision_score(y_test, y_score)
+precision, recall, thresholds = precision_recall_curve(y_test, proba)
+ap = average_precision_score(y_test, proba)
+print(f"Average Precision: {ap:.3f}")
+`
 
-print("Average Precision:", round(ap, 3))
-```
+PR 曲線の描画は先ほどのスクリプトで保存した pr_curve.png を参照できます。
 
-`y_score` は陽性クラスの予測確率やスコアを渡します。二値分類では `average_precision_score` が簡単に計算でき、多ラベルや多クラスでは `average` 引数で `macro`、`weighted` などを指定できます。
+{{< figure src="/images/eval/classification/precision-recall/pr_curve.png" alt="Precision-Recall 曲線" caption="AP は PR 曲線の下側面積を再現率の増分で重み付けした指標。" >}}
 
 ---
 
 ## 3. AP と PR-AUC の違い
 
-AP は標準的には「再現率の階段関数に基づく面積」、PR-AUC は数値積分による面積です。Scikit-learn の `average_precision_score` は AP を返し、`sklearn.metrics.auc(recall, precision)` は単純積分の PR-AUC を返します。AP は再現率のステップに合わせて補間するため、順位評価として安定しています。
+scikit-learn では verage_precision_score が AP、sklearn.metrics.auc(recall, precision) が単純な台形公式による PR-AUC を返します。AP はステップ状の曲線を想定して再現率の変化量を重視するため、クラス不均衡なデータでより安定した評価が得られることが多いです。
 
 ---
 
-## 4. ランキング指標としての解釈
+## 4. 実務での活用ポイント
 
-- スコアを降順に並べたときの Precision を、各再現率レベルで平均したもの。
-- AP が高いほど、陽性サンプルを上位に集められている。
-- AP = 1 の場合、陽性がすべて上位に位置し、一度も適合率が下がらない理想的なケース。
-
-情報検索や推薦システムでは、平均適合率の平均（MAP）を用いてランキングモデル全体を評価します。
-
----
-
-## 5. 実務での活用
-
-- **しきい値に依存しない評価**：PR 曲線全体をまとめて評価できるため、固定しきい値の F1 よりも総合的な判定が可能。
-- **不均衡データ**：陽性クラスが少ない場合でも、確率順位の良さを評価できる。
-- **アンサンブル**：複数モデルの確率を組み合わせる際、AP を指標にして最適な重みを探索できる。
+- **閾値選択の指針** … AP が高いモデルほど、広い閾値範囲で高い Precision を維持しやすい。
+- **ランキング課題の評価** … レコメンドや情報検索では、MAP（平均 AP）として各クエリの AP を平均するのが一般的。
+- **F1 との比較** … F1 は特定の閾値に依存する一方、AP は閾値全体を通した性能を可視化できる。
 
 ---
 
 ## まとめ
 
-- Average Precision は PR 曲線の面積に相当し、確率スコアの順位付け性能を測る。
-- `average_precision_score` で簡単に算出でき、特にクラス不均衡タスクで有効。
-- F1 や ROC-AUC と併用し、しきい値固定の性能とランキング性能の両方を確認しよう。
-
+- Average Precision は Precision–Recall 曲線全体の品質を数値化した指標。少数クラスの挙動も反映される。
+- Python 3.13 + scikit-learn では verage_precision_score を使えば数行で算出できる。
+- F1、ROC-AUC、精度曲線と合わせて利用し、モデル選定や閾値調整の議論をスムーズに進めよう。
 ---

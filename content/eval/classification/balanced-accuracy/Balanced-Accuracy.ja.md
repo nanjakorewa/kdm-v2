@@ -1,83 +1,92 @@
----
-title: "バランスド正解率（Balanced Accuracy）"
+﻿---
+title: "バランスド正解率（Balanced Accuracy）| 不均衡データでの評価"
+linkTitle: "Balanced Accuracy"
+seo_title: "バランスド正解率（Balanced Accuracy）| 不均衡データでの評価"
 pre: "4.3.6 "
 weight: 6
-title_suffix: "クラス不均衡でも公平に評価"
 ---
 
 {{< lead >}}
-バランスド正解率（Balanced Accuracy）は、各クラスの再現率を単純平均した指標です。多数派クラスだけが正しく分類されても高くならないため、不均衡データのベースラインとして有効です。
+Balanced Accuracy はクラスごとの再現率を平均した指標で、陽性・陰性のバランスが崩れたデータでも過大評価を避けられます。Python 3.13 のコード例で Accuracy との違いを確認し、どのようなケースで採用すべきか整理します。
 {{< /lead >}}
 
 ---
 
 ## 1. 定義
 
-二値分類では感度（True Positive Rate）と特異度（True Negative Rate）の平均として定義されます。
+陽性クラスの再現率（TPR）と陰性クラスの再現率（TNR）を平均したものが Balanced Accuracy です。混同行列の記号を使うと次式になります。
 
-$$
-\mathrm{Balanced\ Accuracy} = \frac{1}{2} \left( \frac{TP}{TP + FN} + \frac{TN}{TN + FP} \right)
-$$
 
-多クラスの場合は、各クラスの再現率を計算して単純平均します。
+\mathrm{Balanced\ Accuracy} = \frac{1}{2}\left(\frac{TP}{TP + FN} + \frac{TN}{TN + FP}\right)
+
+
+多クラス分類の場合も、各クラスの再現率を平均すれば同様の考え方で拡張できます。
 
 ---
 
-## 2. Python で計算
+## 2. Python 3.13 での実装
 
-```python
-from sklearn.datasets import make_classification
-from sklearn.model_selection import train_test_split
+`ash
+python --version        # 例: Python 3.13.0
+pip install scikit-learn matplotlib
+`
+
+以下のコードは Accuracy との比較に使ったものと同じで、ランダムフォレストを学習させたあと alanced_accuracy_score と ccuracy_score を並べています。図は Accuracy の記事でも使っている static/images/eval/classification/accuracy/accuracy_vs_balanced.png を共有します。
+
+`python
+import matplotlib.pyplot as plt
+import numpy as np
+from pathlib import Path
+from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import balanced_accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, balanced_accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
-X, y = make_classification(
-    n_samples=5000,
-    n_features=20,
-    weights=[0.9, 0.1],
-    random_state=42,
-)
-
+X, y = load_breast_cancer(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, stratify=y, random_state=42
+    X, y, test_size=0.25, random_state=42, stratify=y
 )
 
-clf = RandomForestClassifier(class_weight="balanced", random_state=42)
-clf.fit(X_train, y_train)
-pred = clf.predict(X_test)
+pipeline = make_pipeline(
+    StandardScaler(),
+    RandomForestClassifier(random_state=42, n_estimators=300),
+)
+pipeline.fit(X_train, y_train)
+y_pred = pipeline.predict(X_test)
 
-bal_acc = balanced_accuracy_score(y_test, pred)
-print("Balanced Accuracy =", round(bal_acc, 3))
-print(confusion_matrix(y_test, pred))
-```
+acc = accuracy_score(y_test, y_pred)
+bal_acc = balanced_accuracy_score(y_test, y_pred)
+print(f"Accuracy: {acc:.3f}, Balanced Accuracy: {bal_acc:.3f}")
+`
 
-`class_weight="balanced"` を指定すると、少数派クラスの重みが自動調整され、Balanced Accuracy が改善することがあります。
-
----
-
-## 3. 直感と活用
-
-- **Accuracy との差**：多数派の正解率ばかり高いモデルは Balanced Accuracy で減点されるため、誤った安心感を防げます。
-- **再現率の平均**：各クラスの再現率が同じなら Accuracy と一致します。極端な不均衡では Balanced Accuracy の方が実態を表すことが多いです。
-- **しきい値調整の指標**：予測確率のしきい値を変えて Balanced Accuracy を最大化すると、各クラスの見落としを均等に抑えられます。
+{{< figure src="/images/eval/classification/accuracy/accuracy_vs_balanced.png" alt="Accuracy と Balanced Accuracy の比較" caption="Balanced Accuracy はクラスごとの再現率を平均するため、不均衡データでも過大評価を避けられる。" >}}
 
 ---
 
-## 4. 他指標との比較
+## 3. いつ Balanced Accuracy を使うか
 
-| 指標 | 特徴 | 注意点 |
+- **クラス不均衡が大きいとき** … Accuracy だけでは多い方のクラスを当ててしまうだけで高得点になる。Balanced Accuracy なら少数クラスの再現率も同じ重みで評価できる。
+- **モデル間の比較** … 不均衡データ上で複数モデルを比較する際、Balanced Accuracy を併用すると能力差が浮き彫りになる。
+- **閾値調整の目安** … Precision / Recall と組み合わせれば、どの閾値で両クラスをバランスよく拾えているかが分かる。
+
+---
+
+## 4. 他指標との併用
+
+| 指標 | 何を測るか | 不均衡データでの注意点 |
 | --- | --- | --- |
-| Accuracy | 全体の正解率 | 不均衡だと多数派の影響が大きい |
-| Recall / Sensitivity | 特定クラスに着目 | 負例は無視される |
-| **Balanced Accuracy** | クラスごと再現率を平均 | 各クラスの重要度が同じという前提 |
-| Macro F1 | Precision と Recall の平均 | 適合率も含めたいときに有効 |
+| Accuracy | 全体の正解割合 | 多数派クラスだけを当てても高得点になる |
+| Recall / Sensitivity | 特定クラスの検出率 | クラスごとに値が異なるので別々に報告が必要 |
+| **Balanced Accuracy** | クラスごとの再現率の平均 | 各クラスを同じ重みで評価できる |
+| Macro F1 | Precision と Recall の調和平均（各クラス同等） | Precision も考慮したい場合に有効 |
 
 ---
 
 ## まとめ
 
-- Balanced Accuracy は各クラスの再現率を平等に扱うため、不均衡データの評価に適している。
-- `balanced_accuracy_score` で簡単に算出でき、Accuracy と並べて報告すると誤認を防げる。
-- しきい値やクラス重みの調整と組み合わせ、モデルがどのクラスも適切に扱えているか確認しよう。
-
+- Balanced Accuracy は「クラスごとの再現率の平均」。不均衡データでモデルを評価する際の基準に適している。
+- Python 3.13 では alanced_accuracy_score 一行で計算でき、Accuracy との違いを数値で比較できる。
+- Precision / Recall / F1 など他指標と併せて、どのクラスを重視するかを明確にしながら評価を進めよう。
 ---
