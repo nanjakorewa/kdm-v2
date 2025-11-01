@@ -1,101 +1,107 @@
----
-title: "ROC-AUC"
-pre: "4.3.1 "
+﻿---
+title: "ROC-AUC | Panduan menyesuaikan ambang keputusan dan membandingkan model"
+linkTitle: "ROC-AUC"
+seo_title: "ROC-AUC | Panduan menyesuaikan ambang keputusan dan membandingkan model"
+pre: "4.3.3 "
 weight: 1
-searchtitle: "plot grafik ROC-AUC dalam python"
 ---
 
-Area di bawah kurva ROC disebut AUC (Area Under the Curve) dan digunakan sebagai indeks evaluasi untuk model klasifikasi; yang terbaik adalah ketika AUC adalah 1, dan 0.5 untuk model acak dan sama sekali tidak valid.
+{{< lead >}}
+Kurva ROC menggambarkan hubungan antara true positive rate dan false positive rate ketika ambang keputusan berubah, sedangkan AUC (Area Under the Curve) merangkum kemampuan pemeringkatan model. Dengan Python 3.13 kita dapat memvisualkannya dan menggunakan hasilnya untuk memilih ambang yang tepat.
+{{< /lead >}}
 
-- ROC-AUC adalah contoh tipikal dari indeks evaluasi klasifikasi biner
-- 1 adalah yang terbaik, 0,5 mendekati prediksi yang benar-benar acak
-- Di bawah 0,5 bisa jadi ketika prediksi adalah kebalikan dari jawaban yang benar
-- Merencanakan kurva ROC dapat membantu menentukan ambang klasifikasi yang seharusnya
+---
 
+## 1. Makna kurva ROC dan AUC
 
-```python
-import numpy as np
+Kurva ROC menempatkan **False Positive Rate (FPR)** pada sumbu x dan **True Positive Rate (TPR)** pada sumbu y sambil menggeser ambang prediksi dari 0 ke 1. Nilai AUC berada di kisaran 0.5 (acak) hingga 1.0 (pemisahan sempurna).
+
+- AUC ≈ 1.0 → model sangat baik dalam membedakan kelas.
+- AUC ≈ 0.5 → serupa dengan tebakan acak.
+- AUC < 0.5 → mungkin tanda bahwa keputusan perlu dibalik atau ambang perlu disesuaikan signifikan.
+
+---
+
+## 2. Implementasi dan visualisasi di Python 3.13
+
+Pastikan interpreter dan paket yang dibutuhkan telah tersedia:
+
+`ash
+python --version        # contoh: Python 3.13.0
+pip install scikit-learn matplotlib
+`
+
+Kode di bawah ini melatih regresi logistik pada dataset Breast Cancer, menampilkan kurva ROC, dan menyimpan gambar ke static/images/eval/classification/rocauc. Alur ini kompatibel dengan generate_eval_assets.py untuk regenerasi otomatis.
+
+`python
 import matplotlib.pyplot as plt
-from sklearn.datasets import make_classification
-from sklearn.ensemble import RandomForestClassifier
+from pathlib import Path
+from sklearn.datasets import load_breast_cancer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import RocCurveDisplay, roc_auc_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_curve
-```
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
-## Plot Kurva ROC
-{{% notice document %}}
-[sklearn.metrics.roc_curve](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html)
-{{% /notice %}}
-
-### Fungsi untuk memplot Kurva ROC
-
-```python
-def plot_roc_curve(test_y, pred_y):
-    """Plot Kurva ROC dari jawaban dan prediksi yang benar
-
-    Args:
-        test_y (ndarray of shape (n_samples,)): y
-        pred_y (ndarray of shape (n_samples,)): Nilai prediksi untuk y
-    """
-    # Tingkat Positif Palsu, Tingkat Positif Sejati
-
-    fprs, tprs, thresholds = roc_curve(test_y, pred_y)
-
-    # plot ROC
-    plt.figure(figsize=(8, 8))
-    plt.plot([0, 1], [0, 1], linestyle="-", c="k", alpha=0.2, label="ROC-AUC=0.5")
-    plt.plot(fprs, tprs, color="orange", label="ROC Curve")
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-
-    # Isi area yang sesuai dengan skor ROC-AUC
-    y_zeros = [0 for _ in tprs]
-    plt.fill_between(fprs, y_zeros, tprs, color="orange", alpha=0.3, label="ROC-AUC")
-    plt.legend()
-    plt.show()
-```
-
-### Membuat model dan memplot Kurva ROC terhadap data sampel
-
-```python
-X, y = make_classification(
-    n_samples=1000,
-    n_classes=2,
-    n_informative=4,
-    n_clusters_per_class=3,
-    random_state=RND,
-)
-train_X, test_X, train_y, test_y = train_test_split(
-    X, y, test_size=0.33, random_state=RND
+X, y = load_breast_cancer(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y
 )
 
-model = RandomForestClassifier(max_depth=5)
-model.fit(train_X, train_y)
-pred_y = model.predict_proba(test_X)[:, 1]
-plot_roc_curve(test_y, pred_y)
-```
+pipeline = make_pipeline(
+    StandardScaler(),
+    LogisticRegression(max_iter=2000, solver="lbfgs"),
+)
+pipeline.fit(X_train, y_train)
+proba = pipeline.predict_proba(X_test)[:, 1]
+auc = roc_auc_score(y_test, proba)
+print(f"ROC-AUC: {auc:.3f}")
 
+fig, ax = plt.subplots(figsize=(5, 5))
+RocCurveDisplay.from_predictions(
+    y_test,
+    proba,
+    name="Logistic Regression",
+    ax=ax,
+)
+ax.plot([0, 1], [0, 1], "--", color="grey", alpha=0.5, label="Acak")
+ax.set_xlabel("False Positive Rate")
+ax.set_ylabel("True Positive Rate")
+ax.set_title("Kurva ROC (Breast Cancer Dataset)")
+ax.legend(loc="lower right")
+fig.tight_layout()
+output_dir = Path("static/images/eval/classification/rocauc")
+output_dir.mkdir(parents=True, exist_ok=True)
+fig.savefig(output_dir / "roc_curve.png", dpi=150)
+plt.close(fig)
+`
 
-    
-![png](/images/eval/classification/ROC-AUC_files/ROC-AUC_6_0.png)
-    
+{{< figure src="/images/eval/classification/rocauc/roc_curve.png" alt="Kurva ROC" caption="AUC adalah luas di bawah kurva ROC; makin besar nilainya, makin baik kemampuan pemeringkatan model." >}}
 
+---
 
-### Hitung ROC-AUC
-{{% notice document %}}
-[sklearn.metrics.roc_auc_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
-{{% /notice %}}
+## 3. Menggunakan ROC-AUC untuk menyesuaikan ambang
 
+- **Kasus sensitif terhadap recall** (kesehatan, fraud): pilih titik pada kurva yang menjaga TPR tinggi dengan FPR yang masih dapat diterima.
+- **Menjaga keseimbangan precision–recall**: model dengan AUC tinggi cenderung stabil di berbagai ambang.
+- **Perbandingan model**: AUC memberikan ukuran tunggal sebelum menentukan ambang operasional.
 
-```python
-from sklearn.metrics import roc_auc_score
+Sertakan analisis Precision–Recall agar dampak perubahan ambang terhadap kualitas prediksi semakin jelas.
 
-roc_auc_score(test_y, pred_y)
-```
+---
 
+## 4. Checklist operasional
 
+1. **Periksa ketidakseimbangan data** – walau AUC hanya sekitar 0.5, mungkin ada ambang lain yang menyelamatkan kasus penting.
+2. **Uji bobot kelas** – lihat apakah memberi bobot berbeda meningkatkan AUC.
+3. **Bagikan visualisasinya** – tampilkan kurva ROC di dashboard agar tim mudah memahami trade-off.
+4. **Notebook Python 3.13** – simpan evaluasi agar dapat dijalankan ulang setiap kali model diperbarui.
 
+---
 
-    0.89069793083171
+## Ringkasan
 
-
+- ROC-AUC menilai kemampuan model mengurutkan kelas positif di depan kelas negatif pada seluruh rentang ambang.
+- Di Python 3.13, gunakan RocCurveDisplay dan oc_auc_score untuk menghitung serta memvisualisasikannya dengan ringkas.
+- Kombinasikan dengan metrik precision–recall guna memilih ambang yang sejalan dengan kebutuhan bisnis.
+---

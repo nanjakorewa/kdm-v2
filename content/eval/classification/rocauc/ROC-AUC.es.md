@@ -1,101 +1,107 @@
----
-title: "ROC-AUC"
-pre: "4.3.1 "
+﻿---
+title: "ROC-AUC | Guía para ajustar umbrales y comparar modelos"
+linkTitle: "ROC-AUC"
+seo_title: "ROC-AUC | Guía para ajustar umbrales y comparar modelos"
+pre: "4.3.3 "
 weight: 1
-searchtitle: "trazar el gráfico ROC-AUC en python"
 ---
 
-El área bajo la curva ROC se denomina AUC (Area Under the Curve) y se utiliza como índice de evaluación de los modelos de clasificación; el mejor es cuando el AUC es 1, y 0,5 para los modelos aleatorios y totalmente inválidos.
+{{< lead >}}
+La curva ROC muestra cómo evolucionan la tasa de verdaderos positivos y la tasa de falsos positivos cuando movemos el umbral de decisión, y el AUC (área bajo la curva) resume esa capacidad de discriminación. Con código reproducible en Python 3.13 podemos visualizarla y usarla para calibrar el modelo.
+{{< /lead >}}
 
-- El ROC-AUC es un ejemplo típico de índice de evaluación de clasificación binaria
-- 1 es el mejor, 0,5 se acerca a una predicción totalmente aleatoria
-- Por debajo de 0,5 puede ser cuando la predicción es lo contrario de la respuesta correcta
-- El trazado de la curva ROC puede ayudar a determinar cuál debe ser el umbral de clasificación
+---
 
+## 1. Qué representan la curva ROC y el AUC
 
-```python
-import numpy as np
+La curva ROC traza la **tasa de falsos positivos (FPR)** en el eje x y la **tasa de verdaderos positivos (TPR)** en el eje y mientras variamos el umbral entre 0 y 1. El AUC toma valores entre 0.5 (azar) y 1.0 (separación perfecta).
+
+- AUC ≈ 1.0 → el modelo distingue muy bien ambas clases.
+- AUC ≈ 0.5 → comportamiento aleatorio.
+- AUC < 0.5 → la predicción puede estar “invertida”, por lo que cambiar el signo o el umbral podría mejorarla.
+
+---
+
+## 2. Implementación y visualización con Python 3.13
+
+Comprueba el intérprete e instala las dependencias:
+
+`ash
+python --version        # p. ej. Python 3.13.0
+pip install scikit-learn matplotlib
+`
+
+El código siguiente entrena una regresión logística sobre el conjunto Breast Cancer, genera la curva ROC y guarda la figura en static/images/eval/classification/rocauc. Es compatible con generate_eval_assets.py para regenerar los activos cuando sea necesario.
+
+`python
 import matplotlib.pyplot as plt
-from sklearn.datasets import make_classification
-from sklearn.ensemble import RandomForestClassifier
+from pathlib import Path
+from sklearn.datasets import load_breast_cancer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import RocCurveDisplay, roc_auc_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_curve
-```
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
-## Plot ROC Curve
-{{% notice document %}}
-[sklearn.metrics.roc_curve](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html)
-{{% /notice %}}
-
-### Function to plot ROC Curve
-
-```python
-def plot_roc_curve(test_y, pred_y):
-    """Trazar la curva ROC a partir de las respuestas correctas y las predicciones
-
-    Args:
-        test_y (ndarray of shape (n_samples,)): y
-        pred_y (ndarray of shape (n_samples,)): Valor previsto para y
-    """
-    # Tasa de falsos positivos, tasa de verdaderos positivos
-    fprs, tprs, thresholds = roc_curve(test_y, pred_y)
-
-    # gráfico ROC-AUC
-    plt.figure(figsize=(8, 8))
-    plt.plot([0, 1], [0, 1], linestyle="-", c="k", alpha=0.2, label="ROC-AUC=0.5")
-    plt.plot(fprs, tprs, color="orange", label="ROC Curve")
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-
-    # Rellene el área correspondiente a la puntuación ROC-AUC
-    y_zeros = [0 for _ in tprs]
-    plt.fill_between(fprs, y_zeros, tprs, color="orange", alpha=0.3, label="ROC-AUC")
-    plt.legend()
-    plt.show()
-```
-
-### Create a model and plot ROC Curve against sample data
-
-
-```python
-X, y = make_classification(
-    n_samples=1000,
-    n_classes=2,
-    n_informative=4,
-    n_clusters_per_class=3,
-    random_state=RND,
-)
-train_X, test_X, train_y, test_y = train_test_split(
-    X, y, test_size=0.33, random_state=RND
+X, y = load_breast_cancer(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y
 )
 
-model = RandomForestClassifier(max_depth=5)
-model.fit(train_X, train_y)
-pred_y = model.predict_proba(test_X)[:, 1]
-plot_roc_curve(test_y, pred_y)
-```
+pipeline = make_pipeline(
+    StandardScaler(),
+    LogisticRegression(max_iter=2000, solver="lbfgs"),
+)
+pipeline.fit(X_train, y_train)
+proba = pipeline.predict_proba(X_test)[:, 1]
+auc = roc_auc_score(y_test, proba)
+print(f"ROC-AUC: {auc:.3f}")
 
+fig, ax = plt.subplots(figsize=(5, 5))
+RocCurveDisplay.from_predictions(
+    y_test,
+    proba,
+    name="Logistic Regression",
+    ax=ax,
+)
+ax.plot([0, 1], [0, 1], "--", color="grey", alpha=0.5, label="Aleatorio")
+ax.set_xlabel("False Positive Rate")
+ax.set_ylabel("True Positive Rate")
+ax.set_title("Curva ROC (Breast Cancer Dataset)")
+ax.legend(loc="lower right")
+fig.tight_layout()
+output_dir = Path("static/images/eval/classification/rocauc")
+output_dir.mkdir(parents=True, exist_ok=True)
+fig.savefig(output_dir / "roc_curve.png", dpi=150)
+plt.close(fig)
+`
 
-    
-![png](/images/eval/classification/ROC-AUC_files/ROC-AUC_6_0.png)
-    
+{{< figure src="/images/eval/classification/rocauc/roc_curve.png" alt="Ejemplo de curva ROC" caption="El área bajo la curva (AUC) resume la capacidad del modelo para ordenar correctamente las clases." >}}
 
+---
 
-### Calculate ROC-AUC
-{{% notice document %}}
-[sklearn.metrics.roc_auc_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
-{{% /notice %}}
+## 3. Uso práctico para ajustar umbrales
 
+- **Dominios sensibles al recall** (salud, fraude): selecciona un punto de la curva que maximice TPR con un FPR aceptable.
+- **Balance precisión–recall**: los modelos con AUC alto suelen mantener buen rendimiento en un rango amplio de umbrales.
+- **Comparación de modelos**: el AUC ofrece un escalar independiente del umbral para evaluar alternativas antes de elegir el punto de operación.
 
-```python
-from sklearn.metrics import roc_auc_score
+Combina ROC-AUC con el análisis de precisión–recall para comprender el costo de mover el umbral.
 
-roc_auc_score(test_y, pred_y)
-```
+---
 
+## 4. Lista de comprobación operativa
 
+1. **Revisa el desbalanceo** – incluso con AUC ≈ 0.5, otro umbral puede rescatar casos valiosos.
+2. **Prueba pesos de clase** – observa si ajustar los pesos mejora el AUC.
+3. **Comparte la visualización** – incluir la curva ROC en dashboards facilita discutir trade-offs con el equipo.
+4. **Notebook reproducible en Python 3.13** – mantener el flujo documentado agiliza las reevaluaciones tras cada retraining.
 
+---
 
-    0.89069793083171
+## Resumen
 
-
+- ROC-AUC mide la capacidad de un modelo para ordenar los positivos por encima de los negativos a lo largo de todos los umbrales.
+- En Python 3.13, RocCurveDisplay y oc_auc_score simplifican el cálculo y la visualización.
+- Úsalo junto a métricas de precision–recall para seleccionar umbrales acordes a los objetivos de negocio.
+---

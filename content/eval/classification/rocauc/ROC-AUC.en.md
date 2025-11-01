@@ -1,101 +1,107 @@
----
-title: "ROC-AUC"
-pre: "4.3.1 "
+﻿---
+title: "ROC-AUC | A guide to threshold tuning and model comparison"
+linkTitle: "ROC-AUC"
+seo_title: "ROC-AUC | A guide to threshold tuning and model comparison"
+pre: "4.3.3 "
 weight: 1
-searchtitle: "plot ROC-AUC graph in python"
 ---
 
-The area under the ROC curve is called AUC (Area Under the Curve) and is used as an evaluation index for classification models; the best is when the AUC is 1, and 0.5 for random and totally invalid models.
+{{< lead >}}
+The ROC curve plots the trade-off between the true-positive rate and the false-positive rate, and the area underneath it (AUC) summarises the classifier’s ranking ability. With Python 3.13 code in hand, we can visualise the curve, compute its AUC, and use it to fine-tune thresholds.
+{{< /lead >}}
 
-- ROC-AUC is a typical example of binary classification evaluation index
-- 1 is the best, 0.5 is close to a completely random prediction
-- Below 0.5 can be when the prediction is the opposite of the correct answer
-- Plotting the ROC curve can help determine what the classification threshold should be
+---
 
+## 1. What ROC and AUC represent
 
-```python
-import numpy as np
+The ROC curve traces **False Positive Rate (FPR)** on the x-axis and **True Positive Rate (TPR)** on the y-axis while sweeping the decision threshold from 0 to 1. The area under the curve (AUC) ranges between 0.5 (random guessing) and 1.0 (perfect separation).
+
+- AUC ≈ 1.0 → excellent discrimination
+- AUC ≈ 0.5 → indistinguishable from random
+- AUC < 0.5 → the model may have flipped polarity; inverting the decision rule could improve performance
+
+---
+
+## 2. Implementation and plotting in Python 3.13
+
+Check your interpreter and install the required packages:
+
+`ash
+python --version        # e.g. Python 3.13.0
+pip install scikit-learn matplotlib
+`
+
+The code below trains a logistic regression model on the breast cancer dataset, draws the ROC curve, and saves the figure to static/images/eval/classification/rocauc. It is compatible with generate_eval_assets.py so you can refresh assets automatically.
+
+`python
 import matplotlib.pyplot as plt
-from sklearn.datasets import make_classification
-from sklearn.ensemble import RandomForestClassifier
+from pathlib import Path
+from sklearn.datasets import load_breast_cancer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import RocCurveDisplay, roc_auc_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_curve
-```
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
-## Plot ROC Curve
-{{% notice document %}}
-[sklearn.metrics.roc_curve](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html)
-{{% /notice %}}
-
-### Function to plot ROC Curve
-
-```python
-def plot_roc_curve(test_y, pred_y):
-    """Plot ROC Curve from correct answers and predictions
-
-    Args:
-        test_y (ndarray of shape (n_samples,)): y
-        pred_y (ndarray of shape (n_samples,)): Predicted value for y
-    """
-    # False Positive Rate, True Positive Rate
-    fprs, tprs, thresholds = roc_curve(test_y, pred_y)
-
-    # plot ROC
-    plt.figure(figsize=(8, 8))
-    plt.plot([0, 1], [0, 1], linestyle="-", c="k", alpha=0.2, label="ROC-AUC=0.5")
-    plt.plot(fprs, tprs, color="orange", label="ROC Curve")
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-
-    # Fill in the area corresponding to the ROC-AUC score
-    y_zeros = [0 for _ in tprs]
-    plt.fill_between(fprs, y_zeros, tprs, color="orange", alpha=0.3, label="ROC-AUC")
-    plt.legend()
-    plt.show()
-```
-
-### Create a model and plot ROC Curve against sample data
-
-
-```python
-X, y = make_classification(
-    n_samples=1000,
-    n_classes=2,
-    n_informative=4,
-    n_clusters_per_class=3,
-    random_state=RND,
-)
-train_X, test_X, train_y, test_y = train_test_split(
-    X, y, test_size=0.33, random_state=RND
+X, y = load_breast_cancer(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y
 )
 
-model = RandomForestClassifier(max_depth=5)
-model.fit(train_X, train_y)
-pred_y = model.predict_proba(test_X)[:, 1]
-plot_roc_curve(test_y, pred_y)
-```
+pipeline = make_pipeline(
+    StandardScaler(),
+    LogisticRegression(max_iter=2000, solver="lbfgs"),
+)
+pipeline.fit(X_train, y_train)
+proba = pipeline.predict_proba(X_test)[:, 1]
+auc = roc_auc_score(y_test, proba)
+print(f"ROC-AUC: {auc:.3f}")
 
+fig, ax = plt.subplots(figsize=(5, 5))
+RocCurveDisplay.from_predictions(
+    y_test,
+    proba,
+    name="Logistic Regression",
+    ax=ax,
+)
+ax.plot([0, 1], [0, 1], "--", color="grey", alpha=0.5, label="Random")
+ax.set_xlabel("False Positive Rate")
+ax.set_ylabel("True Positive Rate")
+ax.set_title("ROC Curve (Breast Cancer Dataset)")
+ax.legend(loc="lower right")
+fig.tight_layout()
+output_dir = Path("static/images/eval/classification/rocauc")
+output_dir.mkdir(parents=True, exist_ok=True)
+fig.savefig(output_dir / "roc_curve.png", dpi=150)
+plt.close(fig)
+`
 
-    
-![png](/images/eval/classification/ROC-AUC_files/ROC-AUC_6_0.png)
-    
+{{< figure src="/images/eval/classification/rocauc/roc_curve.png" alt="ROC curve example" caption="The AUC measures the area below the ROC curve; higher values indicate better ranking ability." >}}
 
+---
 
-### Calculate ROC-AUC
-{{% notice document %}}
-[sklearn.metrics.roc_auc_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
-{{% /notice %}}
+## 3. Using the curve for threshold tuning
 
+- **Recall-sensitive domains** (healthcare, fraud): move along the curve to pick a higher TPR while keeping FPR acceptable.
+- **Balancing precision vs. recall**: models with high AUC typically maintain good performance across a wider range of thresholds.
+- **Model comparison**: AUC provides a single scalar to compare classifiers before picking an operating point.
 
-```python
-from sklearn.metrics import roc_auc_score
+Combine ROC-AUC with precision–recall analysis to understand the cost of altering the decision threshold.
 
-roc_auc_score(test_y, pred_y)
-```
+---
 
+## 4. Operational checklist
 
+1. **Inspect class imbalance** – even with AUC close to 0.5, a different threshold might still rescue important cases.
+2. **Evaluate class-weight strategies** – adjust class weights or sample weights and verify whether AUC improves.
+3. **Share the plot** – include the ROC curve in dashboards so teams can reason about trade-offs.
+4. **Keep a Python 3.13 notebook** – reproduce the calculation effortlessly whenever the model is retrained.
 
+---
 
-    0.89069793083171
+## Summary
 
-
+- ROC-AUC captures how well a classifier ranks positives ahead of negatives across all thresholds.
+- In Python 3.13, RocCurveDisplay and oc_auc_score make computation and plotting straightforward.
+- Use the curve in tandem with precision–recall metrics to choose operating thresholds aligned with business goals.
+---
