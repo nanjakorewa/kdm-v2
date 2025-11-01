@@ -2,72 +2,126 @@
 title: "ガウス混合モデル (GMM)"
 pre: "2.5.5 "
 weight: 5
-title_suffix: "確率的クラスタリングとソフト割り当て"
+title_suffix: "確率クラスタリングとソフト割り当て"
 ---
 
 {{% summary %}}
-- ガウス混合モデルは複数の多変量正規分布を線形結合し、データ分布全体を表現する生成モデル。
-- 各点のクラスタ所属確率を計算できるため「一番近いクラスタだけでなく、どれくらい所属しそうか」を出力できる。
-- パラメータ推定には EM アルゴリズム（E-step と M-step）が用いられ、共分散行列の形状（`full`, `tied`, `diag`, `spherical`）を選べる。
-- モデル選択には BIC/AIC や対数尤度を用い、初期化を複数回行うことで安定性が向上する。
+- ガウス混合モデルは複数の多変量正規分布を重ね合わせ、データ全体の確率分布を表す生成モデルです。
+- 各サンプルに対してクラスタ所属確率（責務）が推定でき、ハードな割り当てでは見えない曖昧さを表現できます。
+- パラメータは EM アルゴリズムで推定し、分散共分散行列の形を `full`, `tied`, `diag`, `spherical` から選択できます。
+- BIC や AIC を使ったモデル選択、複数回の初期化による安定化が実務では不可欠です。
 {{% /summary %}}
 
 ## 直感
-「データは複数のガウス分布が混ざったもの」と仮定すると、各クラスタは平均ベクトルと共分散行列を持つ楕円体として表現できます。  
-k-means が「硬い割り当て（hard assignment）」を行うのに対し、GMM は点ごとに所属確率（責務）を出力する「ソフトクラスタリング」が可能です。
+「データは複数のガウス分布が混ざったもの」と仮定すると、各クラスタは平均ベクトルと共分散行列を持つ楕円体として表現できます。k-means が最も近いクラスタを 1 つだけ返すのに対し、GMM は「クラスタ \\(k\\) がサンプル \\(x_i\\) を生み出した確率 \\(\gamma_{ik}\\)」を返すソフトクラスタリングを行います。
 
-## 具体的な数式
+## 数式
 入力ベクトル \\(\mathbf{x}\\) の確率密度は
 
 $$
 p(\mathbf{x}) = \sum_{k=1}^{K} \pi_k \, \mathcal{N}(\mathbf{x} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k),
 $$
 
-ここで \\(\pi_k \ge 0\\) は混合係数（\\(\sum_k \pi_k = 1\\)）、\\(\boldsymbol{\mu}_k\\) は平均ベクトル、\\(\boldsymbol{\Sigma}_k\\) は共分散行列です。  
-EM アルゴリズムでは以下を収束まで繰り返します。
+で表されます。\\(\pi_k\\) は混合係数（非負で総和が 1）、\\(\boldsymbol{\mu}_k\\) は平均、\\(\boldsymbol{\Sigma}_k\\) は共分散行列です。EM アルゴリズムでは以下を収束まで繰り返します。
 
-- **E-step**: クラスタ \\(k\\) がサンプル \\(\mathbf{x}_i\\) を生成した確率（責務）を計算。
+- **E-step**: 責務 \\(\gamma_{ik}\\) を求める。
   $$
   \gamma_{ik} = \frac{\pi_k \, \mathcal{N}(\mathbf{x}_i \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)}
-  {\sum_{j=1}^K \pi_j \, \mathcal{N}(\mathbf{x}_i \mid \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)}
+  {\sum_{j=1}^K \pi_j \, \mathcal{N}(\mathbf{x}_i \mid \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)}.
   $$
-- **M-step**: 責務を重みにして \\(\pi_k, \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k\\) を更新。
+- **M-step**: 責務を重みとして \\(\pi_k, \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k\\) を更新。
 
-この反復で対数尤度が単調に増加し、局所最大に収束します。
+対数尤度は単調に増加し、局所最大に収束します。
 
-## Pythonを用いた実験や説明
-混合分布から生成したデータを `GaussianMixture` で学習し、共分散の扱いによる差やクラスタリング結果を可視化します。
+## Pythonで確かめる
+合成データに GMM を適用し、クラスタ中心と責務を可視化します。
 
 ```python
-import numpy as np
-import matplotlib.pyplot as plt
+from __future__ import annotations
+
 import japanize_matplotlib
-from sklearn.mixture import GaussianMixture
+import matplotlib.pyplot as plt
+import numpy as np
+from numpy.typing import NDArray
 from sklearn.datasets import make_blobs
+from sklearn.mixture import GaussianMixture
 
-X, _ = make_blobs(
-    n_samples=600,
-    centers=3,
-    cluster_std=[1.0, 1.5, 0.8],
-    random_state=7,
-)
 
-for cov_type in ["full", "tied", "diag"]:
-    gmm = GaussianMixture(n_components=3, covariance_type=cov_type, random_state=0)
-    gmm.fit(X)
-    print(cov_type, "対数尤度:", gmm.score(X))
+def run_gmm_demo(
+    n_samples: int = 600,
+    n_components: int = 3,
+    cluster_std: list[float] | tuple[float, ...] = (1.0, 1.4, 0.8),
+    covariance_type: str = "full",
+    random_state: int = 7,
+    n_init: int = 8,
+) -> dict[str, object]:
+    """ガウス混合モデルを学習し、責務とクラスタ中心を可視化する。"""
+    japanize_matplotlib.japanize()
+    features, labels_true = make_blobs(
+        n_samples=n_samples,
+        centers=n_components,
+        cluster_std=cluster_std,
+        random_state=random_state,
+    )
 
-best = GaussianMixture(n_components=3, covariance_type="full", random_state=0).fit(X)
-labels = best.predict(X)
-plt.figure(figsize=(6, 5))
-plt.scatter(X[:, 0], X[:, 1], c=labels, cmap="viridis", s=20)
-plt.scatter(best.means_[:, 0], best.means_[:, 1], marker="x", color="red", s=100, label="平均")
-plt.legend()
-plt.tight_layout()
-plt.show()
+    gmm = GaussianMixture(
+        n_components=n_components,
+        covariance_type=covariance_type,
+        random_state=random_state,
+        n_init=n_init,
+    )
+    gmm.fit(features)
+
+    hard_labels = gmm.predict(features)
+    responsibilities = gmm.predict_proba(features)
+    log_likelihood = float(gmm.score(features))
+    weights = gmm.weights_
+
+    fig, ax = plt.subplots(figsize=(6.2, 5.2))
+    scatter = ax.scatter(
+        features[:, 0],
+        features[:, 1],
+        c=hard_labels,
+        cmap="viridis",
+        s=30,
+        edgecolor="white",
+        linewidth=0.2,
+        alpha=0.85,
+    )
+    ax.scatter(
+        gmm.means_[:, 0],
+        gmm.means_[:, 1],
+        marker="x",
+        c="red",
+        s=140,
+        linewidth=2.0,
+        label="クラスタ中心",
+    )
+    ax.set_title("ガウス混合モデルによるソフトクラスタリング")
+    ax.set_xlabel("特徴量 1")
+    ax.set_ylabel("特徴量 2")
+    ax.grid(alpha=0.2)
+    handles, _ = scatter.legend_elements()
+    labels = [f"クラスタ {idx}" for idx in range(n_components)]
+    ax.legend(handles, labels, title="予測ラベル", loc="upper right")
+    fig.tight_layout()
+    plt.show()
+
+    return {
+        "log_likelihood": log_likelihood,
+        "weights": weights.tolist(),
+        "responsibilities_shape": responsibilities.shape,
+    }
+
+
+metrics = run_gmm_demo()
+print(f"対数尤度: {metrics['log_likelihood']:.3f}")
+print("混合係数:", metrics["weights"])
+print("責務行列の形状:", metrics["responsibilities_shape"])
 ```
 
-![gaussian-mixture block 1](/images/basic/clustering/gaussian-mixture_block01.svg)
+
+![ガウス混合モデルの結果](/images/basic/clustering/gaussian-mixture_block01_ja.png)
 
 ## 参考文献
 {{% references %}}
