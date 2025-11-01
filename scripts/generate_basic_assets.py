@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import random
 import re
 import sys
 import types
@@ -528,8 +529,10 @@ def save_figures(
 def main(_: argparse.Namespace) -> None:
     repo_root = Path(__file__).resolve().parents[1]
     content_root = repo_root / "content" / "basic"
-    np.random.seed(777)
     install_sklearn_stub()
+
+    original_default_rng = np.random.default_rng
+    default_seed = 12345
 
     for md_path, blocks, rel_slugs, file_slug, lang in iter_targets(content_root):
         print(f"Processing {md_path.relative_to(repo_root)}")
@@ -539,12 +542,20 @@ def main(_: argparse.Namespace) -> None:
             apply_font_settings()
             namespace.setdefault("np", np)
             namespace.setdefault("plt", plt)
+            seed_value = default_seed + block_idx
+            random.seed(seed_value)
+            np.random.seed(seed_value)
+            np.random.default_rng = (  # type: ignore[assignment]
+                lambda seed=None: original_default_rng(seed_value if seed is None else seed)
+            )
             try:
                 exec(compile(code, str(md_path), "exec"), namespace)  # noqa: S102
             except Exception as exc:  # noqa: BLE001
                 print(f"  Failed block {block_idx}: {exc}")
                 plt.close("all")
                 continue
+            finally:
+                np.random.default_rng = original_default_rng
 
             new_figs = [num for num in plt.get_fignums() if num not in existing]
             if not new_figs:
