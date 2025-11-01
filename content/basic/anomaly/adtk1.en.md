@@ -1,5 +1,7 @@
 ---
-title: "Anomaly Detection ①"
+title: "Anomaly Detection Toolkit (ADTK) Basics | Threshold and Statistical Detectors"
+linkTitle: "ADTK basics"
+seo_title: "Anomaly Detection Toolkit (ADTK) Basics | Threshold and Statistical Detectors"
 pre: "2.9.1 "
 weight: 1
 ---

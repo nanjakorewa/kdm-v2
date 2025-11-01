@@ -1,5 +1,7 @@
 ---
-title: Regresi linear
+title: "Model regresi | Dari baseline linear ke regularisasi"
+linkTitle: "Regresi"
+seo_title: "Model regresi | Dari baseline linear ke regularisasi"
 weight: 1
 chapter: true
 not_use_colab: true

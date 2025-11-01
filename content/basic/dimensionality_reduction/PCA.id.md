@@ -1,5 +1,7 @@
 ---
-title: "PCA"
+title: "Principal Component Analysis | Menangkap variasi dengan sumbu ortogonal"
+linkTitle: "PCA"
+seo_title: "Principal Component Analysis | Menangkap variasi dengan sumbu ortogonal"
 pre: "2.6.1 "
 weight: 1
 searchtitle: "Cara menggunakan PCA dalam python untuk reduksi dimensionalitas"

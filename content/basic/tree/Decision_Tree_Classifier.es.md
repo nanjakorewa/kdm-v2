@@ -1,5 +1,7 @@
 ---
-title: "Árbol de decisión (clasificación)"
+title: "Clasificador con árboles de decisión | Dividir datos según la ganancia de información"
+linkTitle: "Árbol de decisión"
+seo_title: "Clasificador con árboles de decisión | Dividir datos según la ganancia de información"
 pre: "2.3.1 "
 weight: 1
 searchtitle: "Ejecución de árboles de decisión (clasificación) en python"

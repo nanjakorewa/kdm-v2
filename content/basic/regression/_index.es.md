@@ -1,5 +1,7 @@
 ---
-title: Regresión lineal
+title: "Modelos de regresión | De bases lineales a técnicas de regularización"
+linkTitle: "Regresión"
+seo_title: "Modelos de regresión | De bases lineales a técnicas de regularización"
 weight: 1
 chapter: true
 not_use_colab: true

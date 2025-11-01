@@ -1,5 +1,7 @@
 ---
-title: "線形回帰と最小二乗法"
+title: "線形回帰と最小二乗法 | 基礎理論とPython実装"
+linkTitle: "線形回帰"
+seo_title: "線形回帰と最小二乗法 | 基礎理論とPython実装"
 pre: "2.1.1 "
 weight: 1
 title_suffix: "基礎から理解する"

@@ -1,5 +1,7 @@
 ---
-title: "k-means"
+title: "k-meansクラスタリング | 重心の更新でデータを自動分割"
+linkTitle: "k-means"
+seo_title: "k-meansクラスタリング | 重心の更新でデータを自動分割"
 weight: 1
 pre: "2.5.1 "
 title_suffix: "クラスタの“重心”を反復的に洗い出す"

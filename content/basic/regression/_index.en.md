@@ -1,5 +1,7 @@
 ---
-title: Linear Regression
+title: "Regression Models | From Linear Baselines to Regularization"
+linkTitle: "Regression"
+seo_title: "Regression Models | From Linear Baselines to Regularization"
 weight: 1
 chapter: true
 not_use_colab: true

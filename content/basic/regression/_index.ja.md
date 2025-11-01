@@ -1,5 +1,7 @@
 ---
-title: 線形回帰
+title: "回帰モデル | 線形手法と正則化の基礎"
+linkTitle: "回帰"
+seo_title: "回帰モデル | 線形手法と正則化の基礎"
 weight: 1
 chapter: true
 not_use_colab: true

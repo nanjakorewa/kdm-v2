@@ -1,5 +1,7 @@
 ---
-title: "k-means"
+title: "Clustering k-means | Particionar datos ajustando centroides"
+linkTitle: "k-means"
+seo_title: "Clustering k-means | Particionar datos ajustando centroides"
 weight: 1
 pre: "2.5.1 "
 title_suffix: "Refinar centroides de forma iterativa"

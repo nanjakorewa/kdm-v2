@@ -1,5 +1,7 @@
 ---
-title: "Regresión lineal y mínimos cuadrados ordinarios"
+title: "Regresión lineal y mínimos cuadrados ordinarios | Teoría e implementación en Python"
+linkTitle: "Regresión lineal"
+seo_title: "Regresión lineal y mínimos cuadrados ordinarios | Teoría e implementación en Python"
 pre: "2.1.1 "
 weight: 1
 title_suffix: "Comprender desde los primeros principios"

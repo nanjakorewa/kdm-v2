@@ -1,5 +1,7 @@
 ---
-title: "Regresión logística"
+title: "Regresión logística | Modelar probabilidades de clase con la sigmoide"
+linkTitle: "Regresión logística"
+seo_title: "Regresión logística | Modelar probabilidades de clase con la sigmoide"
 pre: "2.2.1 "
 weight: 1
 title_suffix: "Estimar probabilidades con la sigmoide"

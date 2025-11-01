@@ -1,5 +1,7 @@
 ---
-title: "Linear Regression and Ordinary Least Squares"
+title: "Linear Regression and Ordinary Least Squares | Theory and Python Implementation"
+linkTitle: "Linear Regression"
+seo_title: "Linear Regression and Ordinary Least Squares | Theory and Python Implementation"
 pre: "2.1.1 "
 weight: 1
 title_suffix: "Understand from first principles"

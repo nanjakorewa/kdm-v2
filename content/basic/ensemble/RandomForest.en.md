@@ -1,5 +1,7 @@
 ---
-title: "Random Forest"
+title: "Random Forest | Bagging Decision Trees for Robust Predictions"
+linkTitle: "Random Forest"
+seo_title: "Random Forest | Bagging Decision Trees for Robust Predictions"
 pre: "2.4.1 "
 weight: 1
 title_suffix: "Intuition, formulas, and practice"

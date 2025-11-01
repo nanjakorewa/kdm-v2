@@ -1,5 +1,7 @@
 ---
-title: "Random Forest"
+title: "Random Forest | Ensamble de árboles para predicciones robustas"
+linkTitle: "Random Forest"
+seo_title: "Random Forest | Ensamble de árboles para predicciones robustas"
 pre: "2.4.1 "
 weight: 1
 title_suffix: "Intuición, fórmulas y práctica"

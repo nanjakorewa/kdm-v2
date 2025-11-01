@@ -1,5 +1,7 @@
 ---
-title: "Decision Tree (Classification)"
+title: "Decision Tree Classifier | Splitting Data with Information Gain"
+linkTitle: "Decision Tree (Classifier)"
+seo_title: "Decision Tree Classifier | Splitting Data with Information Gain"
 pre: "2.3.1 "
 weight: 1
 searchtitle: "Running decision trees (classification) in python"

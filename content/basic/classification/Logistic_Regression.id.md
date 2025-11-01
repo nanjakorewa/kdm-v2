@@ -1,5 +1,7 @@
 ---
-title: "Regresi Logistik"
+title: "Regresi logistik | Memodelkan probabilitas kelas dengan fungsi sigmoid"
+linkTitle: "Regresi logistik"
+seo_title: "Regresi logistik | Memodelkan probabilitas kelas dengan fungsi sigmoid"
 pre: "2.2.1 "
 weight: 1
 title_suffix: "Menghitung probabilitas dengan sigmoid"

@@ -1,5 +1,7 @@
 ---
-title: "PCA"
+title: "Principal Component Analysis | Capturing Variance with Orthogonal Axes"
+linkTitle: "PCA"
+seo_title: "Principal Component Analysis | Capturing Variance with Orthogonal Axes"
 pre: "2.6.1 "
 weight: 1
 searchtitle: "Using PCA in python for dimensionality reduction"

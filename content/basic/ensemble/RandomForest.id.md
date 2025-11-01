@@ -1,5 +1,7 @@
 ---
-title: "Random Forest"
+title: "Random Forest | Menggabungkan pohon keputusan untuk prediksi yang stabil"
+linkTitle: "Random Forest"
+seo_title: "Random Forest | Menggabungkan pohon keputusan untuk prediksi yang stabil"
 pre: "2.4.1 "
 weight: 1
 title_suffix: "Intuisi, rumus, dan praktik"

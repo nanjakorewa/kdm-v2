@@ -1,5 +1,7 @@
 ---
-title: "Detección de anomalías①"
+title: "Detección de anomalías con ADTK | Detectores estadísticos y umbrales"
+linkTitle: "ADTK básico"
+seo_title: "Detección de anomalías con ADTK | Detectores estadísticos y umbrales"
 pre: "2.9.1 "
 weight: 1
 ---

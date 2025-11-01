@@ -1,5 +1,7 @@
 ---
-title: "Logistic Regression"
+title: "Logistic Regression | Modeling Class Probabilities with the Sigmoid"
+linkTitle: "Logistic Regression"
+seo_title: "Logistic Regression | Modeling Class Probabilities with the Sigmoid"
 pre: "2.2.1 "
 weight: 1
 title_suffix: "Estimate class probabilities with the sigmoid"

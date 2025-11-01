@@ -1,5 +1,7 @@
 ---
-title: "k-means"
+title: "Klastering k-means | Membagi data dengan penyempurnaan centroid"
+linkTitle: "k-means"
+seo_title: "Klastering k-means | Membagi data dengan penyempurnaan centroid"
 weight: 1
 pre: "2.5.1 "
 title_suffix: "Memperbarui centroid secara iteratif"

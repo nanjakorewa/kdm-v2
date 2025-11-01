@@ -1,5 +1,7 @@
 ---
-title: "Deteksi Anomali①"
+title: "Deteksi anomali dengan ADTK | Detektor ambang dan statistik"
+linkTitle: "ADTK dasar"
+seo_title: "Deteksi anomali dengan ADTK | Detektor ambang dan statistik"
 pre: "2.9.1 "
 weight: 1
 ---

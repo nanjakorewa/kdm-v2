@@ -1,5 +1,7 @@
 ---
-title: "k-means"
+title: "k-means Clustering | Iterative Centroid Partitioning"
+linkTitle: "k-means"
+seo_title: "k-means Clustering | Iterative Centroid Partitioning"
 weight: 1
 pre: "2.5.1 "
 title_suffix: "Iteratively refine cluster centroids"

@@ -1,5 +1,7 @@
 ---
-title: "PCA"
+title: "Análisis de componentes principales | Capturar la varianza con ejes ortogonales"
+linkTitle: "PCA"
+seo_title: "Análisis de componentes principales | Capturar la varianza con ejes ortogonales"
 pre: "2.6.1 "
 weight: 1
 title_suffix: "Explicación del funcionamiento"

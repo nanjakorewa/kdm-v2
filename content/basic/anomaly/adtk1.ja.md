@@ -1,5 +1,7 @@
 ---
-title: "異常検知①"
+title: "異常検知① | ADTKで閾値と統計ベースの検出器を学ぶ"
+linkTitle: "異常検知①"
+seo_title: "異常検知① | ADTKで閾値と統計ベースの検出器を学ぶ"
 pre: "2.9.1 "
 weight: 1
 ---

@@ -1,5 +1,7 @@
 ---
-title: "Pohon Keputusan (Klasifikasi)"
+title: "Klasifikasi dengan pohon keputusan | Membagi data berdasarkan gain informasi"
+linkTitle: "Pohon keputusan"
+seo_title: "Klasifikasi dengan pohon keputusan | Membagi data berdasarkan gain informasi"
 pre: "2.3.1 "
 weight: 1
 searchtitle: "Menjalankan pohon keputusan (klasifikasi) dalam python"

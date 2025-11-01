@@ -1,5 +1,7 @@
 ---
-title: "PCA"
+title: "主成分分析（PCA）| 分散を最大化する軸で特徴量を圧縮する"
+linkTitle: "PCA"
+seo_title: "主成分分析（PCA）| 分散を最大化する軸で特徴量を圧縮する"
 pre: "2.6.1 "
 weight: 1
 title_suffix: "の仕組みの説明"

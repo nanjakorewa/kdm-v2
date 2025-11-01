@@ -1,5 +1,7 @@
 ---
-title: "Regresi linear dan metode kuadrat terkecil"
+title: "Regresi linear dan Ordinary Least Squares | Teori dan implementasi Python"
+linkTitle: "Regresi linear"
+seo_title: "Regresi linear dan Ordinary Least Squares | Teori dan implementasi Python"
 pre: "2.1.1 "
 weight: 1
 title_suffix: "Memahami dari prinsip dasar"
