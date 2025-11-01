@@ -1,105 +1,127 @@
 ---
-title: "混同行列の読み方"
+title: "混同行列 | クラス分類の評価指標を読み解く"
+linkTitle: "混同行列"
+seo_title: "混同行列 | クラス分類の評価指標を読み解く"
 pre: "4.3.0 "
 weight: 0
-title_suffix: "分類モデルの基本を押さえる"
 ---
 
 {{< lead >}}
-混同行列は分類モデルがどのクラスを取り違えたのかを一覧できる基本指標です。適合率・再現率・F1 を計算する前に、まず混同行列で誤分類の傾向を直感的に把握しましょう。
+混同行列は、分類モデルが各クラスをどのように判定したかを表形式で可視化する基本指標です。正解との突合せを通じて、精度・再現率・F1 スコアなど派生メトリクスを理解しやすくなります。
 {{< /lead >}}
 
 ---
 
-## 1. 混同行列とは
+## 1. 混同行列の構造
 
-二値分類では以下の 2×2 行列で表現します。
+二値分類の混同行列は次の 2×2 テーブルで表現できます。
 
-|            | 予測:陽性 | 予測:陰性 |
-| ---------- | --------- | --------- |
-| **実際:陽性** | 真陽性 (TP) | 偽陰性 (FN) |
-| **実際:陰性** | 偽陽性 (FP) | 真陰性 (TN) |
+|              | 予測:陰性 | 予測:陽性 |
+| ------------ | --------- | --------- |
+| **実際:陰性** | 真陰性 (TN) | 偽陽性 (FP) |
+| **実際:陽性** | 偽陰性 (FN) | 真陽性 (TP) |
 
-- 行は「実際のクラス」、列は「モデルの予測」。  
-- どのクラスで誤りが多いかを直接確認できるので、閾値調整や学習データの再設計に役立ちます。
+- 行は「実測値」、列は「モデルが予測した値」を意味します。
+- TP・FP・FN・TN のバランスを見ることで、特定クラスに偏った判断をしていないかを把握できます。
 
 ---
 
-## 2. Python で計算
+## 2. Python 3.13 + scikit-learn での計算例
+
+ローカル環境が **Python 3.13** であることを前提に、以下のようにバージョンを確認しておきましょう。
+
+```bash
+python --version  # 例: Python 3.13.0
+pip install scikit-learn matplotlib
+```
+
+次のスクリプトは乳がん診断データセットにロジスティック回帰を適用し、混同行列を算出・描画します。`StandardScaler` を併用することで、収束警告を避けつつ安定した結果を得られます。
 
 ```python
-from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from pathlib import Path
+
 import matplotlib.pyplot as plt
+from sklearn.datasets import load_breast_cancer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
 X, y = load_breast_cancer(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
-clf = LogisticRegression(max_iter=500)
-clf.fit(X_train, y_train)
-y_pred = clf.predict(X_test)
+pipeline = make_pipeline(
+    StandardScaler(),
+    LogisticRegression(max_iter=1000, solver="lbfgs"),
+)
+pipeline.fit(X_train, y_train)
+y_pred = pipeline.predict(X_test)
 
 cm = confusion_matrix(y_test, y_pred)
 print(cm)
 
 disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-disp.plot(cmap="Blues")
+disp.plot(cmap="Blues", colorbar=False)
+plt.tight_layout()
 plt.show()
 ```
 
-`ConfusionMatrixDisplay` を使うとヒートマップで視覚化できます。左上と右下が大きいほど正しい予測が多いことを意味します。
+{{< figure src="/images/eval/confusion-matrix/binary_matrix.png" alt="乳がん診断データセットでの混同行列" caption="scikit-learn Pipeline（Python 3.13）を用いて描画した混同行列" >}}
 
 ---
 
-## 3. 正規化して割合を見る
+## 3. 正規化して割合を確認する
 
-クラス分布が偏っている場合は割合で見ると分かりやすくなります。
+データにクラス不均衡がある場合は、行（実測値）ごとに割合を出すと読みやすくなります。
 
 ```python
-cm_normalized = confusion_matrix(y_test, y_pred, normalize="true")
-print(cm_normalized)
+cm_norm = confusion_matrix(y_test, y_pred, normalize="true")
+print(cm_norm)
+
+disp_norm = ConfusionMatrixDisplay(confusion_matrix=cm_norm)
+disp_norm.plot(cmap="Blues", values_format=".2f", colorbar=False)
+plt.tight_layout()
+plt.show()
 ```
 
-- `normalize="true"`：各行で割り、実際のクラスごとの再現率を表す。  
-- `normalize="pred"`：各列で割り、予測クラスごとの適合率を表す。  
-- `normalize="all"`：全体で割り、割合表示だけ欲しいときに使う。
-
-正規化すると値が 0〜1 になり、モデルの弱点を客観的に比較しやすくなります。
+- `normalize="true"`: 行ごとに正規化（実測クラスに対する割合）
+- `normalize="pred"`: 列ごとに正規化（予測クラスに対する割合）
+- `normalize="all"`: 全要素で正規化
 
 ---
 
-## 4. 多クラス分類での見方
+## 4. 多クラス分類への拡張
 
-多クラスの場合は行と列がクラス数だけ増えます。  
-- 対角線上に並ぶ値が正解数。  
-- 特定の列や行に大きな値が集中していれば、そのクラスで誤りが偏っているサイン。  
-- ヒートマップを並べて可視化すると、どのラベルを取り違えているか一目で判断できます。
+多クラス分類でも同じ要領で混同行列を描画できます。`from_predictions` を使うとラベルを自動で設定できます。
 
 ```python
 ConfusionMatrixDisplay.from_predictions(
-    y_test_multi, y_pred_multi, normalize="true", values_format=".2f"
+    y_true=ground_truth_labels,
+    y_pred=model_outputs,
+    normalize="true",
+    values_format=".2f",
+    cmap="Blues",
 )
+plt.tight_layout()
+plt.show()
 ```
 
 ---
 
-## 5. 実務での活用ヒント
+## 5. 現場でのチェックポイント
 
-- **閾値調整**：偽陰性が許されないタスクでは、混同行列で FN をチェックしながら予測確率の閾値を下げる。
-- **データ再収集**：誤分類が多いクラスに追加データを集めたり、サンプルウェイトを設定する根拠にできる。
-- **評価指標との連携**：ROC-AUC や PR 曲線と合わせると、量的（スコア）・質的（誤りの種類）両面から分析できる。
-- **説明資料に載せる**：ビジネスサイドに誤分類の影響を説明する際に直感的で伝わりやすい。
+- **偽陰性 vs. 偽陽性**: 医療や不正検知では、どちらを最小化したいかを明確にして混同行列を確認します。
+- **ヒートマップと併用**: グラフ化すると偏りが直感的にわかり、チーム内の議論もスムーズになります。
+- **派生指標との連携**: 混同行列から精度・適合率・再現率・F1 を算出し、ROC-AUC や PR 曲線とあわせて評価しましょう。
+- **スクリプトの再利用**: Python 3.13 環境で再現可能なノートブックを用意しておくと、モデル改善サイクルが高速化します。
 
 ---
 
 ## まとめ
 
-- 混同行列は分類モデルの誤りの種類と量を可視化する基礎指標。
-- `normalize` オプションで割合を確認すると、クラス不均衡でも比較しやすい。
-- 閾値調整やデータ改善の方針を決めるために、他の評価指標と併用すると効果的。
-
----
+- 混同行列は TP・FP・FN・TN を整理し、モデルの癖を素早く把握できる評価表です。
+- `normalize` オプションで割合を出すと、クラス不均衡でも比較がしやすくなります。
+- 可視化したヒートマップと派生メトリクスを併用し、ビジネス要件に沿った評価基準を設計しましょう。
