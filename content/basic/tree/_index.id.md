@@ -1,5 +1,7 @@
 ---
-title: Pohon keputusan
+title: "Pohon keputusan | Dasar pembelajaran mesin"
+linkTitle: "Pohon keputusan"
+seo_title: "Pohon keputusan | Dasar pembelajaran mesin"
 weight: 4
 chapter: true
 not_use_colab: true

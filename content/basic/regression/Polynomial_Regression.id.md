@@ -1,5 +1,7 @@
 ---
-title: "Regresi polinomial"
+title: "Regresi polinomial | Menangkap pola nonlinier dengan model linear"
+linkTitle: "Regresi polinomial"
+seo_title: "Regresi polinomial | Menangkap pola nonlinier dengan model linear"
 pre: "2.1.4 "
 weight: 4
 title_suffix: "Menangkap pola nonlinier dengan model linear"

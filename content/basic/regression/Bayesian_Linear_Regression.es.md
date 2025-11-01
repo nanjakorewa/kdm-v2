@@ -1,5 +1,7 @@
 ---
-title: "Regresión lineal bayesiana"
+title: "Regresión lineal bayesiana | Cuantificar la incertidumbre de predicción"
+linkTitle: "Regresión lineal bayesiana"
+seo_title: "Regresión lineal bayesiana | Cuantificar la incertidumbre de predicción"
 pre: "2.1.6 "
 weight: 6
 title_suffix: "Cuantificar la incertidumbre de predicción"

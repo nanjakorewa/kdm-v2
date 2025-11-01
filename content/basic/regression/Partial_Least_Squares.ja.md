@@ -1,5 +1,7 @@
 ---
-title: "PLS 回帰 (Partial Least Squares)"
+title: "PLS 回帰 (Partial Least Squares) | 目標を意識した潜在因子で回帰する"
+linkTitle: "PLS 回帰 (Partial Least Squares)"
+seo_title: "PLS 回帰 (Partial Least Squares) | 目標を意識した潜在因子で回帰する"
 pre: "2.1.9 "
 weight: 9
 title_suffix: "目標を意識した潜在因子で回帰する"

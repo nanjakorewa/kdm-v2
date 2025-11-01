@@ -1,5 +1,7 @@
 ---
-title: クラスタリング
+title: "クラスタリング | 機械学習の基礎解説"
+linkTitle: "クラスタリング"
+seo_title: "クラスタリング | 機械学習の基礎解説"
 weight: 6
 chapter: true
 not_use_colab: true

@@ -1,5 +1,7 @@
 ---
-title: アンサンブル
+title: "アンサンブル | 機械学習の基礎解説"
+linkTitle: "アンサンブル"
+seo_title: "アンサンブル | 機械学習の基礎解説"
 weight: 5
 chapter: true
 not_use_colab: true

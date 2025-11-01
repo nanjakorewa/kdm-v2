@@ -1,5 +1,7 @@
 ---
-title: "Orthogonal Matching Pursuit (OMP)"
+title: "Orthogonal Matching Pursuit (OMP) | 疎な係数を貪欲に選ぶ線形回帰"
+linkTitle: "Orthogonal Matching Pursuit (OMP)"
+seo_title: "Orthogonal Matching Pursuit (OMP) | 疎な係数を貪欲に選ぶ線形回帰"
 pre: "2.1.12 "
 weight: 12
 title_suffix: "疎な係数を貪欲に選ぶ線形回帰"

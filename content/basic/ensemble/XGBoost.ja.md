@@ -1,5 +1,7 @@
 ---
-title: "XGBoost"
+title: "XGBoost | 高速・高精度な勾配ブースティング実装"
+linkTitle: "XGBoost"
+seo_title: "XGBoost | 高速・高精度な勾配ブースティング実装"
 pre: "2.4.9 "
 weight: 9
 title_suffix: "高速・高精度な勾配ブースティング実装"

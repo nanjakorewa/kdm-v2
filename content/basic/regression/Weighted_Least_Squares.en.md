@@ -1,5 +1,7 @@
 ---
-title: "Weighted Least Squares (WLS)"
+title: "Weighted Least Squares (WLS) | Handle observations with unequal variance"
+linkTitle: "Weighted Least Squares (WLS)"
+seo_title: "Weighted Least Squares (WLS) | Handle observations with unequal variance"
 pre: "2.1.11 "
 weight: 11
 title_suffix: "Handle observations with unequal variance"

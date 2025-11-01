@@ -1,5 +1,7 @@
 ---
-title: "Pohon keputusan (regresi)"
+title: "Pohon keputusan (regresi) | Memvisualisasikan pohon keputusan (regresi) dalam python"
+linkTitle: "Pohon keputusan (regresi)"
+seo_title: "Pohon keputusan (regresi) | Memvisualisasikan pohon keputusan (regresi) dalam python"
 pre: "2.3.2 "
 weight: 2
 searchtitle: "Memvisualisasikan pohon keputusan (regresi) dalam python"

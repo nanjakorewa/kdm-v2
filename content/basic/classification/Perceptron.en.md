@@ -1,5 +1,7 @@
-﻿---
-title: "Perceptron"
+---
+title: "Perceptron | The simplest linear classifier"
+linkTitle: "Perceptron"
+seo_title: "Perceptron | The simplest linear classifier"
 pre: "2.2.3 "
 weight: 3
 title_suffix: "The simplest linear classifier"

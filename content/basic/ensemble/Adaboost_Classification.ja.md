@@ -1,5 +1,7 @@
 ---
-title: "AdaBoost（分類）"
+title: "AdaBoost（分類） | の直感・数式・実装"
+linkTitle: "AdaBoost（分類）"
+seo_title: "AdaBoost（分類） | の直感・数式・実装"
 pre: "2.4.3 "
 weight: 3
 title_suffix: "の直感・数式・実装"

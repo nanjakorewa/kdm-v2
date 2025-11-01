@@ -1,5 +1,7 @@
 ---
-title: "Principal Component Regression (PCR)"
+title: "Principal Component Regression (PCR) | Mitigate multicollinearity via dimensionality reduction"
+linkTitle: "Principal Component Regression (PCR)"
+seo_title: "Principal Component Regression (PCR) | Mitigate multicollinearity via dimensionality reduction"
 pre: "2.1.8 "
 weight: 8
 title_suffix: "Mitigate multicollinearity via dimensionality reduction"

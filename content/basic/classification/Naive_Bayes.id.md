@@ -1,5 +1,7 @@
-﻿---
-title: "Naive Bayes"
+---
+title: "Naive Bayes | Inferensi cepat dengan asumsi independensi"
+linkTitle: "Naive Bayes"
+seo_title: "Naive Bayes | Inferensi cepat dengan asumsi independensi"
 pre: "2.2.6 "
 weight: 6
 title_suffix: "Inferensi cepat dengan asumsi independensi"

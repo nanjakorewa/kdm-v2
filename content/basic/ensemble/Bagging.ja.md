@@ -1,5 +1,7 @@
 ---
-title: "バギング (Bagging)"
+title: "バギング (Bagging) | 分散を抑えるアンサンブルの基本"
+linkTitle: "バギング (Bagging)"
+seo_title: "バギング (Bagging) | 分散を抑えるアンサンブルの基本"
 pre: "2.5.4 "
 weight: 4
 title_suffix: "分散を抑えるアンサンブルの基本"

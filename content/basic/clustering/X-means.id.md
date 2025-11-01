@@ -1,5 +1,7 @@
 ---
-title: "X-means"
+title: "X-means | Mengestimasi jumlah klaster secara otomatis"
+linkTitle: "X-means"
+seo_title: "X-means | Mengestimasi jumlah klaster secara otomatis"
 weight: 3
 pre: "2.5.3 "
 title_suffix: "Mengestimasi jumlah klaster secara otomatis"

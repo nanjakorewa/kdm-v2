@@ -1,5 +1,7 @@
 ---
-title: "Modelo de Mezclas Gaussianas (GMM)"
+title: "Modelo de Mezclas Gaussianas (GMM) | Asignaciones suaves para clustering probabilístico"
+linkTitle: "Modelo de Mezclas Gaussianas (GMM)"
+seo_title: "Modelo de Mezclas Gaussianas (GMM) | Asignaciones suaves para clustering probabilístico"
 pre: "2.5.5 "
 weight: 5
 title_suffix: "Asignaciones suaves para clustering probabilístico"

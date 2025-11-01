@@ -1,5 +1,7 @@
 ---
-title: Klasifikasi linear
+title: "Klasifikasi linear | Dasar pembelajaran mesin"
+linkTitle: "Klasifikasi linear"
+seo_title: "Klasifikasi linear | Dasar pembelajaran mesin"
 weight: 3
 chapter: true
 not_use_colab: true

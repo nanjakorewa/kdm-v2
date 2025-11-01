@@ -1,5 +1,7 @@
 ---
-title: "Regresión Partial Least Squares (PLS)"
+title: "Regresión Partial Least Squares (PLS) | Factores latentes alineados con la variable objetivo"
+linkTitle: "Regresión Partial Least Squares (PLS)"
+seo_title: "Regresión Partial Least Squares (PLS) | Factores latentes alineados con la variable objetivo"
 pre: "2.1.9 "
 weight: 9
 title_suffix: "Factores latentes alineados con la variable objetivo"

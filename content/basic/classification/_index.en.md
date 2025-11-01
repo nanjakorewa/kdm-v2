@@ -1,5 +1,7 @@
 ---
-title: Linear Classification
+title: "Linear Classification | Machine Learning Basics"
+linkTitle: "Linear Classification"
+seo_title: "Linear Classification | Machine Learning Basics"
 weight: 3
 chapter: true
 not_use_colab: true

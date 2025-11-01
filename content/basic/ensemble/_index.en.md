@@ -1,5 +1,7 @@
 ---
-title: Ensemble
+title: "Ensemble | Machine Learning Basics"
+linkTitle: "Ensemble"
+seo_title: "Ensemble | Machine Learning Basics"
 weight: 5
 chapter: true
 not_use_colab: true

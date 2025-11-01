@@ -1,5 +1,7 @@
 ---
-title: "k近傍法 (k-NN)"
+title: "k近傍法 (k-NN) | 距離に基づく怠惰学習"
+linkTitle: "k近傍法 (k-NN)"
+seo_title: "k近傍法 (k-NN) | 距離に基づく怠惰学習"
 pre: "2.2.7 "
 weight: 7
 title_suffix: "距離に基づく怠惰学習"

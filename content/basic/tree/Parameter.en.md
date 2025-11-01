@@ -1,5 +1,7 @@
 ---
-title: "Decision Tree Parameters"
+title: "Decision Tree Parameters | Examine the influence of each parameter of the decision tree"
+linkTitle: "Decision Tree Parameters"
+seo_title: "Decision Tree Parameters | Examine the influence of each parameter of the decision tree"
 pre: "2.3.3 "
 weight: 3
 searchtitle: "Examine the influence of each parameter of the decision tree"

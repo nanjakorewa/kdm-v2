@@ -1,5 +1,7 @@
-﻿---
-title: "Support Vector Machine (SVM)"
+---
+title: "Support Vector Machine (SVM) | Meningkatkan generalisasi dengan margin maksimum"
+linkTitle: "Support Vector Machine (SVM)"
+seo_title: "Support Vector Machine (SVM) | Meningkatkan generalisasi dengan margin maksimum"
 pre: "2.2.5 "
 weight: 5
 title_suffix: "Meningkatkan generalisasi dengan margin maksimum"

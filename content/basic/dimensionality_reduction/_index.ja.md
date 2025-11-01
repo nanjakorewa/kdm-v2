@@ -1,5 +1,7 @@
 ---
-title: 次元削減
+title: "次元削減 | 機械学習の基礎解説"
+linkTitle: "次元削減"
+seo_title: "次元削減 | 機械学習の基礎解説"
 weight: 7
 chapter: true
 not_use_colab: true

@@ -1,5 +1,7 @@
 ---
-title: "Regresi Linear Bayesian"
+title: "Regresi Linear Bayesian | Mengukur ketidakpastian prediksi"
+linkTitle: "Regresi Linear Bayesian"
+seo_title: "Regresi Linear Bayesian | Mengukur ketidakpastian prediksi"
 pre: "2.1.6 "
 weight: 6
 title_suffix: "Mengukur ketidakpastian prediksi"

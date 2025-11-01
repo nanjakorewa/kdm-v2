@@ -1,5 +1,7 @@
-﻿---
-title: "Mﾃ｡quinas de vectores de soporte (SVM)"
+---
+title: "Mﾃ｡quinas de vectores de soporte (SVM) | Mejorar la generalizaciﾃｳn maximizando el margen"
+linkTitle: "Mﾃ｡quinas de vectores de soporte (SVM)"
+seo_title: "Mﾃ｡quinas de vectores de soporte (SVM) | Mejorar la generalizaciﾃｳn maximizando el margen"
 pre: "2.2.5 "
 weight: 5
 title_suffix: "Mejorar la generalizaciﾃｳn maximizando el margen"

@@ -1,5 +1,7 @@
 ---
-title: "Isomap"
+title: "Isomap | 測地距離で多様体を展開する"
+linkTitle: "Isomap"
+seo_title: "Isomap | 測地距離で多様体を展開する"
 pre: "2.4.6 "
 weight: 6
 title_suffix: "測地距離で多様体を展開する"

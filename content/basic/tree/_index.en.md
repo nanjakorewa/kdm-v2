@@ -1,5 +1,7 @@
 ---
-title: Decision Tree
+title: "Decision Tree | Machine Learning Basics"
+linkTitle: "Decision Tree"
+seo_title: "Decision Tree | Machine Learning Basics"
 weight: 4
 chapter: true
 not_use_colab: true

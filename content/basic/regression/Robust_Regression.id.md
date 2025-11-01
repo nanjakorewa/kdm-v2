@@ -1,5 +1,7 @@
 ---
-title: "Regresi robust"
+title: "Regresi robust | Menangani outlier dengan loss Huber"
+linkTitle: "Regresi robust"
+seo_title: "Regresi robust | Menangani outlier dengan loss Huber"
 pre: "2.1.3 "
 weight: 3
 title_suffix: "Menangani outlier dengan loss Huber"

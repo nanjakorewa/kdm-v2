@@ -1,5 +1,7 @@
 ---
-title: "Kernel-PCA"
+title: "Kernel-PCA | implementado en Python"
+linkTitle: "Kernel-PCA"
+seo_title: "Kernel-PCA | implementado en Python"
 pre: "2.6.4 "
 weight: 4
 title_suffix: "implementado en Python"

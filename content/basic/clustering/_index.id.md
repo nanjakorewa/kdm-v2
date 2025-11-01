@@ -1,5 +1,7 @@
 ---
-title: Pengelompokan
+title: "Pengelompokan | Dasar pembelajaran mesin"
+linkTitle: "Pengelompokan"
+seo_title: "Pengelompokan | Dasar pembelajaran mesin"
 weight: 6
 chapter: true
 not_use_colab: true

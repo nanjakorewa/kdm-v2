@@ -1,5 +1,7 @@
 ---
-title: "AdaBoost (Regresión)"
+title: "AdaBoost (Regresión) | Intuición, pérdidas y práctica"
+linkTitle: "AdaBoost (Regresión)"
+seo_title: "AdaBoost (Regresión) | Intuición, pérdidas y práctica"
 pre: "2.4.4 "
 weight: 4
 title_suffix: "Intuición, pérdidas y práctica"

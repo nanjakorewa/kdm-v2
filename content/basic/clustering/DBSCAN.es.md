@@ -1,5 +1,7 @@
 ---
-title: "DBSCAN"
+title: "DBSCAN | Clustering basado en densidad"
+linkTitle: "DBSCAN"
+seo_title: "DBSCAN | Clustering basado en densidad"
 pre: "2.5.4 "
 weight: 4
 title_suffix: "Clustering basado en densidad"

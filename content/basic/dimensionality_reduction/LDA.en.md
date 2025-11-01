@@ -1,5 +1,7 @@
 ---
-title: "LDA"
+title: "LDA | Machine Learning Basics"
+linkTitle: "LDA"
+seo_title: "LDA | Machine Learning Basics"
 pre: "2.6.3 "
 weight: 3
 ---

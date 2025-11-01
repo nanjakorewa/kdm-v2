@@ -1,5 +1,7 @@
 ---
-title: "Regresi Partial Least Squares (PLS)"
+title: "Regresi Partial Least Squares (PLS) | Faktor laten yang selaras dengan target"
+linkTitle: "Regresi Partial Least Squares (PLS)"
+seo_title: "Regresi Partial Least Squares (PLS) | Faktor laten yang selaras dengan target"
 pre: "2.1.9 "
 weight: 9
 title_suffix: "Faktor laten yang selaras dengan target"

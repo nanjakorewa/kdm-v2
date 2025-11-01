@@ -1,5 +1,7 @@
 ---
-title: "Regresión Elastic Net"
+title: "Regresión Elastic Net | Fusionar las ventajas de L1 y L2"
+linkTitle: "Regresión Elastic Net"
+seo_title: "Regresión Elastic Net | Fusionar las ventajas de L1 y L2"
 pre: "2.1.5 "
 weight: 5
 title_suffix: "Fusionar las ventajas de L1 y L2"

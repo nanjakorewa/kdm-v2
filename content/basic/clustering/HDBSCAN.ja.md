@@ -1,5 +1,7 @@
 ---
-title: "HDBSCAN"
+title: "HDBSCAN | 密度に階層構造を導入する"
+linkTitle: "HDBSCAN"
+seo_title: "HDBSCAN | 密度に階層構造を導入する"
 pre: "2.5.6 "
 weight: 6
 title_suffix: "密度に階層構造を導入する"

@@ -1,5 +1,7 @@
 ---
-title: "Bayesian Linear Regression"
+title: "Bayesian Linear Regression | Quantify predictive uncertainty"
+linkTitle: "Bayesian Linear Regression"
+seo_title: "Bayesian Linear Regression | Quantify predictive uncertainty"
 pre: "2.1.6 "
 weight: 6
 title_suffix: "Quantify predictive uncertainty"

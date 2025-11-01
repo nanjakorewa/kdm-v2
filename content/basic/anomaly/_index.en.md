@@ -1,5 +1,7 @@
 ---
-title: Anomaly detection
+title: "Anomaly detection | Machine Learning Basics"
+linkTitle: "Anomaly detection"
+seo_title: "Anomaly detection | Machine Learning Basics"
 weight: 9
 chapter: true
 not_use_colab: true

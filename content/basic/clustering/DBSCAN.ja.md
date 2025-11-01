@@ -1,5 +1,7 @@
 ---
-title: "DBSCAN"
+title: "DBSCAN | 密度の違いからクラスタを抽出する"
+linkTitle: "DBSCAN"
+seo_title: "DBSCAN | 密度の違いからクラスタを抽出する"
 pre: "2.5.4 "
 weight: 4
 title_suffix: "密度の違いからクラスタを抽出する"

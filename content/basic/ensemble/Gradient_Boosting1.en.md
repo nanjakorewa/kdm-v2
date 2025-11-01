@@ -1,5 +1,7 @@
 ---
-title: "Gradient Boosting (Basics)"
+title: "Gradient Boosting (Basics) | Intuition, formulas, and practice"
+linkTitle: "Gradient Boosting (Basics)"
+seo_title: "Gradient Boosting (Basics) | Intuition, formulas, and practice"
 pre: "2.4.5 "
 weight: 5
 title_suffix: "Intuition, formulas, and practice"

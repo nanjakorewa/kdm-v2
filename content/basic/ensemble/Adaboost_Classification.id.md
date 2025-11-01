@@ -1,5 +1,7 @@
 ---
-title: "AdaBoost (Klasifikasi)"
+title: "AdaBoost (Klasifikasi) | Intuisi, rumus, dan praktik"
+linkTitle: "AdaBoost (Klasifikasi)"
+seo_title: "AdaBoost (Klasifikasi) | Intuisi, rumus, dan praktik"
 pre: "2.4.3 "
 weight: 3
 title_suffix: "Intuisi, rumus, dan praktik"

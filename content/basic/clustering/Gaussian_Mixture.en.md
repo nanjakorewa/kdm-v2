@@ -1,5 +1,7 @@
 ---
-title: "Gaussian Mixture Models (GMM)"
+title: "Gaussian Mixture Models (GMM) | Soft clustering with probabilistic assignments"
+linkTitle: "Gaussian Mixture Models (GMM)"
+seo_title: "Gaussian Mixture Models (GMM) | Soft clustering with probabilistic assignments"
 pre: "2.5.5 "
 weight: 5
 title_suffix: "Soft clustering with probabilistic assignments"

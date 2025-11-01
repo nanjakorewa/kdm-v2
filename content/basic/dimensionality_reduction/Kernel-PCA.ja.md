@@ -1,5 +1,7 @@
 ---
-title: "Kernel-PCA"
+title: "Kernel-PCA | Implementing in Python"
+linkTitle: "Kernel-PCA"
+seo_title: "Kernel-PCA | Implementing in Python"
 pre: "2.6.4 "
 weight: 4
 title_suffix: "Implementing in Python"

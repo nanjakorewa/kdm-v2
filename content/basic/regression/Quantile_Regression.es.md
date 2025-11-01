@@ -1,5 +1,7 @@
 ---
-title: "Regresión por cuantiles"
+title: "Regresión por cuantiles | Estimar los contornos de la distribución condicional"
+linkTitle: "Regresión por cuantiles"
+seo_title: "Regresión por cuantiles | Estimar los contornos de la distribución condicional"
 pre: "2.1.7 "
 weight: 7
 title_suffix: "Estimar los contornos de la distribución condicional"

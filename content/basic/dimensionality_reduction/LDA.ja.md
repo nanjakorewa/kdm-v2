@@ -1,5 +1,7 @@
 ---
-title: "LDA"
+title: "LDA | をpythonで実行してみる"
+linkTitle: "LDA"
+seo_title: "LDA | をpythonで実行してみる"
 pre: "2.6.3 "
 weight: 3
 title_suffix: "をpythonで実行してみる"

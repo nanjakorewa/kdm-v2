@@ -1,5 +1,7 @@
 ---
-title: "Árbol de decisión (regresión)"
+title: "Árbol de decisión (regresión) | Visualización de árboles de decisión (regresión) en python"
+linkTitle: "Árbol de decisión (regresión)"
+seo_title: "Árbol de decisión (regresión) | Visualización de árboles de decisión (regresión) en python"
 pre: "2.3.2 "
 weight: 2
 searchtitle: "Visualización de árboles de decisión (regresión) en python"

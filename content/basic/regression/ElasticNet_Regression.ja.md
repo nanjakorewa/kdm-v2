@@ -1,5 +1,7 @@
 ---
-title: "Elastic Net 回帰"
+title: "Elastic Net 回帰 | L1とL2正則化の長所を融合する"
+linkTitle: "Elastic Net 回帰"
+seo_title: "Elastic Net 回帰 | L1とL2正則化の長所を融合する"
 pre: "2.1.5 "
 weight: 5
 title_suffix: "L1とL2正則化の長所を融合する"

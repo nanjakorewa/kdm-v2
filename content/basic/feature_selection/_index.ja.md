@@ -1,5 +1,7 @@
 ---
-title: 特徴選択
+title: "特徴選択 | 機械学習の基礎解説"
+linkTitle: "特徴選択"
+seo_title: "特徴選択 | 機械学習の基礎解説"
 weight: 7
 chapter: true
 not_use_colab: true

@@ -1,5 +1,7 @@
-﻿---
-title: "Anﾃ｡lisis discriminante lineal (LDA)"
+---
+title: "Anﾃ｡lisis discriminante lineal (LDA) | Aprender direcciones que separan clases"
+linkTitle: "Anﾃ｡lisis discriminante lineal (LDA)"
+seo_title: "Anﾃ｡lisis discriminante lineal (LDA) | Aprender direcciones que separan clases"
 pre: "2.2.4 "
 weight: 4
 title_suffix: "Aprender direcciones que separan clases"

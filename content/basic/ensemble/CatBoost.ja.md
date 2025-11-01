@@ -1,5 +1,7 @@
 ---
-title: "CatBoost"
+title: "CatBoost | カテゴリ処理に強い勾配ブースティング"
+linkTitle: "CatBoost"
+seo_title: "CatBoost | カテゴリ処理に強い勾配ブースティング"
 pre: "2.4.8 "
 weight: 8
 title_suffix: "カテゴリ処理に強い勾配ブースティング"

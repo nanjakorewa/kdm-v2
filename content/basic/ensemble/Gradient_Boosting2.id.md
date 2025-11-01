@@ -1,5 +1,7 @@
 ---
-title: "Visualisasi Gradient Boosting"
+title: "Visualisasi Gradient Boosting | Kontribusi bertahap"
+linkTitle: "Visualisasi Gradient Boosting"
+seo_title: "Visualisasi Gradient Boosting | Kontribusi bertahap"
 pre: "2.4.6 "
 weight: 6
 title_suffix: "Kontribusi bertahap"

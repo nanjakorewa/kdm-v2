@@ -1,5 +1,7 @@
 ---
-title: "Support Vector Regression (SVR)"
+title: "Support Vector Regression (SVR) | Robust predictions with an ε-insensitive tube"
+linkTitle: "Support Vector Regression (SVR)"
+seo_title: "Support Vector Regression (SVR) | Robust predictions with an ε-insensitive tube"
 pre: "2.1.10 "
 weight: 10
 title_suffix: "Robust predictions with an ε-insensitive tube"

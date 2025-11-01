@@ -1,5 +1,7 @@
 ---
-title: "Regresión por componentes principales (PCR)"
+title: "Regresión por componentes principales (PCR) | Mitigar la multicolinealidad mediante reducción de dimensionalidad"
+linkTitle: "Regresión por componentes principales (PCR)"
+seo_title: "Regresión por componentes principales (PCR) | Mitigar la multicolinealidad mediante reducción de dimensionalidad"
 pre: "2.1.8 "
 weight: 8
 title_suffix: "Mitigar la multicolinealidad mediante reducción de dimensionalidad"

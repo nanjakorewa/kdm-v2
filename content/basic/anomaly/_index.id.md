@@ -1,5 +1,7 @@
 ---
-title: Deteksi Anomali
+title: "Deteksi Anomali | Dasar pembelajaran mesin"
+linkTitle: "Deteksi Anomali"
+seo_title: "Deteksi Anomali | Dasar pembelajaran mesin"
 weight: 9
 chapter: true
 not_use_colab: true

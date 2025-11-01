@@ -1,5 +1,7 @@
 ---
-title: "Regresión robusta"
+title: "Regresión robusta | Controlar outliers con la pérdida de Huber"
+linkTitle: "Regresión robusta"
+seo_title: "Regresión robusta | Controlar outliers con la pérdida de Huber"
 pre: "2.1.3 "
 weight: 3
 title_suffix: "Controlar outliers con la pérdida de Huber"

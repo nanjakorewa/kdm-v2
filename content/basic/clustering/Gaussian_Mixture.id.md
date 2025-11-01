@@ -1,5 +1,7 @@
 ---
-title: "Gaussian Mixture Model (GMM)"
+title: "Gaussian Mixture Model (GMM) | Clustering probabilistik dengan penugasan lunak"
+linkTitle: "Gaussian Mixture Model (GMM)"
+seo_title: "Gaussian Mixture Model (GMM) | Clustering probabilistik dengan penugasan lunak"
 pre: "2.5.5 "
 weight: 5
 title_suffix: "Clustering probabilistik dengan penugasan lunak"

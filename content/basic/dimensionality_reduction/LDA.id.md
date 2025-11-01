@@ -1,5 +1,7 @@
 ---
-title: "LDA"
+title: "LDA | dijalankan dengan Python"
+linkTitle: "LDA"
+seo_title: "LDA | dijalankan dengan Python"
 pre: "2.6.3 "
 weight: 3
 title_suffix: "dijalankan dengan Python"

@@ -1,5 +1,7 @@
-﻿---
-title: "Linear Discriminant Analysis (LDA)"
+---
+title: "Linear Discriminant Analysis (LDA) | Learn directions that separate classes"
+linkTitle: "Linear Discriminant Analysis (LDA)"
+seo_title: "Linear Discriminant Analysis (LDA) | Learn directions that separate classes"
 pre: "2.2.4 "
 weight: 4
 title_suffix: "Learn directions that separate classes"

@@ -1,5 +1,7 @@
 ---
-title: "t-SNE"
+title: "t-SNE | 高次元データを可視化する定番手法"
+linkTitle: "t-SNE"
+seo_title: "t-SNE | 高次元データを可視化する定番手法"
 pre: "2.4.5 "
 weight: 5
 title_suffix: "高次元データを可視化する定番手法"

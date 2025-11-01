@@ -1,5 +1,7 @@
 ---
-title: "ロバスト回帰"
+title: "ロバスト回帰 | Huber損失で外れ値に強くする"
+linkTitle: "ロバスト回帰"
+seo_title: "ロバスト回帰 | Huber損失で外れ値に強くする"
 pre: "2.1.3 "
 weight: 3
 title_suffix: "Huber損失で外れ値に強くする"

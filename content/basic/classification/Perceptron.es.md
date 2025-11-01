@@ -1,5 +1,7 @@
-﻿---
-title: "Perceptrﾃｳn"
+---
+title: "Perceptrﾃｳn | El clasificador lineal mﾃ｡s simple"
+linkTitle: "Perceptrﾃｳn"
+seo_title: "Perceptrﾃｳn | El clasificador lineal mﾃ｡s simple"
 pre: "2.2.3 "
 weight: 3
 title_suffix: "El clasificador lineal mﾃ｡s simple"

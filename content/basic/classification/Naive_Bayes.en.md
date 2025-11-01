@@ -1,5 +1,7 @@
-﻿---
-title: "Naive Bayes"
+---
+title: "Naive Bayes | Fast inference with conditional independence"
+linkTitle: "Naive Bayes"
+seo_title: "Naive Bayes | Fast inference with conditional independence"
 pre: "2.2.6 "
 weight: 6
 title_suffix: "Fast inference with conditional independence"

@@ -1,5 +1,7 @@
 ---
-title: 異常検知
+title: "異常検知 | 機械学習の基礎解説"
+linkTitle: "異常検知"
+seo_title: "異常検知 | 機械学習の基礎解説"
 weight: 9
 chapter: true
 not_use_colab: true

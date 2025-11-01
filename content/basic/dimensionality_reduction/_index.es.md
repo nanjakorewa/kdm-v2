@@ -1,5 +1,7 @@
 ---
-title: Reducción de la dimensionalidad
+title: "Reducción de la dimensionalidad | Guía de aprendizaje automático"
+linkTitle: "Reducción de la dimensionalidad"
+seo_title: "Reducción de la dimensionalidad | Guía de aprendizaje automático"
 weight: 7
 chapter: true
 not_use_colab: true

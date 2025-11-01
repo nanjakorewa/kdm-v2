@@ -1,5 +1,7 @@
 ---
-title: Árbol de decisionesÁrbol de decisiones
+title: "Árbol de decisionesÁrbol de decisiones | Guía de aprendizaje automático"
+linkTitle: "Árbol de decisionesÁrbol de decisiones"
+seo_title: "Árbol de decisionesÁrbol de decisiones | Guía de aprendizaje automático"
 weight: 4
 chapter: true
 not_use_colab: true

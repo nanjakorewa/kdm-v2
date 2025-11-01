@@ -1,5 +1,7 @@
 ---
-title: Clustering
+title: "Clustering | Machine Learning Basics"
+linkTitle: "Clustering"
+seo_title: "Clustering | Machine Learning Basics"
 weight: 6
 chapter: true
 not_use_colab: true

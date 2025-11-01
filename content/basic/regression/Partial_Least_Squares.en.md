@@ -1,5 +1,7 @@
 ---
-title: "Partial Least Squares Regression (PLS)"
+title: "Partial Least Squares Regression (PLS) | Learn latent factors aligned with the target"
+linkTitle: "Partial Least Squares Regression (PLS)"
+seo_title: "Partial Least Squares Regression (PLS) | Learn latent factors aligned with the target"
 pre: "2.1.9 "
 weight: 9
 title_suffix: "Learn latent factors aligned with the target"

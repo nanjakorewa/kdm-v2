@@ -1,5 +1,7 @@
-﻿---
-title: "Naive Bayes"
+---
+title: "Naive Bayes | Inferencia rﾃ｡pida con independencia condicional"
+linkTitle: "Naive Bayes"
+seo_title: "Naive Bayes | Inferencia rﾃ｡pida con independencia condicional"
 pre: "2.2.6 "
 weight: 6
 title_suffix: "Inferencia rﾃ｡pida con independencia condicional"

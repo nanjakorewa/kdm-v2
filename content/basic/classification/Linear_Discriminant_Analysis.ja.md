@@ -1,5 +1,7 @@
 ---
-title: "線形判別分析 (LDA)"
+title: "線形判別分析 (LDA) | クラスを分ける方向を学ぶ"
+linkTitle: "線形判別分析 (LDA)"
+seo_title: "線形判別分析 (LDA) | クラスを分ける方向を学ぶ"
 pre: "2.2.4 "
 weight: 4
 title_suffix: "クラスを分ける方向を学ぶ"

@@ -1,5 +1,7 @@
 ---
-title: "RuleFit"
+title: "RuleFit | 機械学習の基礎解説"
+linkTitle: "RuleFit"
+seo_title: "RuleFit | 機械学習の基礎解説"
 pre: "2.3.4 "
 weight: 4
 ---

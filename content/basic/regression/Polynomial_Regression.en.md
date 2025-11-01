@@ -1,5 +1,7 @@
 ---
-title: "Polynomial Regression"
+title: "Polynomial Regression | Capture nonlinear patterns with a linear model"
+linkTitle: "Polynomial Regression"
+seo_title: "Polynomial Regression | Capture nonlinear patterns with a linear model"
 pre: "2.1.4 "
 weight: 4
 title_suffix: "Capture nonlinear patterns with a linear model"

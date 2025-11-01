@@ -1,5 +1,7 @@
 ---
-title: "Quantile Regression"
+title: "Quantile Regression | Estimate conditional distribution contours"
+linkTitle: "Quantile Regression"
+seo_title: "Quantile Regression | Estimate conditional distribution contours"
 pre: "2.1.7 "
 weight: 7
 title_suffix: "Estimate conditional distribution contours"

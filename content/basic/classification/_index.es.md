@@ -1,5 +1,7 @@
 ---
-title: Clasificación lineal
+title: "Clasificación lineal | Guía de aprendizaje automático"
+linkTitle: "Clasificación lineal"
+seo_title: "Clasificación lineal | Guía de aprendizaje automático"
 weight: 3
 chapter: true
 not_use_colab: true

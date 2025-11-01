@@ -1,5 +1,7 @@
 ---
-title: "X-means"
+title: "X-means | Estimando automáticamente el número de clústeres"
+linkTitle: "X-means"
+seo_title: "X-means | Estimando automáticamente el número de clústeres"
 weight: 3
 pre: "2.5.3 "
 title_suffix: "Estimando automáticamente el número de clústeres"

@@ -1,5 +1,7 @@
 ---
-title: "Elastic Net Regression"
+title: "Elastic Net Regression | Blend the strengths of L1 and L2"
+linkTitle: "Elastic Net Regression"
+seo_title: "Elastic Net Regression | Blend the strengths of L1 and L2"
 pre: "2.1.5 "
 weight: 5
 title_suffix: "Blend the strengths of L1 and L2"

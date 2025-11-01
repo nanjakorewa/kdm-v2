@@ -1,5 +1,7 @@
 ---
-title: "Parameter Pohon Keputusan"
+title: "Parameter Pohon Keputusan | Memeriksa pengaruh dari setiap parameter pohon keputusan"
+linkTitle: "Parameter Pohon Keputusan"
+seo_title: "Parameter Pohon Keputusan | Memeriksa pengaruh dari setiap parameter pohon keputusan"
 pre: "2.3.3 "
 weight: 3
 searchtitle: "Memeriksa pengaruh dari setiap parameter pohon keputusan"

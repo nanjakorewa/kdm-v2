@@ -1,5 +1,7 @@
-﻿---
-title: "Support Vector Machines (SVM)"
+---
+title: "Support Vector Machines (SVM) | Improve generalisation by maximising the margin"
+linkTitle: "Support Vector Machines (SVM)"
+seo_title: "Support Vector Machines (SVM) | Improve generalisation by maximising the margin"
 pre: "2.2.5 "
 weight: 5
 title_suffix: "Improve generalisation by maximising the margin"

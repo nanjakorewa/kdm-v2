@@ -1,5 +1,7 @@
 ---
-title: "Regresión polinómica"
+title: "Regresión polinómica | Capturar patrones no lineales con un modelo lineal"
+linkTitle: "Regresión polinómica"
+seo_title: "Regresión polinómica | Capturar patrones no lineales con un modelo lineal"
 pre: "2.1.4 "
 weight: 4
 title_suffix: "Capturar patrones no lineales con un modelo lineal"

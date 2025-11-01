@@ -1,5 +1,7 @@
 ---
-title: "AdaBoost (Regression)"
+title: "AdaBoost (Regression) | Intuition, loss options, and practice"
+linkTitle: "AdaBoost (Regression)"
+seo_title: "AdaBoost (Regression) | Intuition, loss options, and practice"
 pre: "2.4.4 "
 weight: 4
 title_suffix: "Intuition, loss options, and practice"

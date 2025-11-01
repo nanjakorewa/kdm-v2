@@ -1,5 +1,7 @@
 ---
-title: 線形分類
+title: "線形分類 | 機械学習の基礎解説"
+linkTitle: "線形分類"
+seo_title: "線形分類 | 機械学習の基礎解説"
 weight: 3
 chapter: true
 not_use_colab: true

@@ -1,5 +1,7 @@
 ---
-title: "k-Nearest Neighbours (k-NN)"
+title: "k-Nearest Neighbours (k-NN) | Lazy learning based on distances"
+linkTitle: "k-Nearest Neighbours (k-NN)"
+seo_title: "k-Nearest Neighbours (k-NN) | Lazy learning based on distances"
 pre: "2.2.7 "
 weight: 7
 title_suffix: "Lazy learning based on distances"

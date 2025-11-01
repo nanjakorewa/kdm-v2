@@ -1,5 +1,7 @@
 ---
-title: "Orthogonal Matching Pursuit (OMP)"
+title: "Orthogonal Matching Pursuit (OMP) | Selección codiciosa de coeficientes dispersos"
+linkTitle: "Orthogonal Matching Pursuit (OMP)"
+seo_title: "Orthogonal Matching Pursuit (OMP) | Selección codiciosa de coeficientes dispersos"
 pre: "2.1.12 "
 weight: 12
 title_suffix: "Selección codiciosa de coeficientes dispersos"

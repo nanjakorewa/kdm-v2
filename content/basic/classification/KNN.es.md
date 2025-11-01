@@ -1,5 +1,7 @@
 ---
-title: "k vecinos más cercanos (k-NN)"
+title: "k vecinos más cercanos (k-NN) | Aprendizaje perezoso basado en distancias"
+linkTitle: "k vecinos más cercanos (k-NN)"
+seo_title: "k vecinos más cercanos (k-NN) | Aprendizaje perezoso basado en distancias"
 pre: "2.2.7 "
 weight: 7
 title_suffix: "Aprendizaje perezoso basado en distancias"

@@ -1,5 +1,7 @@
 ---
-title: "AdaBoost（回帰）"
+title: "AdaBoost（回帰） | の直感・数式・実装"
+linkTitle: "AdaBoost（回帰）"
+seo_title: "AdaBoost（回帰） | の直感・数式・実装"
 pre: "2.4.4 "
 weight: 4
 title_suffix: "の直感・数式・実装"

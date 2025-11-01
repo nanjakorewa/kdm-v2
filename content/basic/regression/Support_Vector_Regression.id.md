@@ -1,5 +1,7 @@
 ---
-title: "Support Vector Regression (SVR)"
+title: "Support Vector Regression (SVR) | Prediksi tangguh dengan tabung ε-insensitive"
+linkTitle: "Support Vector Regression (SVR)"
+seo_title: "Support Vector Regression (SVR) | Prediksi tangguh dengan tabung ε-insensitive"
 pre: "2.1.10 "
 weight: 10
 title_suffix: "Prediksi tangguh dengan tabung ε-insensitive"

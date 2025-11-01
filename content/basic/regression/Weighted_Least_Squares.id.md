@@ -1,5 +1,7 @@
 ---
-title: "Weighted Least Squares (WLS)"
+title: "Weighted Least Squares (WLS) | Menangani observasi dengan varians berbeda"
+linkTitle: "Weighted Least Squares (WLS)"
+seo_title: "Weighted Least Squares (WLS) | Menangani observasi dengan varians berbeda"
 pre: "2.1.11 "
 weight: 11
 title_suffix: "Menangani observasi dengan varians berbeda"

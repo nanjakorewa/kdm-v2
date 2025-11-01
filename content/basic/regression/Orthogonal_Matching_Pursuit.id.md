@@ -1,5 +1,7 @@
 ---
-title: "Orthogonal Matching Pursuit (OMP)"
+title: "Orthogonal Matching Pursuit (OMP) | Pemilihan rakus untuk koefisien jarang"
+linkTitle: "Orthogonal Matching Pursuit (OMP)"
+seo_title: "Orthogonal Matching Pursuit (OMP) | Pemilihan rakus untuk koefisien jarang"
 pre: "2.1.12 "
 weight: 12
 title_suffix: "Pemilihan rakus untuk koefisien jarang"

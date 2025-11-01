@@ -1,5 +1,7 @@
 ---
-title: "LightGBM"
+title: "LightGBM | の仕組みとチューニングのコツ"
+linkTitle: "LightGBM"
+seo_title: "LightGBM | の仕組みとチューニングのコツ"
 pre: "2.4.7 "
 weight: 7
 title_suffix: "の仕組みとチューニングのコツ"

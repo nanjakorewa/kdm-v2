@@ -1,5 +1,7 @@
 ---
-title: "X-means"
+title: "X-means | クラスタ数を自動推定する"
+linkTitle: "X-means"
+seo_title: "X-means | クラスタ数を自動推定する"
 weight: 3
 pre: "2.5.3 "
 title_suffix: "クラスタ数を自動推定する"

@@ -1,5 +1,7 @@
 ---
-title: "加重最小二乗法 (WLS)"
+title: "加重最小二乗法 (WLS) | ばらつきが異なる観測を適切に扱う"
+linkTitle: "加重最小二乗法 (WLS)"
+seo_title: "加重最小二乗法 (WLS) | ばらつきが異なる観測を適切に扱う"
 pre: "2.1.11 "
 weight: 11
 title_suffix: "ばらつきが異なる観測を適切に扱う"

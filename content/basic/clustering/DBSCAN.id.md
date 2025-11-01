@@ -1,5 +1,7 @@
 ---
-title: "DBSCAN"
+title: "DBSCAN | Clustering berbasis kepadatan"
+linkTitle: "DBSCAN"
+seo_title: "DBSCAN | Clustering berbasis kepadatan"
 pre: "2.5.4 "
 weight: 4
 title_suffix: "Clustering berbasis kepadatan"

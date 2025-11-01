@@ -1,5 +1,7 @@
 ---
-title: "Regresi Elastic Net"
+title: "Regresi Elastic Net | Menggabungkan kekuatan L1 dan L2"
+linkTitle: "Regresi Elastic Net"
+seo_title: "Regresi Elastic Net | Menggabungkan kekuatan L1 dan L2"
 pre: "2.1.5 "
 weight: 5
 title_suffix: "Menggabungkan kekuatan L1 dan L2"

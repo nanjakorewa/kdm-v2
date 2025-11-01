@@ -1,5 +1,7 @@
 ---
-title: "Peningkatan gradient"
+title: "Peningkatan gradient | Memvisualisasikan proses pembelajaran gradient boosting"
+linkTitle: "Peningkatan gradient"
+seo_title: "Peningkatan gradient | Memvisualisasikan proses pembelajaran gradient boosting"
 pre: "2.4.5 "
 weight: 5
 searchtitle: "Memvisualisasikan proses pembelajaran gradient boosting"

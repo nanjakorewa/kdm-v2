@@ -1,5 +1,7 @@
 ---
-title: "Regresión con máquinas de soporte vectorial (SVR)"
+title: "Regresión con máquinas de soporte vectorial (SVR) | Predicciones robustas con un tubo ε-insensible"
+linkTitle: "Regresión con máquinas de soporte vectorial (SVR)"
+seo_title: "Regresión con máquinas de soporte vectorial (SVR) | Predicciones robustas con un tubo ε-insensible"
 pre: "2.1.10 "
 weight: 10
 title_suffix: "Predicciones robustas con un tubo ε-insensible"

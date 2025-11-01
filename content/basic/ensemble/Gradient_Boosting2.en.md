@@ -1,5 +1,7 @@
 ---
-title: "Visualizing Gradient Boosting"
+title: "Visualizing Gradient Boosting | Staged contributions"
+linkTitle: "Visualizing Gradient Boosting"
+seo_title: "Visualizing Gradient Boosting | Staged contributions"
 pre: "2.4.6 "
 weight: 6
 title_suffix: "Staged contributions"

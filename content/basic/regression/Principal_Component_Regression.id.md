@@ -1,5 +1,7 @@
 ---
-title: "Regresi Komponen Utama (PCR)"
+title: "Regresi Komponen Utama (PCR) | Mengurangi multikolinearitas lewat reduksi dimensi"
+linkTitle: "Regresi Komponen Utama (PCR)"
+seo_title: "Regresi Komponen Utama (PCR) | Mengurangi multikolinearitas lewat reduksi dimensi"
 pre: "2.1.8 "
 weight: 8
 title_suffix: "Mengurangi multikolinearitas lewat reduksi dimensi"

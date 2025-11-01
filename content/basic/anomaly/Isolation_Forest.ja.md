@@ -1,5 +1,7 @@
 ---
-title: "Isolation Forest"
+title: "Isolation Forest | ランダム分割で外れ値を隔離する"
+linkTitle: "Isolation Forest"
+seo_title: "Isolation Forest | ランダム分割で外れ値を隔離する"
 pre: "2.6.4 "
 weight: 4
 title_suffix: "ランダム分割で外れ値を隔離する"

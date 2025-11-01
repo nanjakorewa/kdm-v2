@@ -1,5 +1,7 @@
 ---
-title: "DBSCAN"
+title: "DBSCAN | Extracting density-based clusters"
+linkTitle: "DBSCAN"
+seo_title: "DBSCAN | Extracting density-based clusters"
 pre: "2.5.4 "
 weight: 4
 title_suffix: "Extracting density-based clusters"

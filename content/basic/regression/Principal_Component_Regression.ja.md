@@ -1,5 +1,7 @@
 ---
-title: "主成分回帰 (PCR)"
+title: "主成分回帰 (PCR) | 多重共線性を緩和する次元圧縮回帰"
+linkTitle: "主成分回帰 (PCR)"
+seo_title: "主成分回帰 (PCR) | 多重共線性を緩和する次元圧縮回帰"
 pre: "2.1.8 "
 weight: 8
 title_suffix: "多重共線性を緩和する次元圧縮回帰"

@@ -1,5 +1,7 @@
 ---
-title: Pengurangan Dimensi
+title: "Pengurangan Dimensi | Dasar pembelajaran mesin"
+linkTitle: "Pengurangan Dimensi"
+seo_title: "Pengurangan Dimensi | Dasar pembelajaran mesin"
 weight: 7
 chapter: true
 not_use_colab: true

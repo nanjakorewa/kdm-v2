@@ -1,5 +1,7 @@
 ---
-title: "k tetangga terdekat (k-NN)"
+title: "k tetangga terdekat (k-NN) | Pembelajaran malas berbasis jarak"
+linkTitle: "k tetangga terdekat (k-NN)"
+seo_title: "k tetangga terdekat (k-NN) | Pembelajaran malas berbasis jarak"
 pre: "2.2.7 "
 weight: 7
 title_suffix: "Pembelajaran malas berbasis jarak"

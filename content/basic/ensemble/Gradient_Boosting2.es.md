@@ -1,5 +1,7 @@
 ---
-title: "Visualización de Gradient Boosting"
+title: "Visualización de Gradient Boosting | Contribuciones por etapas"
+linkTitle: "Visualización de Gradient Boosting"
+seo_title: "Visualización de Gradient Boosting | Contribuciones por etapas"
 pre: "2.4.6 "
 weight: 6
 title_suffix: "Contribuciones por etapas"

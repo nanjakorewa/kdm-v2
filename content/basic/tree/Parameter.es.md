@@ -1,5 +1,7 @@
 ---
-title: "Parámetros de los Árboles de Decisión"
+title: "Parámetros de los Árboles de Decisión | Comprender cómo funcionan"
+linkTitle: "Parámetros de los Árboles de Decisión"
+seo_title: "Parámetros de los Árboles de Decisión | Comprender cómo funcionan"
 pre: "2.3.3 "
 weight: 3
 title_suffix: "Comprender cómo funcionan"

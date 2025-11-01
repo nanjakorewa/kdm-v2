@@ -1,5 +1,7 @@
 ---
-title: "分位点回帰 (Quantile Regression)"
+title: "分位点回帰 (Quantile Regression) | 条件付き分布の輪郭を推定する"
+linkTitle: "分位点回帰 (Quantile Regression)"
+seo_title: "分位点回帰 (Quantile Regression) | 条件付き分布の輪郭を推定する"
 pre: "2.1.7 "
 weight: 7
 title_suffix: "条件付き分布の輪郭を推定する"

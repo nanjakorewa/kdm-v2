@@ -1,5 +1,7 @@
 ---
-title: "AdaBoost (Classification)"
+title: "AdaBoost (Classification) | Intuition, formulas, and practice"
+linkTitle: "AdaBoost (Classification)"
+seo_title: "AdaBoost (Classification) | Intuition, formulas, and practice"
 pre: "2.4.3 "
 weight: 3
 title_suffix: "Intuition, formulas, and practice"

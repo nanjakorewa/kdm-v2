@@ -1,5 +1,7 @@
 ---
-title: "LDA"
+title: "LDA | Guía de aprendizaje automático"
+linkTitle: "LDA"
+seo_title: "LDA | Guía de aprendizaje automático"
 pre: "2.6.3 "
 weight: 3
 ---

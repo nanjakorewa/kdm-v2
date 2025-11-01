@@ -1,5 +1,7 @@
 ---
-title: "Regresi Kuantil"
+title: "Regresi Kuantil | Memperkirakan kontur distribusi kondisional"
+linkTitle: "Regresi Kuantil"
+seo_title: "Regresi Kuantil | Memperkirakan kontur distribusi kondisional"
 pre: "2.1.7 "
 weight: 7
 title_suffix: "Memperkirakan kontur distribusi kondisional"

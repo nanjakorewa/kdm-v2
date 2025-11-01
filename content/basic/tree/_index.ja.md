@@ -1,5 +1,7 @@
 ---
-title: 決定木
+title: "決定木 | 機械学習の基礎解説"
+linkTitle: "決定木"
+seo_title: "決定木 | 機械学習の基礎解説"
 weight: 4
 chapter: true
 not_use_colab: true

@@ -1,5 +1,7 @@
 ---
-title: Seleksi Fitur
+title: "Seleksi Fitur | Dasar pembelajaran mesin"
+linkTitle: "Seleksi Fitur"
+seo_title: "Seleksi Fitur | Dasar pembelajaran mesin"
 weight: 7
 chapter: true
 not_use_colab: true

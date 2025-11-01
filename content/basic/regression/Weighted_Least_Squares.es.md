@@ -1,5 +1,7 @@
 ---
-title: "Mínimos cuadrados ponderados (WLS)"
+title: "Mínimos cuadrados ponderados (WLS) | Tratar observaciones con varianza desigual"
+linkTitle: "Mínimos cuadrados ponderados (WLS)"
+seo_title: "Mínimos cuadrados ponderados (WLS) | Tratar observaciones con varianza desigual"
 pre: "2.1.11 "
 weight: 11
 title_suffix: "Tratar observaciones con varianza desigual"

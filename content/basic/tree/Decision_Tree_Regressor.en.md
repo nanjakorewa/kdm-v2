@@ -1,5 +1,7 @@
 ---
-title: "Decision tree (regression)"
+title: "Decision tree (regression) | Visualizing decision trees (regression) in python"
+linkTitle: "Decision tree (regression)"
+seo_title: "Decision tree (regression) | Visualizing decision trees (regression) in python"
 pre: "2.3.2 "
 weight: 2
 searchtitle: "Visualizing decision trees (regression) in python"

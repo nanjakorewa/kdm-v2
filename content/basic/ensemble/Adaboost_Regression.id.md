@@ -1,5 +1,7 @@
 ---
-title: "AdaBoost (Regresi)"
+title: "AdaBoost (Regresi) | Intuisi, loss, dan praktik"
+linkTitle: "AdaBoost (Regresi)"
+seo_title: "AdaBoost (Regresi) | Intuisi, loss, dan praktik"
 pre: "2.4.4 "
 weight: 4
 title_suffix: "Intuisi, loss, dan praktik"

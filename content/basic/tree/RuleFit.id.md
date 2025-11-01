@@ -1,5 +1,7 @@
 ---
-title: "RuleFit"
+title: "RuleFit | Aturan + Linear dengan L1"
+linkTitle: "RuleFit"
+seo_title: "RuleFit | Aturan + Linear dengan L1"
 pre: "2.3.4 "
 weight: 4
 title_suffix: "Aturan + Linear dengan L1"

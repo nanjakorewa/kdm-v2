@@ -1,5 +1,7 @@
 ---
-title: "Robust regression"
+title: "Robust regression | Handle outliers with the Huber loss"
+linkTitle: "Robust regression"
+seo_title: "Robust regression | Handle outliers with the Huber loss"
 pre: "2.1.3 "
 weight: 3
 title_suffix: "Handle outliers with the Huber loss"

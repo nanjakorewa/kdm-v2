@@ -1,5 +1,7 @@
 ---
-title: "Orthogonal Matching Pursuit (OMP)"
+title: "Orthogonal Matching Pursuit (OMP) | Greedy selection for sparse coefficients"
+linkTitle: "Orthogonal Matching Pursuit (OMP)"
+seo_title: "Orthogonal Matching Pursuit (OMP) | Greedy selection for sparse coefficients"
 pre: "2.1.12 "
 weight: 12
 title_suffix: "Greedy selection for sparse coefficients"
