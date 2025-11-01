@@ -2,74 +2,142 @@
 title: "DBSCAN"
 pre: "2.5.4 "
 weight: 4
-title_suffix: "密度ベースでクラスタを抽出する"
+title_suffix: "密度の違いからクラスタを抽出する"
 ---
 
 {{% summary %}}
-- DBSCAN（Density-Based Spatial Clustering of Applications with Noise）は「密度が高い領域をクラスタ、疎な領域をノイズ」とみなすアルゴリズム。
-- 2 つのハイパーパラメータ `eps`（半径）と `min_samples`（近傍の必要点数）で密度を規定し、コア・境界・ノイズの 3 種類の点に分類する。
-- 距離ベースの k-means と異なりクラスタ数を事前に指定する必要がなく、非凸な形状やノイズを含むデータに強い。
-- `min_samples`-距離プロット（k-distance graph）を用いると `eps` の当たりを付けやすく、前処理として標準化を行うと距離が安定する。
+- DBSCAN（Density-Based Spatial Clustering of Applications with Noise）は、密度が高い領域をクラスタ、疎な領域をノイズとして扱うアルゴリズムです。
+- 距離の半径 `eps` と近傍に必要な点数 `min_samples` を指定し、点をコア・境界・ノイズの 3 種類に分類します。
+- クラスタ数を事前に決める必要がなく、非凸な形のクラスタやノイズを含むデータに強いのが特徴です。
+- `min_samples`-距離プロットを手掛かりに `eps` を調整し、距離のスケールを揃えるために標準化しておくと安定します。
 {{% /summary %}}
 
 ## 直感
-DBSCAN では「点の周囲に十分な仲間が存在するか」を基準にクラスタを構成します。
+DBSCAN は「点の周囲に十分な仲間がいるかどうか」を基準にクラスタを構成します。
 
-- **コアポイント**: 半径 `eps` の近傍に `min_samples` 個以上の点が存在する。
-- **境界ポイント**: コアポイントの近傍に含まれるが、自身は条件を満たさない。
-- **ノイズ**: コアにも境界にも属さない孤立した点。
+- **コアポイント**: 半径 `eps` の円内に `min_samples` 個以上の点がある点。
+- **境界ポイント**: コアポイントの近傍に存在するが、自分自身は条件を満たさない点。
+- **ノイズ**: コアにも境界にも分類されない孤立した点。
 
-コアポイントは同じ密度領域に属する点をつなぎ、密度領域ごとにクラスタを形成します。クラスタ形状が不規則でも分離できる一方、密度差が大きい場合にはパラメータ調整が必要です。
+コアポイント同士が鎖のようにつながると同じ密度領域として扱われ、その領域が 1 つのクラスタになります。クラスタの形が不規則でも対応できますが、密度差が大きいデータではパラメータ調整が重要です。
 
-## 具体的な数式
-データ集合 \\(\mathcal{X}\\) の点 \\(x_i\\) に対し、`eps` の \\(\varepsilon\\)-近傍を
+## 数式で見る
+データ集合 \\(\mathcal{X}\\) の点 \\(x_i\\) に対し、`eps` で定義される \\(\varepsilon\\)-近傍は
 
 $$
-\mathcal{N}_\varepsilon(x_i) = \{x_j \in \mathcal{X} \mid \lVert x_i - x_j \rVert \le \varepsilon \}
+\mathcal{N}_\varepsilon(x_i) = \{\, x_j \in \mathcal{X} \mid \lVert x_i - x_j \rVert \le \varepsilon \,\}
 $$
 
-と定義します。以下の条件を満たす点をコアポイントと呼びます。
+です。近傍に十分な点が存在すればコアポイントになります。
 
 $$
 |\mathcal{N}_\varepsilon(x_i)| \ge \texttt{min\_samples}
 $$
 
-コアポイント同士がチェーン状につながると「密度連結」とみなされ、同じクラスタに属します。境界ポイントはコアポイントに密度到達可能（density reachable）な点であり、ノイズはそれ以外の点です。
+コアポイント同士が密度連結であれば同じクラスタに属し、境界ポイントはクラスタにぶら下がる形で所属します。ノイズはどのクラスタにも属さない点です。
 
-## Pythonを用いた実験や説明
-`scikit-learn` で月型データをクラスタリングし、ノイズ点の自動検出を確認します。
+## Pythonで確かめる
+標準化した月型データに DBSCAN を適用し、クラスタ数とノイズ点の数を確認します。
 
 ```python
-import numpy as np
-import matplotlib.pyplot as plt
+from __future__ import annotations
+
 import japanize_matplotlib
-from sklearn.datasets import make_moons
+import matplotlib.pyplot as plt
+import numpy as np
+from numpy.typing import NDArray
 from sklearn.cluster import DBSCAN
+from sklearn.datasets import make_moons
 from sklearn.preprocessing import StandardScaler
 
-X, _ = make_moons(n_samples=600, noise=0.08, random_state=0)
-X = StandardScaler().fit_transform(X)
 
-model = DBSCAN(eps=0.3, min_samples=10)
-labels = model.fit_predict(X)
+def run_dbscan_demo(
+    n_samples: int = 600,
+    noise: float = 0.08,
+    eps: float = 0.3,
+    min_samples: int = 10,
+    random_state: int = 0,
+) -> dict[str, int]:
+    """DBSCAN で月型データをクラスタリングし、クラスタ数とノイズ点を調べる。"""
+    japanize_matplotlib.japanize()
+    features, _ = make_moons(
+        n_samples=n_samples,
+        noise=noise,
+        random_state=random_state,
+    )
+    features = StandardScaler().fit_transform(features)
 
-print("クラスタ数 (ノイズ除く):", len(set(labels)) - (1 if -1 in labels else 0))
-print("ノイズ点数:", np.sum(labels == -1))
+    model = DBSCAN(eps=eps, min_samples=min_samples)
+    labels = model.fit_predict(features)
 
-plt.figure(figsize=(6, 5))
-plt.scatter(X[:, 0], X[:, 1], c=labels, cmap="Spectral", s=20)
-plt.title("DBSCAN によるクラスタリング")
-plt.xlabel("特徴量1")
-plt.ylabel("特徴量2")
-plt.tight_layout()
-plt.show()
+    unique_labels = sorted(np.unique(labels))
+    cluster_ids = [label for label in unique_labels if label != -1]
+    noise_count = int(np.sum(labels == -1))
+
+    core_mask = np.zeros(labels.shape[0], dtype=bool)
+    if hasattr(model, "core_sample_indices_"):
+        core_mask[model.core_sample_indices_] = True
+
+    fig, ax = plt.subplots(figsize=(6.2, 5.2))
+    palette = plt.cm.get_cmap("tab10", max(len(cluster_ids), 1))
+
+    for order, cluster_id in enumerate(cluster_ids):
+        mask = labels == cluster_id
+        color = palette(order)
+        ax.scatter(
+            features[mask & core_mask, 0],
+            features[mask & core_mask, 1],
+            c=[color],
+            s=36,
+            edgecolor="white",
+            linewidth=0.2,
+            label=f"クラスタ {cluster_id}（コア）",
+        )
+        ax.scatter(
+            features[mask & ~core_mask, 0],
+            features[mask & ~core_mask, 1],
+            c=[color],
+            s=24,
+            edgecolor="white",
+            linewidth=0.2,
+            marker="o",
+            label=f"クラスタ {cluster_id}（境界）",
+        )
+
+    if noise_count:
+        noise_mask = labels == -1
+        ax.scatter(
+            features[noise_mask, 0],
+            features[noise_mask, 1],
+            c="#9ca3af",
+            marker="x",
+            s=28,
+            linewidth=0.8,
+            label="ノイズ",
+        )
+
+    ax.set_title("DBSCAN によるクラスタリング")
+    ax.set_xlabel("特徴量 1")
+    ax.set_ylabel("特徴量 2")
+    ax.grid(alpha=0.2)
+    ax.legend(loc="upper right", fontsize=9)
+    fig.tight_layout()
+    plt.show()
+
+    return {"n_clusters": len(cluster_ids), "n_noise": noise_count}
+
+
+result = run_dbscan_demo()
+print(f"検出されたクラスタ数: {result['n_clusters']}")
+print(f"ノイズ点の数: {result['n_noise']}")
 ```
 
-![dbscan block 1](/images/basic/clustering/dbscan_block01.svg)
+
+![DBSCAN のクラスタリング結果](/images/basic/clustering/dbscan_block01_ja.png)
 
 ## 参考文献
 {{% references %}}
 <li>Ester, M., Kriegel, H.-P., Sander, J., &amp; Xu, X. (1996). A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise. <i>KDD</i>.</li>
-<li>Schubert, E. et al. (2017). DBSCAN Revisited, Revisited. <i>ACM Transactions on Database Systems</i>.</li>
+<li>Schubert, E., Sander, J., Ester, M., Kriegel, H.-P., &amp; Xu, X. (2017). DBSCAN Revisited, Revisited. <i>ACM Transactions on Database Systems</i>.</li>
 <li>scikit-learn developers. (2024). <i>Clustering</i>. https://scikit-learn.org/stable/modules/clustering.html</li>
 {{% /references %}}
