@@ -1,83 +1,256 @@
----
-title: "F1・Fβスコア"
+﻿---
+
+title: "F1スコア | 適合率と再現率の調和平均"
+
+linkTitle: "F1 Score"
+
+seo_title: "F1スコア | 適合率と再現率の調和平均"
+
 pre: "4.3.8 "
+
 weight: 8
-title_suffix: "適合率と再現率の調和平均"
+
 ---
+
+
 
 {{< lead >}}
-F1 スコアは適合率（Precision）と再現率（Recall）の調和平均で、両者のバランスを一つの数値で捉えられます。Fβ スコアでは β を変えることで、再現率をどれだけ重視するかを調整できます。
+
+F1 スコアは適合率（Precision）と再現率（Recall）の調和平均で、誤警報と見逃しをバランスよく抑えたいときに有効です。Python 3.13 のコードで計算・可視化し、閾値調整や Fβ スコアの使い分けまで整理します。
+
 {{< /lead >}}
 
+
+
 ---
+
+
 
 ## 1. 定義
 
-適合率を \\(P\\)、再現率を \\(R\\) とすると、
 
-$$
+
+適合率を \(P\)、再現率を \(R\) とすると F1 スコアは
+
+
+
+
+
 F_1 = 2 \cdot \frac{P \cdot R}{P + R}
-$$
 
-より一般的な Fβ スコアは次の式です。
 
-$$
+
+
+
+で表せます。より一般的な Fβ スコアは
+
+
+
+
+
 F_\beta = (1 + \beta^2) \cdot \frac{P \cdot R}{\beta^2 P + R}
-$$
 
-- β > 1：再現率を重視（偽陰性を嫌う）
-- β < 1：適合率を重視（偽陽性を嫌う）
+
+
+
+
+となり、\(\beta > 1\) で再現率を、\(\beta < 1\) で適合率をより重視します。
+
+
 
 ---
 
-## 2. Python で計算
 
-```python
-from sklearn.metrics import f1_score, fbeta_score, classification_report
 
-print("F1:", f1_score(y_test, y_pred))
-print("F0.5:", fbeta_score(y_test, y_pred, beta=0.5))
-print("F2:", fbeta_score(y_test, y_pred, beta=2.0))
+## 2. Python 3.13 での計算
 
-print(classification_report(y_test, y_pred, digits=3))
+
+
+```bash
+
+python --version        # 例: Python 3.13.0
+
+pip install scikit-learn matplotlib
+
 ```
 
-`classification_report` ではクラスごとの F1 が表示されます。マルチクラスでは `average` 引数で `micro`、`macro`、`weighted` などを選択でき、全体の F1 を計算できます。
+
+
+```python
+
+import numpy as np
+
+from sklearn.datasets import make_classification
+
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.metrics import (
+
+    classification_report,
+
+    f1_score,
+
+    fbeta_score,
+
+)
+
+from sklearn.model_selection import train_test_split
+
+from sklearn.pipeline import make_pipeline
+
+from sklearn.preprocessing import StandardScaler
+
+
+
+X, y = make_classification(
+
+    n_samples=40_000,
+
+    n_features=20,
+
+    n_informative=6,
+
+    weights=[0.95, 0.05],
+
+    random_state=42,
+
+)
+
+X_train, X_test, y_train, y_test = train_test_split(
+
+    X, y, test_size=0.25, stratify=y, random_state=42
+
+)
+
+
+
+model = make_pipeline(
+
+    StandardScaler(),
+
+    LogisticRegression(max_iter=2000, class_weight="balanced"),
+
+)
+
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+
+
+print(classification_report(y_test, y_pred, digits=3))
+
+print("F1:", f1_score(y_test, y_pred))
+
+print("F0.5:", fbeta_score(y_test, y_pred, beta=0.5))
+
+print("F2:", fbeta_score(y_test, y_pred, beta=2.0))
+
+```
+
+
+
+classification_report ではクラス別の Precision / Recall / F1 がまとめて確認できます。
+
+
 
 ---
 
-## 3. F1 と Fβ の使い分け
 
-- **F1 スコア**：適合率と再現率を同等に評価したいとき。一般的なデフォルト。
-- **F0.5 スコア**：偽陽性コストが高い場合（例：業務フローで手作業チェックが高コスト）。
-- **F2 スコア**：偽陰性を避けたい場合（例：医療スクリーニングや不正検知）。
 
-閾値を調整しながら目的の Fβ を最大化すると、業務要件に合った判定ラインを引けます。
+## 3. 閾値と F1 スコアの関係
+
+
+
+確率出力 predict_proba を使えば、閾値を動かしたときに F1 がどう変わるかを可視化できます。
+
+
+
+```python
+
+from sklearn.metrics import precision_recall_curve, f1_score
+
+
+
+proba = model.predict_proba(X_test)[:, 1]
+
+precision, recall, thresholds = precision_recall_curve(y_test, proba)
+
+thresholds = np.append(thresholds, 1.0)
+
+f1_scores = [
+
+    f1_score(y_test, (proba >= t).astype(int))
+
+    for t in thresholds
+
+]
+
+```
+
+
+
+{{< figure src="/images/eval/classification/f1-score/f1_vs_threshold.png" alt="F1 スコアと閾値" caption="閾値によって F1 は変動する。Recall を優先したい場合は閾値を下げて再計算する。" >}}
+
+
+
+- F1 が最大になる閾値を探せば、Precision / Recall のバランスが最も良い点が分かります。
+
+- Recall をさらに重視したい場合は F2 や F0.5 といった Fβ スコアで閾値を評価し直すと良いでしょう。
+
+
 
 ---
 
-## 4. マクロ平均とマイクロ平均
 
-- **マクロ F1（macro）**：クラスごとの F1 を単純平均。少数派クラスを重視したいとき。
-- **マイクロ F1（micro）**：全サンプルの TP/FP/FN を合算して計算。大規模データで安定。
-- **加重平均（weighted）**：クラスごとの F1 をサンプル数で重み付け。クラス比を反映した全体スコア。
 
-多ラベル問題では `average="samples"` を使うとサンプル単位で平均化できます。
+## 4. 多クラスでの平均化
+
+
+
+scikit-learn の verage 引数を切り替えることで、多クラス問題でも F1 を集計できます。
+
+
+
+- macro … クラスごとに F1 を計算し単純平均。クラス数が少なくても公平。
+
+- weighted … クラスごとの F1 をサンプル数で加重平均。全体のバランスを保つ。
+
+- micro … 混同行列を合算してから計算。クラス不均衡の影響を受けやすい点に注意。
+
+
+
+```python
+
+from sklearn.metrics import f1_score
+
+
+
+f1_macro = f1_score(y_test, y_pred, average="macro")
+
+f1_weighted = f1_score(y_test, y_pred, average="weighted")
+
+```
+
+
+
+サンプル単位のマルチラベルでは verage="samples" も利用できます。
+
+
 
 ---
 
-## 5. 実務でのポイント
 
-- Accuracy と併せて F1 を提示すると、クラス不均衡時でも実態を説明しやすい。
-- モデル比較では ROC-AUC とF1 を見比べ、判別能力と実際のしきい値性能をバランス良く評価する。
-- しきい値探索では `Precision-Recall` 曲線と並べて F1 の変化を可視化すると意思決定者に伝わりやすい。
-
----
 
 ## まとめ
 
-- F1 スコアは適合率と再現率の調和平均で、両者のバランスを一つの数値にまとめる。
-- Fβ スコアで β を調整すると、偽陽性・偽陰性のコストに応じた評価が可能。
-- `average` の指定やしきい値調整を活用し、業務要件を満たす最適なモデルを選択しよう。
+
+
+- F1 スコアは適合率と再現率を同じ比重で評価する調和平均。閾値により大きく変動するので可視化して確認する。
+
+- Fβ スコアを使えば、見逃し重視／誤検知重視など要件に応じて重み付けを変えられる。
+
+- 多クラスやマルチラベルでは平均化方式を明示し、Precision / Recall / PR 曲線と併せて総合的にモデルの挙動を把握しよう。
 
 ---
+

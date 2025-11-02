@@ -1,62 +1,77 @@
 ---
-title: "マクロ・マイクロ平均の使い分け"
+title: "平均化戦略（Averaging Strategies）を使い分ける"
+linkTitle: "平均化戦略"
+seo_title: "平均化戦略（Averaging Strategies）| マルチクラス評価の基本"
 pre: "4.3.14 "
 weight: 14
-title_suffix: "multiクラス評価を正しく解釈する"
 ---
 
 {{< lead >}}
-マルチクラスやマルチラベルの評価指標では、`average` 引数で「macro」「micro」「weighted」「samples」などの平均化戦略を選択できます。それぞれの意味を理解し、用途に応じて正しく選択しましょう。
+マルチクラス／マルチラベル分類で Precision・Recall・F1 などを集計するときは、`average` 引数で「どのように平均を取るか」を指定します。Python 3.13 と scikit-learn の実例とともに、代表的な 4 つの平均化方式を整理しましょう。
 {{< /lead >}}
 
 ---
 
-## 1. 平均化戦略の概要
-
-| average | 計算方法 | 特徴 |
-| --- | --- | --- |
-| `micro` | 全サンプルの TP/FP/FN を合算して計算 | サンプル数の多いクラスが優先される |
-| `macro` | クラスごとの指標を単純平均 | すべてのクラスを同じ重みで扱う |
-| `weighted` | クラスごとの指標をサンプル数で重み付け平均 | クラス不均衡を反映しつつ、極端なクラスの影響を抑える |
-| `samples` | マルチラベル用。サンプル単位で平均 | 1 サンプルに複数ラベルがある場合に有効 |
+## 1. 主な平均化の種類
+| average    | 計算方法                                        | 特徴・主な利用場面                                        |
+| ---------- | ----------------------------------------------- | --------------------------------------------------------- |
+| `micro`    | すべてのサンプルの TP/FP/FN を合算して指標を算出 | クラスごとの重み付けは行わず、全体の正解率を重視する場合 |
+| `macro`    | クラスごとに指標を計算し、単純平均               | 少数クラスも同じ重みで扱える。医療・不正検知などで有効     |
+| `weighted` | クラスごとに指標を計算し、サンプル数で加重平均   | 実データのクラス比を保ちながら平均を取りたい場合          |
+| `samples`  | マルチラベル用。サンプルごとに平均               | 1 件に複数ラベルが付く画像タグ分類などで標準的            |
 
 ---
 
-## 2. Python での指定方法
-
-```python
-from sklearn.metrics import precision_score, recall_score, f1_score
-
-for avg in ["micro", "macro", "weighted"]:
-    f1 = f1_score(y_true, y_pred, average=avg)
-    print(avg, f1)
+## 2. Python 3.13 での比較
+```bash
+python --version  # 例: Python 3.13.0
+pip install scikit-learn matplotlib
 ```
 
-デフォルトでは二値分類は `average="binary"`、多クラスでは `average="weighted"`（一部関数は `None`）になります。希望する平均化戦略を明示的に指定すると安心です。
+```python
+from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, f1_score
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+X, y = make_classification(
+    n_samples=30_000,
+    n_features=20,
+    n_informative=6,
+    weights=[0.85, 0.1, 0.05],  # クラス不均衡
+    random_state=42,
+)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, stratify=y, random_state=42
+)
+
+model = make_pipeline(
+    StandardScaler(),
+    LogisticRegression(max_iter=2000, multi_class="ovr"),
+)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+print(classification_report(y_test, y_pred, digits=3))
+for avg in ["micro", "macro", "weighted"]:
+    print(f"F1 ({avg}):", f1_score(y_test, y_pred, average=avg))
+```
+
+`classification_report` は各クラスの指標と `macro avg` / `weighted avg` / `micro avg` を同時に表示してくれるため、平均化方式の違いをすぐ比較できます。
 
 ---
 
-## 3. 使い分けの指針
-
-- **micro**：全体の正解率に近い感覚。大規模データで平均的な性能を素早く確認したいとき。
-- **macro**：少数派クラスを重視。各クラスを公平に扱いたいとき。
-- **weighted**：クラス比を反映しつつ、少数派の指標も見たいとき。実務でのバランス指標として使いやすい。
-- **samples**：マルチラベルでサンプル単位の平均が欲しいとき（例：1 件のニュース記事ごとのタグ一致度）。
-
----
-
-## 4. 注意点とベストプラクティス
-
-- Macro 平均だけを見ていると、実際に出現頻度の高いクラスのパフォーマンスが把握しづらい。Macro と Weighted を併用するのがおすすめ。
-- Micro 平均はクラス不均衡で多数派に引きずられやすいため、混同行列やクラス別スコアも必ず確認する。
-- レポートでは平均化戦略を明記し、意思決定者が数字を誤解しないようにする。
+## 3. 使い分けのヒント
+- **micro** … モデルの総合的な正解率を重視したいとき。Kaggle などで全サンプルの正答率を確認するときに便利。
+- **macro** … 少数クラスも同じ重みで扱いたいとき。医療や不正検知など取りこぼしが許されない場面に向く。
+- **weighted** … 現実のクラス比を保ったまま評価したいとき。Accuracy に近い感覚で Precision/Recall/F1 を報告できる。
+- **samples** … マルチラベル分類で 1 サンプル複数ラベルの性能を測りたいときの標準的な選択。
 
 ---
 
 ## まとめ
-
-- `average` パラメータによって指標の意味が大きく変わるため、目的に合わせて使い分ける。
-- Macro はクラス平等、Micro は全体重視、Weighted は実務バランス、Samples はマルチラベル用。
-- 複数の平均化結果を併記し、モデルの性能を多角的に判断しよう。
-
----
+- `average` の選択で同じモデルでも指標の意味合いが大きく変わる。タスクとビジネス要件に合わせて使い分けることが重要。
+- `macro` はクラス間を公平に、`micro` は全体の比率を重視、`weighted` はクラス比を保った平均、`samples` はマルチラベル専用と覚えておこう。
+- scikit-learn の `f1_score` などで複数の平均化方式を簡単に計算できるので、併記すると指標の読み違いを防げる。

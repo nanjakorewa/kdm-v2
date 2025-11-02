@@ -1,87 +1,178 @@
----
-title: "対数損失（Log Loss）"
+﻿---
+
+title: "対数損失（Log Loss）| 予測確率の信頼性を測る"
+
+linkTitle: "Log Loss"
+
+seo_title: "対数損失（Log Loss）| 予測確率の信頼性を測る"
+
 pre: "4.3.4 "
+
 weight: 4
-title_suffix: "確率予測の信頼度を測る"
+
 ---
+
+
 
 {{< lead >}}
-対数損失（Log Loss）は予測確率がどれだけ正解ラベルに寄り添っているかを測る指標です。確率を出力できるモデルのキャリブレーションを評価する際に欠かせません。
+
+Log Loss（Cross Entropy）は、予測確率と実際の結果のずれを評価する指標です。確率を間違えるほどペナルティが急速に大きくなるため、キャリブレーションが重要なシーンで役立ちます。Python 3.13 での計算手順と理解に役立つグラフを紹介します。
+
 {{< /lead >}}
 
+
+
 ---
+
+
 
 ## 1. 定義
 
-二値分類では次のように表されます。
 
-$$
-\mathrm{LogLoss} = -\frac{1}{n} \sum_{i=1}^n \bigl[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \bigr]
-$$
 
-ここで \\(p_i\\) はサンプル \\(i\\) が陽性であるとモデルが予測した確率。  
-多クラスでは正解クラスの予測確率の対数を足し合わせます。
+二値分類の Log Loss は次式で表されます。
+
+
+
+
+
+\mathrm{LogLoss} = -\frac{1}{n} \sum_{i=1}^{n} \left[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \right]
+
+
+
+
+
+ここで \(p_i\) は陽性クラスの予測確率、\(y_i\) は正解ラベル（0 または 1）です。多クラスでは各クラスの確率とワンホットラベルの積を同様に加算します。
+
+
 
 ---
 
-## 2. Python で計算
 
-```python
-from sklearn.datasets import load_breast_cancer
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import log_loss
 
-X, y = load_breast_cancer(return_X_y=True)
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
+## 2. Python 3.13 での計算
 
-model = LogisticRegression(max_iter=1000)
-model.fit(X_train, y_train)
-proba = model.predict_proba(X_test)
 
-ll = log_loss(y_test, proba)
-print(f"Log Loss = {ll:.4f}")
+
+```bash
+
+python --version        # 例: Python 3.13.0
+
+pip install scikit-learn matplotlib
+
 ```
 
-`log_loss` の第 2 引数には確率行列を渡します。しきい値で二値化したラベルを渡すと意味がなくなるので注意してください。
+
+
+```python
+
+from sklearn.datasets import load_breast_cancer
+
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.metrics import log_loss, classification_report
+
+from sklearn.model_selection import train_test_split
+
+from sklearn.pipeline import make_pipeline
+
+from sklearn.preprocessing import StandardScaler
+
+
+
+X, y = load_breast_cancer(return_X_y=True)
+
+X_train, X_test, y_train, y_test = train_test_split(
+
+    X, y, test_size=0.3, stratify=y, random_state=42
+
+)
+
+
+
+model = make_pipeline(
+
+    StandardScaler(),
+
+    LogisticRegression(max_iter=2000, solver="lbfgs"),
+
+)
+
+model.fit(X_train, y_train)
+
+proba = model.predict_proba(X_test)
+
+
+
+print(classification_report(y_test, model.predict(X_test), digits=3))
+
+print("Log Loss:", log_loss(y_test, proba))
+
+```
+
+
+
+predict_proba が返す確率を log_loss に渡すだけで評価できます。
+
+
 
 ---
 
-## 3. 確率に対するペナルティ
 
-- 正解クラスに高確率を割り当てれば損失は小さく、外れれば大きなペナルティ。
-- 0 や 1 に極端に寄った確率で外すと、損失がほぼ無限大に発散します。数値安定化のために \\(10^{-15}\\) などの下限でクリップして計算することが一般的です。
-- モデルが自信過剰かどうかを判断するのに有用。Accuracy が高くても Log Loss が悪い場合は、確率が過剰に偏っている可能性があります。
+
+## 3. ペナルティのイメージ
+
+
+
+推定確率が真のラベルとズレるほど Log Loss は急激に増えます。
+
+
+
+{{< figure src="/images/eval/classification/log-loss/log_loss_curves.png" alt="Log Loss のペナルティ" caption="実際のラベルが 1 のときは −log(p)、0 のときは −log(1−p) がペナルティになる。確率を外すほど急増する。" >}}
+
+
+
+- 陽性サンプルに低い確率（例: 0.1）を付与すると大きく罰せられます。
+
+- 0.5 のような無難な確率ばかりでは、検出性能が低いと判断されます。
+
+
+
+---
+
+
+
+## 4. 実務での使いどころ
+
+
+
+- **キャリブレーションの確認** — Platt scaling や isotonic regression で補正したあとの効果測定に最適。
+
+- **コンペティション** — Kaggle など確率を評価するコンテストで採用されることが多い指標。
+
+- **閾値に依存しない比較** — Accuracy のように閾値固定ではないため、ランキング性能や確率の信頼性をまとめて評価できます。
+
+
+
+scikit-learn の log_loss には labels, eps, 
+
+ormalize などの引数があり、欠損ラベルや数値の安定性に配慮できます。
+
+
 
 ---
 
-## 4. ハイパーパラメータの直感
 
-指標そのものにハイパーパラメータはありませんが、scikit-learn の `log_loss` にはいくつかのオプションがあります。
-
-| 引数 | 役割 | 調整したとき |
-| --- | --- | --- |
-| `labels` | 期待するクラスの順序 | 確率行列の列順と一致させる。ラベル欠落時の整合性確保に使う |
-| `eps` | クリップ下限 | デフォルトは `1e-15`。数値エラーが出る場合に調整 |
-| `normalize` | 平均を取るか | `True`（既定）で平均、`False` で合計損失。サンプル数を変えず比較したい場合は `True` のままが推奨 |
-
----
-
-## 5. 実務での活用
-
-- **確率校正の確認**：Platt scaling や isotonic regression で校正した後に Log Loss の改善をチェック。
-- **ランキング評価**：Kaggle などのコンペでは Log Loss が主要評価軸として使われるケースが多い。
-- **アンサンブル**：確率を平均する際、Log Loss を指標にすると適切な重みを決めやすい。重み付き平均で最小化するよう探索すると改善が見込めます。
-- **しきい値選択**：Log Loss は確率の質を評価する指標なので、Accuracy だけでは分からない改善余地を把握できます。
-
----
 
 ## まとめ
 
-- Log Loss は確率予測の信頼度を評価する指標で、自信過剰な予測には大きなペナルティを課す。
-- 確率出力をそのまま渡すこと、数値安定化のためのクリッピングを行うことが重要。
-- Accuracy や ROC-AUC と併用し、確率の質と判別能力の両面からモデルを評価しよう。
+
+
+- Log Loss は確率予測の「どれだけ自信を外したか」を測る指標。小さいほど良い。
+
+- Python 3.13 では log_loss と predict_proba で簡単に算出できる。
+
+- Accuracy や ROC-AUC だけでなく、Log Loss で確率の品質を併せて確認しよう。
 
 ---
+

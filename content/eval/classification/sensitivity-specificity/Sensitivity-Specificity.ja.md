@@ -1,40 +1,44 @@
 ---
 title: "感度と特異度（Sensitivity / Specificity）"
+linkTitle: "Sensitivity / Specificity"
+seo_title: "感度と特異度｜偽陰性と偽陽性のバランスを把握"
+title_suffix: "偽陰性と偽陽性のバランスを把握"
 pre: "4.3.7 "
 weight: 7
-title_suffix: "偽陰性と偽陽性のバランスを把握"
 ---
 
 {{< lead >}}
-感度（Sensitivity）は陽性を取り逃さない能力、特異度（Specificity）は陰性を誤検出しない能力を表します。医療診断や不正検知など、偽陰性・偽陽性のコストが異なるタスクで基礎になる指標です。
+感度（Sensitivity）は陽性を取りこぼさない力、特異度（Specificity）は陰性を誤って陽性と判定しない力を表す指標です。医療診断や不正検知など、偽陰性と偽陽性のコストが大きく異なるタスクで基本となります。
 {{< /lead >}}
 
 ---
 
 ## 1. 定義
-
-混同行列を用いると次のように表されます。
+混同行列を用いると次のように定義されます。
 
 $$
 \mathrm{Sensitivity} = \frac{TP}{TP + FN}, \qquad
 \mathrm{Specificity} = \frac{TN}{TN + FP}
 $$
 
-- 感度が高いほど、陽性サンプルを逃さない。
-- 特異度が高いほど、陰性サンプルを誤って陽性と判定しない。
+- 感度が高いほど陽性サンプルの見逃しが少ない。  
+- 特異度が高いほど陰性サンプルを誤検知しにくい。
 
 ---
 
-## 2. Python で計算
+## 2. Python 3.13 での計算
+```bash
+python --version  # 例: Python 3.13.0
+pip install numpy scikit-learn
+```
 
 ```python
-from sklearn.metrics import confusion_matrix
 import numpy as np
+from sklearn.metrics import confusion_matrix
 
-cm = np.array([[85, 5],
-               [12, 98]])  # [[TN, FP], [FN, TP]]
-
+cm = confusion_matrix(y_test, y_pred)  # [[TN, FP], [FN, TP]]
 tn, fp, fn, tp = cm.ravel()
+
 sensitivity = tp / (tp + fn)
 specificity = tn / (tn + fp)
 
@@ -42,50 +46,44 @@ print("Sensitivity:", round(sensitivity, 3))
 print("Specificity:", round(specificity, 3))
 ```
 
-scikit-learn の `classification_report` では感度は `recall` として出力されます。特異度は `recall` を `pos_label=0` にして計算するか、上記のように手計算します。
+scikit-learn の `classification_report` では感度が `recall` として出力されます。特異度は `recall(y_true, y_pred, pos_label=0)` として計算するか、上記のように手計算します。
 
 ---
 
-## 3. しきい値調整でトレードオフ
-
+## 3. しきい値調整とトレードオフ
 確率を出力するモデルでは、しきい値を動かすと感度と特異度がトレードオフになります。
 
 ```python
 from sklearn.metrics import roc_curve
 
 fpr, tpr, thresholds = roc_curve(y_test, probas)
-specificities = 1 - fpr  # 特異度
+specificities = 1 - fpr
 ```
 
-- ROC 曲線上の一点を選ぶことは、感度と特異度のペアを選ぶことに等しい。
-- コストが明確なら、感度・特異度に重みを付けた目的関数（Youden Index など）で最適なしきい値を探す方法もあります。
+- ROC 曲線上の 1 点は感度と特異度の組み合わせを表します。
+- コストが明確な場合は、Youden Index やコストベースの目的関数で最適なしきい値を探す方法も有効です。
 
 ---
 
-## 4. Youden Index と平衡感度
-
-Youden Index（J統計量）は感度と特異度の和から 1 を引いた値で、最適なしきい値探索に利用されます。
+## 4. Youden Index とバランス
+Youden Index は感度と特異度の和から 1 を引いた値で、バランスの良いしきい値を選ぶ指標として使われます。
 
 $$
 J = \mathrm{Sensitivity} + \mathrm{Specificity} - 1
 $$
 
-J が最大になるしきい値は、感度と特異度をバランス良く確保できるポイントです。
+\\(J\\) が最大になるしきい値では、双方をバランス良く確保できます。
 
 ---
 
-## 5. 実務上のポイント
-
-- **感度重視**：疾病スクリーニングなど、陽性を見逃すリスクが高い場合。
-- **特異度重視**：誤検出がコストにつながるクレジットカード審査など。
-- **報告の際**：Accuracy と併せ、感度・特異度を別々に示すことで意思決定者がリスクを評価しやすくなります。
+## 5. 実務でのポイント
+- **感度重視の例**：重症疾患のスクリーニングでは、見逃し（偽陰性）を避けるため感度を高く保つ。
+- **特異度重視の例**：クレジットカードの不正検知で、正常取引を止める（偽陽性）コストが大きい場合は特異度を重視。
+- **報告テンプレート**：Accuracy と併せて感度・特異度を並べて提示すると、意思決定者がリスクを評価しやすい。
 
 ---
 
 ## まとめ
-
-- 感度（Sensitivity）は陽性の取り逃し、特異度（Specificity）は陰性の誤警報を示す基本指標。
-- しきい値の調整で双方はトレードオフになるため、業務コストに基づいて適切なバランスを選ぶ。
-- Youden Index などを活用しつつ、Accuracy だけでは分からないリスクを補完しよう。
-
----
+- 感度は陽性の取りこぼし、特異度は陰性の誤検知を表す基本指標。
+- しきい値を動かすと感度と特異度がトレードオフになるため、業務コストに基づきバランスを決める。
+- Youden Index などを活用し、Accuracy だけでは見えないリスクを補完しよう。
